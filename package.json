@@ -8,7 +8,8 @@
     "start": "python3 -m http.server 8080 --directory dist"
   },
   "devDependencies": {
-    "jsdom": "^31.0.1"
+    "jsdom": "^31.0.1",
+    "lucide-static": "^0.468.0"
   },
   "dependencies": {
     "@echogarden/espeak-ng-emscripten": "^0.3.5",
