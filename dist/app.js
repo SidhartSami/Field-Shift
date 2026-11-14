@@ -3,6 +3,7 @@ import {waterBudgetGraphic} from './visuals.js';
 import {buildDecisionBrief,rotationCheckKey,LOCAL_CHECKS} from './decision-brief.js';
 import {createUrduDictation} from './stt.js';
 import {createVoiceHelp} from './voice.js';
+import {createVoiceLive} from './voice-live.js';
 import {compareOutcomes,screenEconomics} from './outcomes.js';
 import {createGeoWorkspace} from './geo.js';
 import {crops,summarize,evaluate} from './model.js';
@@ -12,7 +13,7 @@ const defaults={farm:'Lahore example field',area:10,lat:31.5204,lon:74.3587,soil
 const defaultEconomics={currency:'PKR',pumpingCost:'',marginChange:'',transitionCost:''};
 let economics={...defaultEconomics},localChecks={};
 const locale={language:'en',translate:text=>text};
-let voiceView=null,dictation=null;
+let voiceView=null,dictation=null,voiceLive=null;
 let geoView=null;
 let state={version:2,active:'field-1',fields:[],plans:[]},raw,climate,results=[],observed={lat:31.5204,lon:74.3587},source='saved NASA snapshot',url='',fetchTime='2026-11-14',year=2024,selected='water',customSequence=null,ready=false,toastTimer,requestId=0,month=6;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -23,6 +24,26 @@ function hideToast(){$('toast').classList.remove('visible')}
 $('toast-close').onclick=hideToast;
 function input(){return Object.fromEntries(fields.map(k=>[k,$(k).type==='checkbox'?$(k).checked:$(k).type==='number'||$(k).type==='range'?($(k).value===''&&k==='ndvi'?'':Number($(k).value)):$(k).value]));}
 function setInputs(i){for(const k of fields){const value=i[k]??defaults[k];if($(k).type==='checkbox')$(k).checked=value;else $(k).value=value}}
+// Live voice: expose a reader so voice-live can fold facts without importing state.
+globalThis.__fieldshiftReadInputs=()=>input();
+const LIVE_FIELD_IDS=['farm','area','soil','organic','slope','irrigation','summer','winter','priority','ndvi','residue','dry','heat'];
+function flashLiveFocus(ids){
+ for(const el of document.querySelectorAll('.live-focus'))el.classList.remove('live-focus');
+ const list=(ids||[]).filter(id=>$(id));
+ for(const id of list){const el=$(id);el.classList.add('live-focus');el.scrollIntoView?.({block:'nearest',behavior:'smooth'})}
+ if(!list.length)return;
+ clearTimeout(flashLiveFocus._t);
+ flashLiveFocus._t=setTimeout(()=>{for(const el of document.querySelectorAll('.live-focus'))el.classList.remove('live-focus')},2200);
+}
+function applyLiveInputs(next,{live=false,ids=[]}={}){
+ if(!ready)return;
+ setInputs(next);
+ draw();
+ if(!live){
+  stash();
+  flashLiveFocus(ids);
+ }
+}
 function matches(){const i=input();return i.lat===observed.lat&&i.lon===observed.lon}
 function geoContext(){const i=input();return {inputs:i,year,customSequence,selected,selectedName:results.find(r=>r.id===selected)?.name,valid:ready&&$('farm-form').checkValidity()&&matches(),fields:state.fields.map(f=>{const d=f.id===state.active?{inputs:i,observations:{coordinates:observed}}:f.draft;return {id:f.id,name:d.inputs.farm,area:d.inputs.area,lat:Number(d.inputs.lat),lon:Number(d.inputs.lon),active:f.id===state.active,matched:Number(d.inputs.lat)===d.observations.coordinates.lat&&Number(d.inputs.lon)===d.observations.coordinates.lon}})}}
 function ensureGeo(){if(!geoView)geoView=createGeoWorkspace({document,fetcher:(...args)=>fetch(...args),getContext:geoContext,onError:toast,onSelectField:fid=>{$('field-list').querySelector(`[data-field="${fid}"]`)?.click()},onUseLocation:point=>openFieldSetup({point})});return geoView}
@@ -174,6 +195,22 @@ async function init(){try{const response=await fetch('data/power-lahore.json');i
  try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.version===2&&Array.isArray(saved.fields)&&saved.fields.length&&Array.isArray(saved.plans)){for(const f of saved.fields){summarize(f.draft.rawNASA,f.draft.observations.year);if(!f.draft.inputs||!f.draft.observations.coordinates)throw Error('Invalid draft')}if(!saved.fields.some(f=>f.id===saved.active))saved.active=saved.fields[0].id;state=saved;restored=true}}catch{toast('Could not restore workspace. The NASA example is available; export new work to keep a backup.')}
  if(!restored){let draft=bundledDraft();try{const old=JSON.parse(localStorage.getItem('fieldshift-plan-v1')||'null');if(old?.rawNASA&&old?.inputs){summarize(old.rawNASA);draft={...draft,...old,observations:{...old.observations,year:2024}}}}catch{}state.fields=[{id:'field-1',draft}];state.active='field-1'}
  ready=true;$('export').disabled=false;loadDraft(currentField().draft);renderFields();renderPlans();route();$('app-loading').hidden=true;
+ voiceLive=createVoiceLive({document,
+  onLiveInputs:(next,meta)=>{
+   const before=input();
+   const ids=LIVE_FIELD_IDS.filter(k=>String(before[k]??'')!==String(next[k]??''));
+   applyLiveInputs(next,{live:true,ids});
+  },
+  onCommit:next=>{
+   const before=input();
+   const ids=LIVE_FIELD_IDS.filter(k=>String(before[k]??'')!==String(next[k]??''));
+   if(!ids.length)return;
+   applyLiveInputs(next,{live:false,ids});
+   toast(ids.some(k=>k==='dry'||k==='heat')?'Scenario updated by voice.':'Comparison updated by live voice.');
+  },
+  onError:message=>toast(message)
+ });
+ $('voice-live-toggle').onclick=()=>voiceLive?.toggle();
  }catch(e){$('app-loading').innerHTML=`<strong>Observations could not load</strong><p>${esc(e.message)}</p><button class="secondary" id="retry-startup">Retry loading</button>`;$('retry-startup').onclick=init;$('save').disabled=true;$('export').disabled=true;}}
 function voiceContext(){return {valid:ready&&$('farm-form').checkValidity()&&matches(),inputs:input(),baseline:results.find(r=>r.id==='baseline'),selectedRotation:results.find(r=>r.id===selected),financialScreen:economicAnalysis()}}
 document.documentElement.lang='en';document.documentElement.dir='ltr';

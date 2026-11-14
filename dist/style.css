@@ -53,3 +53,32 @@ button,.primary,.secondary{transition:transform 130ms var(--ease-out),opacity 13
 @media(max-width:700px){.brand{font-size:22px;padding:0;gap:10px}.brand>img{width:34px;height:34px}.brand small{font-size:8px}.brand .version{display:inline-block;margin-left:5px}.search-label{font-size:0;gap:0}.search-label .ui-icon{width:18px;height:18px}.workspace-heading{padding-top:24px;padding-bottom:23px}.workspace-heading h1{font-size:30px;letter-spacing:-1.25px;max-width:420px;margin:12px 0}.workspace-heading p{font-size:12px;line-height:1.85;max-width:440px}.overline{font-size:8px;flex-wrap:wrap;row-gap:5px}.sidebar .theme-toggle .ui-icon{width:21px;height:21px}.decision-brief{padding:18px}.brief-main h2{font-size:23px}.water-visual h2{font-size:17px}.water-visual .panel-heading{flex-direction:column;gap:10px}.budget-row-heading{font-size:11px}.budget-row-heading strong{font-size:15px}.budget-row-detail{font-size:9px;line-height:1.7}.water-legend{font-size:9px;gap:11px}.budget-bar{height:23px}.water-visual>.caption{font-size:10px}.crop-icon{width:43px;height:43px}.crop-illustration{width:34px;height:34px}.season strong{font-size:14px}.map-entry{font-size:10px;line-height:1.8}.map-entry a{font-size:11px}.saved-location-bar .location-pin{width:30px;height:30px}}
 @media print{.field-perspective{display:none}.brand{color:#153e35}.water-visual{break-inside:avoid}.budget-bar{height:18px;print-color-adjust:exact;-webkit-print-color-adjust:exact}.budget-rain{fill:#367d7a}.budget-irrigation{fill:#d7aa52}.budget-track{fill:#efeee5}}
 .budget-row-detail .has-gap{color:color-mix(in srgb,var(--clay) 70%,var(--ink))}.field-perspective:after{content:'';position:absolute;inset:45% 0 0;background:linear-gradient(transparent,#153e35dc);pointer-events:none}.perspective-label{z-index:1}
+
+/* Live voice bar — CoffeeBrew-style floating transcript (feature/voice-live-updates) */
+.voice-live-bar{position:fixed;left:calc(50% + 116px);bottom:22px;transform:translateX(-50%);z-index:90;display:flex;justify-content:center;pointer-events:none;width:max-content;max-width:min(640px,calc(100vw - 32px))}
+.voice-live-pill{pointer-events:auto;display:flex;align-items:center;gap:12px;padding:10px 12px 10px 16px;border-radius:999px;background:#10221cee;color:#f5f3eb;border:1px solid #ffffff22;box-shadow:0 8px 28px #00000030;backdrop-filter:blur(8px);min-height:52px}
+.voice-live-mode{font:600 8px 'DM Sans',system-ui,sans-serif;letter-spacing:.12em;color:#d7aa52;border:1px solid #d7aa5255;border-radius:4px;padding:4px 6px;flex-shrink:0}
+.voice-live-text{font-size:13px;line-height:1.45;min-width:140px;max-width:360px;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:#f5f3e7}
+.voice-live-placeholder{color:#ffffff55}
+.voice-live-error{color:#f0a090}
+.voice-live-caret{display:inline-block;width:1px;height:1em;background:#7dd3a8;margin-left:3px;vertical-align:text-bottom;animation:voice-live-pulse 1s steps(2,end) infinite}
+@keyframes voice-live-pulse{50%{opacity:0}}
+.voice-live-status{font-size:10px;color:#ffffff66;max-width:120px;flex-shrink:0}
+.voice-live-toggle{flex-shrink:0;width:40px;height:40px;border:0;border-radius:50%;display:grid;place-items:center;background:#f5f3eb;color:#153e35;cursor:pointer;padding:0;transition:background 130ms var(--ease-out),transform 130ms var(--ease-out)}
+.voice-live-toggle svg{width:20px;height:20px}
+.voice-live-toggle:hover{background:#fff}
+.voice-live-toggle.listening{background:#7dd3a8;color:#10221c}
+.voice-live-toggle.listening:hover{background:#9de0bc}
+.voice-live-toggle:disabled{opacity:.45;cursor:not-allowed}
+.voice-live-bar.is-listening .voice-live-pill{border-color:#7dd3a866}
+.voice-live-bar.is-error .voice-live-pill{border-color:#f0a09066}
+/* Live focus: which input the voice just touched */
+.live-focus{outline:2px solid var(--harvest,#d7aa52)!important;outline-offset:2px;box-shadow:0 0 0 4px #d7aa5233}
+@media(max-width:700px){
+  .voice-live-bar{left:50%;bottom:max(14px,env(safe-area-inset-bottom));width:calc(100% - 24px);max-width:none}
+  .voice-live-pill{width:100%;padding:10px 10px 10px 12px;gap:8px}
+  .voice-live-text{max-width:none;flex:1;font-size:12px}
+  .voice-live-status{display:none}
+}
+@media print{.voice-live-bar{display:none!important}}
+@media(prefers-reduced-motion:reduce){.voice-live-caret{animation:none}}

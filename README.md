@@ -30,6 +30,8 @@ Open http://localhost:8080. The application, vendored Leaflet map library and la
 9. Open the optional dictation section to **dictate Urdu into editable text** using local open-source Whisper, an audio file, or an explicitly selected Urdu browser service. Review before using it as a question or planning note. Urdu stays the recognition language under English UI. Optional read-aloud is separate.
 10. Enter local costs to screen a first-year switch. Fields are blank until supplied; the output is an assumption-based calculation, not a profit forecast.
 
+**Live voice planning** (`feature/voice-live-updates`): the floating mic bar streams English speech-to-text and folds phrases into field inputs as you talk (e.g. “irrigation 400”, “plant millet”, “drier by 30”). Interim transcripts update the comparison live; a completed phrase persists the draft. Uses the browser Speech Recognition API (Chrome/Edge); no Deepgram key. This is separate from Urdu dictation.
+
 Field drafts and named decisions persist separately in `fieldshift-workspace-v2`. Existing v1 plans migrate to a field draft. This is a browser-local system, not a shared multi-user database. Exported JSON includes the raw NASA evidence; this version does not import external files.
 
 ## Architecture
