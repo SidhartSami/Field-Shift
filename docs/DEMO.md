@@ -1,11 +1,11 @@
 # Three-minute demo
 0:00 — Open FieldShift directly into the rotation workspace. “This is a planning tool. Start with the farmer’s own field and current crops.”
-0:20 — Expand field context, enter soil and irrigation inputs, and show the baseline alongside three alternatives.
-0:40 — Select a rotation. Inspect the four-season timeline and its demand, family breaks and soil protection proxies.
+0:20 — Open Field intelligence. Switch rainfall/temperature/wetness overlays, inspect a NASA grid cell and explain that these are coarse historical observations.
+0:40 — Select a location in the planner, then inspect the rotation comparison and four-season timeline.
 1:00 — Apply the hot/dry scenario. Change water/soil priorities and observe model rankings. Explain that scenarios are hypothetical and scores uncalibrated.
 1:25 — Customize the seasonal crop selectors to add a fifth rotation. Save it with a name and planning notes.
 1:45 — Open Saved decisions. Search, reopen the snapshot and export its NASA evidence.
-2:05 — Switch to Earth observations. Compare 2023 with 2024; inspect a month’s rainfall, temperature and wetness. Show the exact NASA request in Model & sources.
+2:05 — Return to the map. Switch to the MODEL water-gap layer and explain that it applies the same field assumptions across regional cells. Inspect 2023/2024 and monthly observed layers; export GeoJSON.
 2:30 — Add a second field and demonstrate independent drafts. Mention that persistence is local to this device.
 2:50 — Close: “FieldShift turns Earth data into a traceable conversation about the next rotation.”
 
@@ -18,7 +18,7 @@
 
 **NASA data:** POWER T2M, PRECTOTCORR and GWETROOT, sourced from MERRA-2 reanalysis. Exact query, data units, resolution caveats and the unmodified response are included.
 
-**Distinctive value:** A baseline-first comparison, honest separation of observations and assumptions, named decision snapshots, independent fields, a reproducible report, and a useful demo that still works when upstream retrieval is unavailable.
+**Distinctive value:** A map-to-planner workflow with real NASA regional overlays, a baseline-first comparison, honest separation of observations and assumptions, named decision snapshots, independent fields, a reproducible report, and a useful demo that still works when upstream retrieval is unavailable.
 
 **Status:** Functional educational prototype with regional Punjab/Haryana crop choices. No validated yield, profit or field-level risk predictions. Vegetation input is manual, and direct SMAP/GPM/Landsat integrations remain future work.
 

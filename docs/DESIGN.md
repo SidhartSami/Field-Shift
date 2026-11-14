@@ -14,3 +14,5 @@ References requested by the user:
 | Decorative schematic field image | Observations with source lineage and month inspection | Prioritize actionable data |
 
 Motion is reserved for occasional dialog/notification entry and press feedback. No count-up metrics, moving charts, delayed navigation or constant decorative motion. Keyboard action search is instant. Light/dark themes persist locally. All native inputs have visible labels, dialogs use the browser focus model, and comparison actions are keyboard reachable. Data remains local to the browser; this revision does not claim backend collaboration.
+
+The geospatial revision introduces Field intelligence as a dedicated spatial workspace. Satellite/street basemaps carry dated NASA observations as coarse cells; the original schematic is not used. The planner includes a direct map entry. A docked inspector, explicit layer legends and a data table connect the spatial overview to exact values and the rotation workflow. Playback requires an explicit user action and stops on navigation or a hidden tab. Geographic place labels help orient the imagery without pretending to add farm-level measurements.
