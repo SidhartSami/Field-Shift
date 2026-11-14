@@ -7,7 +7,7 @@ export function createGeoWorkspace({document:doc,getContext,onUseLocation,onSele
  const textNode=text=>{const el=doc.createElement('span');el.textContent=text;return el};
  const layerOptions=()=>({layer,year,month,context:getContext()});
  const value=c=>overlayValue(c,layer,year,month,getContext());
- function stop(){clearInterval(timer);timer=null;$('geo-play').textContent='▶ Play months';$('geo-play').setAttribute('aria-pressed','false')}
+ function stop(){doc.defaultView.clearInterval(timer);timer=null;$('geo-play').textContent='▶ Play months';$('geo-play').setAttribute('aria-pressed','false')}
  function resize(){if(map)map.invalidateSize({pan:false})}
  function makeMap(){if(!L){$('geo-tile-status').textContent='Map rendering is unavailable. All observations remain accessible in the data table and cell selector.';return}
   try{map=L.map('geo-map',{scrollWheelZoom:false,zoomControl:false,minZoom:3,maxZoom:17}).setView([30.8,75.9],8);L.control.zoom({position:'bottomright'}).addTo(map);L.control.scale({position:'bottomleft',imperial:false}).addTo(map);grids=L.layerGroup().addTo(map);markers=L.layerGroup().addTo(map);annotations=L.layerGroup().addTo(map);map.on('click',e=>inspect(e.latlng.lat,e.latlng.lng));setBasemap('satellite')}
@@ -45,12 +45,12 @@ export function createGeoWorkspace({document:doc,getContext,onUseLocation,onSele
  for(const b of doc.querySelectorAll('[data-geo-layer]'))b.onclick=()=>{layer=b.dataset.geoLayer;if(layer==='gap'){month=null;stop()}render()};
  for(const b of doc.querySelectorAll('[data-basemap]'))b.onclick=()=>setBasemap(b.dataset.basemap);
  $('geo-year').onchange=()=>{year=Number($('geo-year').value);render()};$('geo-annual').onclick=()=>{month=null;stop();render()};$('geo-monthly').onclick=()=>{month=Number($('geo-month').value);render()};$('geo-month').oninput=()=>{month=Number($('geo-month').value);render()};
- $('geo-play').onclick=()=>{if(timer){stop();return}if(month===null||layer==='gap')return;$('geo-play').textContent='Ⅱ Pause';$('geo-play').setAttribute('aria-pressed','true');timer=setInterval(()=>{if(!visible||doc.hidden){stop();return}month=(month+1)%12;$('geo-month').value=month;render()},1000)};
+ $('geo-play').onclick=()=>{if(timer){stop();return}if(month===null||layer==='gap')return;$('geo-play').textContent='Ⅱ Pause';$('geo-play').setAttribute('aria-pressed','true');timer=doc.defaultView.setInterval(()=>{if(!visible||doc.hidden){stop();return}month=(month+1)%12;$('geo-month').value=month;render()},1000)};
  doc.addEventListener('visibilitychange',()=>{if(doc.hidden)stop()});
  $('geo-opacity').oninput=()=>{$('geo-opacity-value').textContent=`${$('geo-opacity').value}%`;paintGrid()};$('geo-show-grid').onchange=paintGrid;$('geo-show-fields').onchange=paintFields;$('geo-show-annotations').onchange=paintAnnotations;
  $('geo-fit').onclick=()=>{map?.fitBounds([[29.25,74.0625],[32.25,77.8125]],{padding:[28,28],animate:false})};
  $('geo-use-location').onclick=()=>{if(probe)onUseLocation({...probe,year})};
- $('geo-export').onclick=()=>{try{const data=exportOverlay(cells,layerOptions());data.metadata.requests=bundle.requests;data.metadata.retrievedAt=bundle.retrievedAt;const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/geo+json'}),a=doc.createElement('a');a.href=URL.createObjectURL(blob);a.download=`fieldshift-${layer}-${year}${month===null?'':`-${month+1}`}.geojson`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}catch(e){onError?.(e.message)}};
+ $('geo-export').onclick=()=>{try{const data=exportOverlay(cells,layerOptions());data.metadata.requests=bundle.requests;data.metadata.retrievedAt=bundle.retrievedAt;const blob=new doc.defaultView.Blob([JSON.stringify(data,null,2)],{type:'application/geo+json'}),a=doc.createElement('a');a.href=doc.defaultView.URL.createObjectURL(blob);a.download=`fieldshift-${layer}-${year}${month===null?'':`-${month+1}`}.geojson`;a.click();doc.defaultView.setTimeout(()=>doc.defaultView.URL.revokeObjectURL(a.href),1000)}catch(e){onError?.(e.message)}};
  makeMap();load();
  return {show(){visible=true;resize();render()},hide(){visible=false;stop()},update(){if(getContext().year!==lastContextYear){year=getContext().year;lastContextYear=year}if(visible)render()},evidence(){return {layer,year,month:month===null?null:month+1,probe:probe?{...probe}:null,regionalRetrievedAt:bundle?.retrievedAt,regionalRequests:bundle?.requests,source:'NASA POWER regional / MERRA-2',note:'Regional model layer uses the same active field assumptions across cells.'}},destroy(){stop();map?.remove()}};
 }
