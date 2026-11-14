@@ -1,0 +1,194 @@
+{
+  "label": "Constructed demonstration, not a real farm or field trial. Crop coefficients and all economic inputs are illustrative.",
+  "climate": {
+    "rain": 764.0300000000001,
+    "temp": 25.06416666666667,
+    "wet": 0.43416666666666676,
+    "monthly": [
+      4.03,
+      33.64,
+      42.160000000000004,
+      17.099999999999998,
+      5.89,
+      36.6,
+      206.46,
+      288.61,
+      94.2,
+      6.82,
+      0,
+      28.52
+    ],
+    "temps": [
+      11.42,
+      14.28,
+      20.61,
+      27.46,
+      34.99,
+      37.94,
+      34.24,
+      29.98,
+      28.86,
+      26.53,
+      21.02,
+      13.44
+    ],
+    "year": 2024
+  },
+  "standard": {
+    "inputs": {
+      "farm": "Illustrative 10 ha Punjab field",
+      "area": 10,
+      "irrigation": 500,
+      "organic": 1.2,
+      "slope": 2,
+      "dry": 0,
+      "heat": 0,
+      "soil": "loam",
+      "summer": "rice",
+      "winter": "wheat",
+      "priority": "balanced",
+      "residue": true
+    },
+    "baseline": {
+      "id": "baseline",
+      "name": "Your current rotation",
+      "sequence": [
+        "rice",
+        "wheat",
+        "rice",
+        "wheat"
+      ],
+      "note": "Reference strategy: your current two-season sequence repeated over two years.",
+      "demand": 1650,
+      "deficit": 653,
+      "soil": 35,
+      "erosion": 62,
+      "breaks": 0,
+      "score": 36,
+      "legumes": 0,
+      "effectiveRain": 497,
+      "heatPenalty": 5.8799999999999955
+    },
+    "selected": {
+      "id": "water",
+      "name": "Lower-demand crop mix",
+      "sequence": [
+        "millet",
+        "chickpea",
+        "mung",
+        "mustard"
+      ],
+      "note": "Lower indicative water demand; millet and mung market access and drainage need checking.",
+      "demand": 650,
+      "deficit": 0,
+      "soil": 65,
+      "erosion": 62,
+      "breaks": 67,
+      "score": 75,
+      "legumes": 2,
+      "effectiveRain": 497,
+      "heatPenalty": 2.9399999999999977
+    },
+    "outcomes": {
+      "baselineId": "baseline",
+      "selectedId": "water",
+      "demandReductionMm": 1000,
+      "demandReductionPct": 60.60606060606061,
+      "demandEquivalentM3": 100000,
+      "gapReductionMm": 653,
+      "remainingGapMm": 0,
+      "soilSupportChange": 30,
+      "protectionChange": 0,
+      "familyBreakChange": 67,
+      "legumeSeasons": 2
+    }
+  },
+  "stress": {
+    "inputs": {
+      "farm": "Illustrative 10 ha Punjab field",
+      "area": 10,
+      "irrigation": 250,
+      "organic": 1.2,
+      "slope": 2,
+      "dry": 30,
+      "heat": 2,
+      "soil": "loam",
+      "summer": "rice",
+      "winter": "wheat",
+      "priority": "balanced",
+      "residue": true
+    },
+    "baseline": {
+      "id": "baseline",
+      "name": "Your current rotation",
+      "sequence": [
+        "rice",
+        "wheat",
+        "rice",
+        "wheat"
+      ],
+      "note": "Reference strategy: your current two-season sequence repeated over two years.",
+      "demand": 1650,
+      "deficit": 1052,
+      "soil": 35,
+      "erosion": 62,
+      "breaks": 0,
+      "score": 24,
+      "legumes": 0,
+      "effectiveRain": 348,
+      "heatPenalty": 9.879999999999995
+    },
+    "selected": {
+      "id": "water",
+      "name": "Lower-demand crop mix",
+      "sequence": [
+        "millet",
+        "chickpea",
+        "mung",
+        "mustard"
+      ],
+      "note": "Lower indicative water demand; millet and mung market access and drainage need checking.",
+      "demand": 650,
+      "deficit": 52,
+      "soil": 65,
+      "erosion": 62,
+      "breaks": 67,
+      "score": 70,
+      "legumes": 2,
+      "effectiveRain": 348,
+      "heatPenalty": 4.939999999999998
+    },
+    "outcomes": {
+      "baselineId": "baseline",
+      "selectedId": "water",
+      "demandReductionMm": 1000,
+      "demandReductionPct": 60.60606060606061,
+      "demandEquivalentM3": 100000,
+      "gapReductionMm": 1000,
+      "remainingGapMm": 52,
+      "soilSupportChange": 30,
+      "protectionChange": 0,
+      "familyBreakChange": 67,
+      "legumeSeasons": 2
+    }
+  },
+  "economics": {
+    "currency": "INR",
+    "baselineApplicationMm": 500,
+    "selectedApplicationMm": 153,
+    "applicationReductionM3": 34700,
+    "pumpingCostChange": 69400,
+    "cropMarginChange": -30000,
+    "firstYearSwitchingCost": 50000,
+    "firstYearNetChange": -10600,
+    "breakEvenCropMarginPerHa": -1940,
+    "assumptions": {
+      "pumpingCost": 2,
+      "marginChange": -3000,
+      "transitionCost": 5000,
+      "irrigation": 500,
+      "area": 10
+    },
+    "interpretation": "Hypothetical first-year cost screen, not a profit forecast. Assumes annual irrigation application at min(available irrigation, demand minus effective rainfall). Costs are per root-zone-equivalent m³; daily timing, conveyance losses, fixed charges, uncertain yields and prices are not modelled."
+  }
+}
