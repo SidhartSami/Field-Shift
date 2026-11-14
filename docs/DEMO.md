@@ -28,7 +28,7 @@ Open the map or seasonal conditions view. “NASA adds historical rainfall and h
 Select a cell and show the dated observation and exact request. One purposeful interaction is enough; avoid a tour of every layer.
 
 ## 2:20–2:45 — Let the farmer hear and keep the reasoning
-Return to the Urdu planner, record a short Urdu question and show its editable STT transcript before using it. Local Whisper base first use is about 100 MB including the runtime, so prepare the model beforehand. Do not claim an accuracy benchmark; review names and numbers. Optional read-aloud is secondary. Then save a decision with notes: “Confirm millet buyer price; review sowing windows and drainage; estimate transition costs with adviser.”
+Return to the English planner, record a short Urdu question and show its editable STT transcript before using it. Local Whisper base first use is about 100 MB including the runtime, so prepare the model beforehand. Do not claim an accuracy benchmark; review names and numbers. Optional read-aloud is secondary. Then save a decision with notes: “Confirm millet buyer price; review sowing windows and drainage; estimate transition costs with adviser.”
 
 “The farmer leaves with an option, the expected model trade-offs, their own cost assumptions and the questions still open. They can print it and bring it into a local agronomy discussion.”
 
@@ -42,4 +42,6 @@ Return to the Urdu planner, record a short Urdu question and show its editable S
 - Rehearse the transitions and economic reset. The exact case is reproducible with `node scripts/example-outcomes.mjs`.
 - Record real team names and roles, confirm official duration/AI disclosure rules and arrange judge access before submission. These steps remain outstanding.
 
-The companion [seven-slide pitch](../dist/pitch.html) is Urdu-first with an English toggle. A farmer-facing spoken script is in [PITCH-URDU.md](PITCH-URDU.md). These are prepared materials, not a recorded submission or validated farmer testimony.
+The companion [seven-slide pitch](../dist/pitch.html) is English-only. A farmer-facing spoken script is in [PITCH-URDU.md](PITCH-URDU.md). These are prepared materials, not a recorded submission or validated farmer testimony.
+
+For the current workflow, set location once through + Add field, then lead the demo with the decision brief: identify the next water/cost/local-feasibility blocker. Show the checklist as self-reported evidence for an agronomist review, not planting approval.

@@ -1,4 +1,4 @@
-import {UR} from './urdu.js';
+const UR={'Your current rotation':'آپ کی موجودہ فصلیں','Diversify with a pulse':'دال کے ساتھ تنوع','Lower-demand crop mix':'کم پانی کی ضرورت والی ترتیب','Keep wheat, add a pulse':'گندم رکھیں، دال شامل کریں','Your custom rotation':'آپ کی بنائی ہوئی ترتیب'};
 export function detectVoiceIntent(text){const q=String(text).toLowerCase().replace(/ي/g,'ی').replace(/ك/g,'ک');if(/پانی|آبپاش|بارش|water|paani|pani|rain/.test(q))return 'water';if(/خرچ|لاگت|منافع|cost|kharch|profit|paisa/.test(q))return 'cost';if(/جانچ|ماہر|مشور|بیج|خریدار|check|seed|buyer/.test(q))return 'checks';if(/نقش|علاقہ|map|location/.test(q))return 'map';if(/خلاص|مدد|summary|help/.test(q))return 'summary';return null;}
 export function buildSpokenSummary(context,topic='summary',language='ur'){
  if(!context?.valid)return language==='ur'?'پہلے کھیت کی معلومات درست کریں اور اسی مقام کے ناسا اعداد لائیں۔ پرانے مقام کے اعداد پر نیا مشورہ نہیں دیا جائے گا۔':'First correct the field inputs and retrieve NASA observations for its coordinates. The old location is not a basis for a new decision.';

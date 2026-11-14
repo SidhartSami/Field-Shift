@@ -1,9 +1,9 @@
-# Optional Urdu read-aloud for Pakistani farmers
+# Optional spoken explanations for Pakistani farmers
 
 **Urdu speech-to-text is now the primary voice feature. See [STT.md](STT.md).** This page documents the optional explanation playback only.
 
 ## Implemented
-- Urdu (`ur-PK`) is the initial language. English is an explicit, persistent alternative. Right-to-left navigation, labels, explanations and controls preserve English technical identifiers and numeric map geometry where needed.
+- The interface is English-only; the language selector and automatic Urdu translation were removed. Urdu STT remains fixed to Urdu, independent of the interface. Optional read-aloud follows the English interface.
 - The starting point is Lahore, Punjab, Pakistan (31.5204°N, 74.3587°E), with authentic NASA POWER point observations for 2023–2024. The regional data covers 90 cells centered on Punjab, Pakistan and neighboring native-grid cells. PKR is the default cost currency. Area remains stored in hectares; an acre equivalent is displayed and spoken.
 - Existing saved fields and decisions are retained. “Load Lahore example” creates a new Pakistan example rather than overwriting user data.
 - Guided spoken explanations cover the active water comparison, entered cost scenario and checks before planting. They are generated from deterministic application values, not an ungrounded model answer. Unrecognised questions receive a scoped fallback, and stale field/location contexts do not receive a new outcome explanation.
