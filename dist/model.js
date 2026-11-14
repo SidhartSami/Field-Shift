@@ -25,6 +25,10 @@ export function evaluate(input,climate){
  if(input.area<=0||input.irrigation<0||input.organic<0||input.organic>10||input.slope<0||input.slope>30||input.dry<0||input.dry>60||input.heat<0||input.heat>5)throw Error('Inputs are outside the supported ranges.');
  if(!crops[input.summer]||!crops[input.winter])throw Error('Choose valid crops.');
  const options=[{id:'baseline',name:'Your current rotation',sequence:[input.summer,input.winter,input.summer,input.winter],note:'Reference strategy: your current two-season sequence repeated over two years.'},...alternatives];
+ if(input.customSequence){
+  if(input.customSequence.length!==4||input.customSequence.some(k=>!crops[k]))throw Error('A custom rotation needs four valid crops.');
+  options.push({id:'custom',name:'Your custom rotation',sequence:input.customSequence,note:'Your editable four-season sequence. Check seasonal suitability and local planting windows with an agronomist.'});
+ }
  return options.map(o=>{
  const cs=o.sequence.map(k=>crops[k]);
  const demand=cs.reduce((s,c)=>s+c.water,0)/2;
