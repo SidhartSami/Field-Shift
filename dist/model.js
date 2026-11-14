@@ -35,7 +35,10 @@ export function evaluate(input,climate){
  const legumes=cs.filter(c=>c.legume).length;
  const soil=Math.min(100,25+input.organic*8+legumes*10+breaks*15);
  const erosion=Math.min(100,Math.round(cs.reduce((s,c)=>s+c.cover,0)/4*80+(input.residue?15:0)-input.slope*1.4));
- const heatPenalty=cs.reduce((s,c,i)=>s+Math.max(0,(i%2===0?Math.max(...climate.temps.slice(5,9)):Math.max(...climate.temps.slice(0,3),...climate.temps.slice(10))))+input.heat-c.heat),0);
+ const heatPenalty=cs.reduce((sum,c,i)=>{
+   const seasonTemp=i%2===0?Math.max(...climate.temps.slice(5,9)):Math.max(...climate.temps.slice(0,3),...climate.temps.slice(10));
+   return sum+Math.max(0,seasonTemp+input.heat-c.heat);
+ },0);
  const water=Math.max(0,100-deficit/demand*100);
  const weights=input.priority==='water'?[.6,.2,.1,.1]:input.priority==='soil'?[.2,.45,.2,.15]:[.35,.3,.15,.2];
  const score=Math.round(water*weights[0]+soil*weights[1]+erosion*weights[2]+(breaks*100)*weights[3]-heatPenalty*.8);
