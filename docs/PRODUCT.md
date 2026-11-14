@@ -1,5 +1,5 @@
-# What FieldShift does
-FieldShift helps a farmer in the irrigated plains of Punjab, Pakistan decide **which change to their current crop rotation deserves a local agronomist discussion**.
+# What FasalPath does
+FasalPath helps a farmer in the irrigated plains of Punjab, Pakistan decide **which change to their current crop rotation deserves a local agronomist discussion**.
 
 The farmer saves a field and its location once. NASA historical rainfall/temperature context is attached to that location. The farmer then supplies their current crops, soil, available irrigation and local cost assumptions. The app compares the current practice with three alternatives or a custom two-year sequence, showing indicative demand, remaining water gaps, management proxies and a first-year cost screen.
 

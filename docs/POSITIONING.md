@@ -1,9 +1,9 @@
-# FieldShift: make the next crop choice count
+# FasalPath: make the next crop choice count
 
 ## The promise we can responsibly make
 **See what a crop change could mean for your water budget, soil management and first-year costs before committing a field.**
 
-FieldShift helps a farmer and their local adviser turn a broad idea—“try a different rotation”—into a specific option they can question. Keep current practice as the reference. Examine the annual water requirement, the water still missing, the changes in crop families, and the cost assumptions that could make a switch worthwhile or unaffordable.
+FasalPath helps a farmer and their local adviser turn a broad idea—“try a different rotation”—into a specific option they can question. Keep current practice as the reference. Examine the annual water requirement, the water still missing, the changes in crop families, and the cost assumptions that could make a switch worthwhile or unaffordable.
 
 ## Who benefits first
 The initial user is a farmer planning summer/winter crops in the irrigated plains of Punjab, Pakistan, supported where possible by a local agronomist or extension adviser. This regional scope is deliberate: crop timing, markets, irrigation and soil management are local. The 10-hectare field in the demonstration is a constructed example, not an interviewed farmer or a validated customer persona.

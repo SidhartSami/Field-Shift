@@ -1,13 +1,13 @@
 # Submission copy — adapt to official field limits
 
 ## Project name
-FieldShift — Make your next crop choice count
+FasalPath — Make your next crop choice count
 
 ## One-sentence value proposition
 Help a farmer compare what a crop change could mean for their water budget, soil management and first-year costs before committing a field.
 
 ## Short description
-A farmer considering a new rotation faces more than a crop choice: the water may be insufficient, the buyer uncertain and the switching cost unaffordable. FieldShift helps farmers and local advisers compare the current rotation with alternatives using historical NASA climate context and local farm assumptions. The result is a specific option they can question—annual water demand and remaining gap, management trade-offs, and an optional cost screen using their own estimates. Benefits are illustrative until field validation; no yield or profit prediction is claimed.
+A farmer considering a new rotation faces more than a crop choice: the water may be insufficient, the buyer uncertain and the switching cost unaffordable. FasalPath helps farmers and local advisers compare the current rotation with alternatives using historical NASA climate context and local farm assumptions. The result is a specific option they can question—annual water demand and remaining gap, management trade-offs, and an optional cost screen using their own estimates. Benefits are illustrative until field validation; no yield or profit prediction is claimed.
 
 ## The problem and who faces it
 Our initial scope is summer/winter cropping in the irrigated plains of Punjab, Pakistan. A farmer deciding what to plant must balance water access, soil management, established markets and the cost of change. Regional climate information alone does not answer whether an alternative fits a particular field or pays for the switch. Familiar practice must remain a credible reference, especially when seed, labour, buyers or advice are constrained.

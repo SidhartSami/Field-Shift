@@ -1,9 +1,11 @@
-# FieldShift
-**A clearer case for your next crop rotation.** FieldShift helps a Pakistani farmer compare a proposed crop switch against current practice, identify water or cost blockers, and keep an evidence-backed option for local review. It is a decision-support prototype, not a validated planting prescription.
+# FasalPath
+**A clearer case for your next crop rotation.** FasalPath helps a Pakistani farmer compare a proposed crop switch against current practice, identify water or cost blockers, and keep an evidence-backed option for local review. It is a decision-support prototype, not a validated planting prescription.
 
 The interface is English-only. Urdu speech-to-text remains available as optional input. Save a field location once through **+ Add field**; later changes use **Edit location**. Daily planning reuses the saved location automatically.
 
 [What we do](docs/PRODUCT.md) · [Urdu STT](docs/STT.md) · [Positioning](docs/POSITIONING.md) · [Claims](docs/CLAIMS.md) · [Submission copy](docs/SUBMISSION.md) · [Proposed pilot](docs/PILOT.md).
+
+Brand: **FasalPath — A clearer next season.** See [brand colours and visual assets](docs/BRAND.md). Source repository: [SidhartSami/Field-Shift](https://github.com/SidhartSami/Field-Shift) (private).
 
 ## Run
 Requires Node 20+ for tests, Python 3 for the static server.
@@ -33,6 +35,9 @@ Field drafts and named decisions persist separately in `fieldshift-workspace-v2`
 ## Architecture
 `dist/index.html` and `style.css`: responsive application shell and planning views; no build step.
 `dist/app.js`: field/decision lifecycle, routing, theme, action search, NASA fetch, state, visualizations and reports.
+`dist/assets/`: original logo/favicon and schematic field illustration.
+`dist/icons.js`: curated Lucide navigation icons and original crop SVG illustrations.
+`dist/visuals.js`: shared-scale water-budget graphic.
 `dist/model.js` and `outcomes.js`: agronomic comparison proxies, outcome differences and the optional first-year cost screen.
 `dist/decision-brief.js`: concrete next-step gates and crop-sequence-specific, self-reported local checks. The removed interface language selector is no longer loaded.
 `dist/stt.js`, `stt-worker.js` and `stt-audio.js`: Urdu capture, local Whisper transcription, audio preprocessing and confirmation.
@@ -69,3 +74,5 @@ The bundled eSpeak NG engine is GPL-3.0, with its COPYING notice, package proven
 Transformers.js 3.8.1 is vendored with its Apache-2.0 license. Public Whisper model files and ONNX runtime load on demand; local base-model first use is about 100 MB. The browser application needs no native GPU install; `npm ci --ignore-scripts` skips optional native dependency installers. To verify actual STT model inference on the bundled Node CPU runtime, run `node --use-env-proxy scripts/verify-urdu-stt.mjs`; see [verification limits](docs/STT.md).
 
 Saved review briefs include local-check status scoped to the field and crop sequence. These checks are self-reported and do not confer planting approval. See [product workflow](docs/PRODUCT.md).
+
+Branding preserves `fieldshift-workspace-v2` and existing browser storage keys for continuity. The application is now FasalPath; the repository name remains Field-Shift.
