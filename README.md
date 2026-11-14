@@ -76,3 +76,4 @@ Transformers.js 3.8.1 is vendored with its Apache-2.0 license. Public Whisper mo
 Saved review briefs include local-check status scoped to the field and crop sequence. These checks are self-reported and do not confer planting approval. See [product workflow](docs/PRODUCT.md).
 
 Branding preserves `fieldshift-workspace-v2` and existing browser storage keys for continuity. The application is now FasalPath; the repository name remains Field-Shift.
+testing
