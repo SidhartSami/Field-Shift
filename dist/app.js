@@ -1,3 +1,4 @@
+import {createUrduDictation} from './stt.js';
 import {createLocale} from './i18n.js';
 import {createVoiceHelp} from './voice.js';
 import {compareOutcomes,screenEconomics} from './outcomes.js';
@@ -8,7 +9,7 @@ const fields=['farm','area','lat','lon','soil','organic','slope','irrigation','s
 const defaults={farm:'میرا لاہور کا کھیت',area:10,lat:31.5204,lon:74.3587,soil:'loam',organic:1.2,slope:2,irrigation:500,summer:'rice',winter:'wheat',priority:'balanced',ndvi:'',residue:true,dry:0,heat:0};
 const defaultEconomics={currency:'PKR',pumpingCost:'',marginChange:'',transitionCost:''};
 let economics={...defaultEconomics};
-let locale,voiceView=null;
+let locale,voiceView=null,dictation=null;
 let geoView=null;
 let state={version:2,active:'field-1',fields:[],plans:[]},raw,climate,results=[],observed={lat:31.5204,lon:74.3587},source='saved NASA snapshot',url='',fetchTime='2026-11-14',year=2024,selected='water',customSequence=null,ready=false,toastTimer,requestId=0,month=6;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -27,7 +28,7 @@ function snapshot(){return {inputs:input(),rawNASA:raw,observations:{source,url,
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));$('save-state').textContent='Draft saved on device';return true}catch{$('save-state').textContent='Draft not saved';toast('Device storage is unavailable or full. Export your plan to keep a copy.');return false}}
 function stash(){if(!ready)return;const f=currentField();if(f)f.draft=snapshot();persist();renderFields();geoView?.update();voiceView?.contextChanged()}
 function validate(){if(!ready)throw Error('Wait for the observations to load.');if(!$('farm-form').reportValidity())throw Error('Correct the highlighted field inputs.');if(!matches())throw Error('Refresh NASA observations for these coordinates before saving or exporting.');evaluate({...input(),customSequence},climate)}
-function report(){validate();return {project:'FieldShift',version:'2.1.0',createdAt:new Date().toISOString(),outcomeComparison:compareOutcomes(results.find(r=>r.id==='baseline'),results.find(r=>r.id===selected),input().area),financialScreen:economicAnalysis(),fieldId:state.active,mapEvidence:geoView?.evidence(),...snapshot(),climate,results,selectedRotation:results.find(r=>r.id===selected),limitations:'Illustrative, uncalibrated decision proxies. Regional crop set for the irrigated plains of Punjab, Pakistan; not an agronomic prescription.'}}
+function report(){validate();return {project:'FieldShift',version:'2.2.0',createdAt:new Date().toISOString(),outcomeComparison:compareOutcomes(results.find(r=>r.id==='baseline'),results.find(r=>r.id===selected),input().area),financialScreen:economicAnalysis(),fieldId:state.active,mapEvidence:geoView?.evidence(),...snapshot(),climate,results,selectedRotation:results.find(r=>r.id===selected),limitations:'Illustrative, uncalibrated decision proxies. Regional crop set for the irrigated plains of Punjab, Pakistan; not an agronomic prescription.'}}
 function openDialog(name,keyboard=false){const d=$(name);d.classList.toggle('instant',keyboard);if(d.showModal)d.showModal();else d.setAttribute('open','');d.querySelector('input,button')?.focus()}
 function closeDialog(name){const d=$(name);if(d.close)d.close();else d.removeAttribute('open')}
 for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>closeDialog(b.dataset.close);
@@ -140,5 +141,6 @@ async function init(){try{const response=await fetch('data/power-lahore.json');i
 function voiceContext(){return {valid:ready&&$('farm-form').checkValidity()&&matches(),inputs:input(),baseline:results.find(r=>r.id==='baseline'),selectedRotation:results.find(r=>r.id===selected),financialScreen:economicAnalysis()}}
 $('load-pakistan-example').onclick=()=>{if(!ready)return;stash();const draft=structuredClone(bundledDraft());draft.inputs.farm='لاہور، پاکستان کی مثال';const field={id:id(),draft};state.fields.push(field);state.active=field.id;requestId++;loadDraft(draft);persist();renderFields();location.hash='planner';toast('Lahore example opened; your existing fields are preserved.')};
 locale=createLocale({document,onChange:()=>voiceView?.languageChanged()});
-voiceView=createVoiceHelp({document,getContext:voiceContext,getLanguage:()=>locale.language,onMap:()=>{location.hash='map'}});
+dictation=createUrduDictation({document,getLanguage:()=>locale.language,fetcher:(...args)=>fetch(...args),onStartCapture:()=>voiceView?.stop(),onUseQuestion:text=>{$('voice-question').value=text;document.querySelector('.optional-read-aloud').open=true;$('voice-details').open=true;$('voice-question').focus();toast('Urdu transcript placed in your question. Review it before continuing.')},onUseNotes:text=>{try{prepareDecision();if($('decision-dialog').open||$('decision-dialog').hasAttribute('open')){$('decision-notes').value=$('decision-notes').value?`${$('decision-notes').value}\n${text}`:text;$('decision-notes').focus()}}catch(e){toast(e.message)}}});
+voiceView=createVoiceHelp({document,getContext:voiceContext,getLanguage:()=>locale.language,onMap:()=>{location.hash='map'},onDictate:()=>dictation?.focus()});
 init();

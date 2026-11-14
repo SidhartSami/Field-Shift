@@ -370,3 +370,30 @@ Object.assign(UR,{
  'Before switching: confirm buyers for millet and pulses, seed access, drainage and local sowing windows. Lower modelled water demand does not establish a better crop margin.':'فصل بدلنے سے پہلے باجرے اور دالوں کے خریدار، بیج، نکاسی اور مقامی بوائی کا وقت جانچیں۔ کم حسابی پانی کی ضرورت بہتر مارجن کی ضمانت نہیں۔',
  'Weigh water demand and switching costs':'پانی اور تبدیلی کا خرچ تولیں'
 });
+Object.assign(UR,{
+ 'URDU SPEECH → TEXT':'اردو آواز سے تحریر',
+ 'Speak Urdu. Review what was written.':'اردو بولیں، لکھی ہوئی بات جانچیں۔',
+ 'Dictate a question or farming note in Urdu. Review and edit the transcript before using it. Speaking never changes crop or cost inputs automatically.':'سوال یا کھیتی کا نوٹ اردو میں بولیں۔ استعمال سے پہلے تحریر دیکھیں اور درست کریں۔ بولنے سے فصل یا خرچ کے اعداد خود نہیں بدلتے۔',
+ 'Recognition engine':'آواز پہچاننے کا طریقہ',
+ 'Open-source Whisper · on this device':'اوپن سورس Whisper · اسی آلے پر',
+ 'Browser recognition · Urdu service':'براؤزر کی اردو پہچان سروس',
+ 'Local model':'مقامی شناخت کا ماڈل',
+ 'Whisper base · standard model, larger download':'Whisper base · عام ماڈل، زیادہ ڈاؤنلوڈ',
+ 'Whisper tiny · light model, smaller download':'Whisper tiny · ہلکا ماڈل، کم ڈاؤنلوڈ',
+ 'Prepare Urdu model':'اردو ماڈل تیار کریں',
+ 'Local mode downloads public model/runtime files on first use; recordings are processed on this device, not uploaded for inference. Downloads are large and older phones may be slow. Browser mode may send audio to its provider.':'مقامی طریقہ پہلی بار ماڈل اور انجن ڈاؤنلوڈ کرتا ہے۔ ریکارڈنگ اسی آلے پر تحریر بنتی ہے، شناخت کے لیے سرور کو نہیں بھیجی جاتی۔ ڈاؤنلوڈ بڑا ہے اور پرانے فون پر وقت لگ سکتا ہے۔ براؤزر کا طریقہ آواز اپنے فراہم کنندہ کو بھیج سکتا ہے۔',
+ '● Record Urdu':'● اردو ریکارڈ کریں',
+ 'Stop recording':'ریکارڈنگ روکیں',
+ 'Choose an audio clip':'آڈیو فائل چنیں',
+ 'Choose an Urdu audio clip':'اردو آڈیو فائل چنیں',
+ 'Cancel processing':'عمل منسوخ کریں',
+ 'Record up to 30 seconds, or choose an audio clip up to 45 seconds and 10 MB. Urdu transcription stays Urdu even when the interface is English.':'30 سیکنڈ تک ریکارڈ کریں، یا زیادہ سے زیادہ 45 سیکنڈ اور 10 میگابائٹ کی آڈیو چنیں۔ انگریزی اسکرین پر بھی اردو بات اردو میں لکھی جائے گی۔',
+ 'Ready for Urdu dictation. No microphone starts until you press Record.':'اردو لکھنے کے لیے تیار ہے۔ ریکارڈ کا بٹن دبائے بغیر مائیکروفون نہیں کھلتا۔',
+ 'Urdu transcript — review and edit':'اردو تحریر — دیکھیں اور درست کریں',
+ 'Use as my question':'اسے میرا سوال بنائیں',
+ 'Add to planning notes':'منصوبے کے نوٹ میں رکھیں',
+ 'Copy transcript':'تحریر نقل کریں',
+ 'Optional: listen to an explanation':'اختیاری: وضاحت سنیں',
+ 'Model & license':'ماڈل اور لائسنس',
+ 'Urdu transcript placed in your question. Review it before continuing.':'اردو تحریر سوال میں رکھ دی گئی ہے۔ آگے بڑھنے سے پہلے اسے جانچیں۔'
+});

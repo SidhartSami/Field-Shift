@@ -20,3 +20,6 @@ There are no customer interviews, testimonials, farm trials, measured pumping sa
 
 ## Urdu and Pakistan revision
 The current demonstration uses Lahore (31.5204°N, 74.3587°E), 90 regional cells and PKR. Speech generation has been exercised with the actual eSpeak NG Urdu engine and produces non-silent WAV audio locally. This verifies generation, not pronunciation quality or farmer comprehension. The optional microphone recogniser is a browser feature, not an open-source/offline guarantee. No neural model training or Urdu user testing is claimed.
+
+## STT correction
+Urdu speech-to-text is primary. Local Whisper uses a pinned multilingual base/tiny model and `language: urdu`, `task: transcribe`; browser fallback is fixed at `ur-PK` regardless of UI language. Actual CPU inference returned an imperfect Urdu-script transcript on synthetic audio. This supports execution, not speech accuracy, farmer comprehension or real browser microphone reliability. See STT.md for the exact sample and limits.

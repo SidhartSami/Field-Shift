@@ -1,13 +1,13 @@
 # FieldShift
 **اپنی زبان، اپنا فیصلہ۔** Compare what a crop change could mean for a Pakistani farmer’s water budget, soil management and first-year costs before committing a field. Built for Challenge 06, *Field Shift: Adapting Farms with NASA Data*.
 
-Urdu is primary; the initial example is Lahore, Punjab, Pakistan, with PKR costs and hectare/acre context. English remains available. [Urdu-first speech and privacy](docs/SPEECH.md) · [Farmer-outcome positioning](docs/POSITIONING.md) · [Claims and evidence](docs/CLAIMS.md) · [Submission text](docs/SUBMISSION.md) · [Urdu pitch](docs/PITCH-URDU.md) · [Proposed pilot](docs/PILOT.md).
+Urdu is primary; the initial example is Lahore, Punjab, Pakistan, with PKR costs and hectare/acre context. English remains available. [Urdu STT and privacy](docs/STT.md) · [Optional read-aloud](docs/SPEECH.md) · [Farmer-outcome positioning](docs/POSITIONING.md) · [Claims and evidence](docs/CLAIMS.md) · [Submission text](docs/SUBMISSION.md) · [Urdu pitch](docs/PITCH-URDU.md) · [Proposed pilot](docs/PILOT.md).
 
 ## Run
 Requires Node 20+ for tests, Python 3 for the static server.
 
 ```sh
-npm ci
+npm ci --ignore-scripts
 npm test
 npm start
 ```
@@ -23,7 +23,7 @@ Open http://localhost:8080. The application, vendored Leaflet map library and la
 7. Open **Field intelligence** to inspect regional rainfall, temperature, wetness and modelled water-gap overlays. Select a cell, change the period, or use a map location in the planner. Export the overlay as GeoJSON.
 8. Use the action search (Ctrl/Cmd+K), switch light/dark appearance, export the current draft or print the report.
 
-9. Read or hear a grounded Urdu explanation of water, the entered cost screen and local checks; use typed questions/topic buttons or optional browser recognition.
+9. **Dictate Urdu into editable text** using local open-source Whisper, an audio file, or an explicitly selected Urdu browser service. Review before using it as a question or planning note. Urdu stays the recognition language under English UI. Optional read-aloud is separate.
 10. Enter local costs to screen a first-year switch. Fields are blank until supplied; the output is an assumption-based calculation, not a profit forecast.
 
 Field drafts and named decisions persist separately in `fieldshift-workspace-v2`. Existing v1 plans migrate to a field draft. This is a browser-local system, not a shared multi-user database. Exported JSON includes the raw NASA evidence; this version does not import external files.
@@ -33,6 +33,7 @@ Field drafts and named decisions persist separately in `fieldshift-workspace-v2`
 `dist/app.js`: field/decision lifecycle, routing, theme, action search, NASA fetch, state, visualizations and reports.
 `dist/model.js` and `outcomes.js`: agronomic comparison proxies, outcome differences and the optional first-year cost screen.
 `dist/i18n.js` and `urdu.js`: Urdu-first message catalog, dynamic text localization and persistent English switching.
+`dist/stt.js`, `stt-worker.js` and `stt-audio.js`: Urdu capture, local Whisper transcription, audio preprocessing and confirmation.
 `dist/voice.js`, `voice-summary.js` and `speech-worker.js`: deterministic explanations, optional recognition and local speech generation.
 `dist/pitch.html`: standalone Urdu/English outcome-first presentation; build with `node scripts/example-outcomes.mjs --write` then `node scripts/build-pitch.mjs`.
 `dist/geo.js` and `geo-data.js`: map interface, NASA regional data joins and derived overlays.
@@ -62,3 +63,5 @@ The redesign uses [Watermelon UI](https://ui.watermelon.sh/) Gridline workspace 
 Original project code: MIT license. NASA POWER data credited to the NASA Langley Research Center POWER Project, supported by NASA Earth Science. NASA and Space Apps names describe challenge context; no affiliation or endorsement is claimed. FAO/USDA references motivate principles; they do not validate this model. Leaflet 1.9.4 is bundled under its BSD-2-Clause license, retained in `dist/vendor/leaflet/LICENSE`. Satellite basemap tiles are provided by Esri (Esri, Maxar, Earthstar Geographics and GIS User Community); street tiles by OpenStreetMap contributors, with attribution displayed on the map. Imagery is contextual and is not used to calculate recommendations.
 
 The bundled eSpeak NG engine is GPL-3.0, with its COPYING notice, package provenance and upstream source snapshot included. See [speech documentation](docs/SPEECH.md). Original application code retains the repository MIT notice; preserve all third-party notices and source materials when redistributing.
+
+Transformers.js 3.8.1 is vendored with its Apache-2.0 license. Public Whisper model files and ONNX runtime load on demand; local base-model first use is about 100 MB. The browser application needs no native GPU install; `npm ci --ignore-scripts` skips optional native dependency installers. To verify actual STT model inference on the bundled Node CPU runtime, run `node --use-env-proxy scripts/verify-urdu-stt.mjs`; see [verification limits](docs/STT.md).

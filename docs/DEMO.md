@@ -28,7 +28,7 @@ Open the map or seasonal conditions view. “NASA adds historical rainfall and h
 Select a cell and show the dated observation and exact request. One purposeful interaction is enough; avoid a tour of every layer.
 
 ## 2:20–2:45 — Let the farmer hear and keep the reasoning
-Return to the Urdu planner, press the water-explanation button, and show the written transcript. First-use speech resources are about 24 MB, so prepare the demonstration beforehand. Then save a decision with notes: “Confirm millet buyer price; review sowing windows and drainage; estimate transition costs with adviser.”
+Return to the Urdu planner, record a short Urdu question and show its editable STT transcript before using it. Local Whisper base first use is about 100 MB including the runtime, so prepare the model beforehand. Do not claim an accuracy benchmark; review names and numbers. Optional read-aloud is secondary. Then save a decision with notes: “Confirm millet buyer price; review sowing windows and drainage; estimate transition costs with adviser.”
 
 “The farmer leaves with an option, the expected model trade-offs, their own cost assumptions and the questions still open. They can print it and bring it into a local agronomy discussion.”
 

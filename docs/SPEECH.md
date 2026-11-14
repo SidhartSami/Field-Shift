@@ -1,4 +1,6 @@
-# Urdu-first access for Pakistani farmers
+# Optional Urdu read-aloud for Pakistani farmers
+
+**Urdu speech-to-text is now the primary voice feature. See [STT.md](STT.md).** This page documents the optional explanation playback only.
 
 ## Implemented
 - Urdu (`ur-PK`) is the initial language. English is an explicit, persistent alternative. Right-to-left navigation, labels, explanations and controls preserve English technical identifiers and numeric map geometry where needed.
@@ -13,8 +15,8 @@ The engine is the eSpeak-NG Emscripten port `@echogarden/espeak-ng-emscripten` 0
 
 The first use loads roughly 24 MB of engine/voice resources from the same site. Synthesis then occurs locally. The app does not implement a service worker or guarantee offline availability after closing the browser. Browser caching and device resources vary; lower-bandwidth and older-device testing remains necessary. Failed worker/audio playback leaves the written explanation available.
 
-## Optional speech-to-text
-Voice input uses a browser-provided `SpeechRecognition`/`webkitSpeechRecognition` implementation when available, configured for `ur-PK`. It starts only after a user press and the browser's microphone permission. Its availability, Urdu accuracy and processing location depend on the browser/provider; some providers send audio to their service. This component is not claimed to be open source, offline or universally supported. Typed questions and topic buttons work without it. A transcript is shown for confirmation; recognition does not silently change crop, cost or field inputs.
+## Primary speech-to-text is separate
+The planner's main dictation panel uses local open-source Whisper with Urdu transcription, plus an explicitly selected browser fallback fixed at `ur-PK`. A visible transcript is reviewed before it is used. The read-aloud microphone shortcut opens that dictation panel. See [STT.md](STT.md) for download sizes, decoding options, privacy and verification limits.
 
 ## Privacy
 Read-aloud text is sent to the local worker, not to a speech inference provider. Read-aloud audio is generated in memory, not uploaded or stored in the app's database. The user can explicitly download a WAV file. Microphone capture is never started on page load. Browser recognition may involve an external provider, as disclosed next to the microphone control. Farmers should avoid speaking private identifiers into browser recognition.
