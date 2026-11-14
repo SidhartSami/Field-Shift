@@ -8,7 +8,7 @@ The interface is English-only. Urdu speech-to-text remains available as optional
 Brand: **FasalPath — A clearer next season.** See [brand colours and visual assets](docs/BRAND.md). Source repository: [SidhartSami/Field-Shift](https://github.com/SidhartSami/Field-Shift) (private).
 
 ## Run
-Requires Node 20+ for tests, Python 3 for the static server.
+Requires Node 20+. The static server is a small Node script (`scripts/serve.mjs`); no Python needed.
 
 ```sh
 npm ci --ignore-scripts
