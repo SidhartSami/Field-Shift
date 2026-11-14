@@ -26,7 +26,7 @@ export function evaluate(input,climate){
  if(!crops[input.summer]||!crops[input.winter])throw Error('Choose valid crops.');
  const options=[{id:'baseline',name:'Your current rotation',sequence:[input.summer,input.winter,input.summer,input.winter],note:'Reference strategy: your current two-season sequence repeated over two years.'},...alternatives];
  if(input.customSequence){
-  if(input.customSequence.length!==4||input.customSequence.some(k=>!crops[k]))throw Error('A custom rotation needs four valid crops.');
+  if(input.customSequence.length!==4||input.customSequence.some((k,j)=>!(j%2?['wheat','chickpea','mustard']:['rice','maize','millet','mung']).includes(k)))throw Error('A custom rotation needs four valid crops.');
   options.push({id:'custom',name:'Your custom rotation',sequence:input.customSequence,note:'Your editable four-season sequence. Check seasonal suitability and local planting windows with an agronomist.'});
  }
  return options.map(o=>{
