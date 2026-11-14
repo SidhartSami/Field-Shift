@@ -6,6 +6,6 @@ The supplied study guide has an unrelated lunar/Martian outpost paragraph on pag
 - Compare: baseline and three two-year alternatives with individual crop sequences.
 - Outcomes: explain indicative water gaps and soil, erosion and crop-family diversity proxies.
 - Decision support: scenario controls, ranked options, saved state, JSON export, printable report and source lineage.
-- Interactive map: 36 NASA grid cells, satellite/street basemaps, observed climate layers and explicitly derived water-gap overlay; cell inspection, annotations, time controls, GeoJSON and map-to-planner handoff.
+- Interactive map: 90 NASA grid cells, satellite/street basemaps, observed climate layers and explicitly derived water-gap overlay; cell inspection, annotations, time controls, GeoJSON and map-to-planner handoff.
 
-Regional scope: an educational demonstrator for northwestern India's irrigated summer/winter systems. Not a universal crop recommender. No yield, profit, pest incidence or soil carbon predictions are claimed.
+Regional scope: an educational demonstrator for Punjab, Pakistan's irrigated summer/winter systems. Not a universal crop recommender. No yield, profit, pest incidence or soil carbon predictions are claimed.

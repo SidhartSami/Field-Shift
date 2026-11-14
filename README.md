@@ -1,5 +1,7 @@
 # FieldShift
-**Earth data. Local decisions.** A functional crop-rotation planning demonstrator for NASA Space Apps Challenge 06, *Field Shift: Adapting Farms with NASA Data*.
+**اپنی زبان، اپنا فیصلہ۔** Compare what a crop change could mean for a Pakistani farmer’s water budget, soil management and first-year costs before committing a field. Built for Challenge 06, *Field Shift: Adapting Farms with NASA Data*.
+
+Urdu is primary; the initial example is Lahore, Punjab, Pakistan, with PKR costs and hectare/acre context. English remains available. [Urdu-first speech and privacy](docs/SPEECH.md) · [Farmer-outcome positioning](docs/POSITIONING.md) · [Claims and evidence](docs/CLAIMS.md) · [Submission text](docs/SUBMISSION.md) · [Urdu pitch](docs/PITCH-URDU.md) · [Proposed pilot](docs/PILOT.md).
 
 ## Run
 Requires Node 20+ for tests, Python 3 for the static server.
@@ -9,7 +11,7 @@ npm ci
 npm test
 npm start
 ```
-Open http://localhost:8080. The application and its vendored Leaflet map library are served locally and require no API key. Serve `dist/` on any static host. NASA retrieval needs internet access and API CORS availability; a real bundled NASA snapshot supports the default demonstration without that request. The Google Fonts enhancement is optional; system fonts work when unavailable.
+Open http://localhost:8080. The application, vendored Leaflet map library and lazy-loaded eSpeak NG read-aloud engine are served locally and require no API key. Serve `dist/` on any static host. NASA retrieval needs internet access and API CORS availability; a real bundled NASA snapshot supports the default demonstration without that request. The Google Fonts enhancement is optional; system fonts work when unavailable.
 
 ## Workspace workflow
 1. Open directly into the rotation planner. Add named fields and switch between independent drafts.
@@ -21,23 +23,29 @@ Open http://localhost:8080. The application and its vendored Leaflet map library
 7. Open **Field intelligence** to inspect regional rainfall, temperature, wetness and modelled water-gap overlays. Select a cell, change the period, or use a map location in the planner. Export the overlay as GeoJSON.
 8. Use the action search (Ctrl/Cmd+K), switch light/dark appearance, export the current draft or print the report.
 
+9. Read or hear a grounded Urdu explanation of water, the entered cost screen and local checks; use typed questions/topic buttons or optional browser recognition.
+10. Enter local costs to screen a first-year switch. Fields are blank until supplied; the output is an assumption-based calculation, not a profit forecast.
+
 Field drafts and named decisions persist separately in `fieldshift-workspace-v2`. Existing v1 plans migrate to a field draft. This is a browser-local system, not a shared multi-user database. Exported JSON includes the raw NASA evidence; this version does not import external files.
 
 ## Architecture
 `dist/index.html` and `style.css`: responsive application shell and planning views; no build step.
 `dist/app.js`: field/decision lifecycle, routing, theme, action search, NASA fetch, state, visualizations and reports.
-`dist/model.js`: pure, independently tested calculations.
+`dist/model.js` and `outcomes.js`: agronomic comparison proxies, outcome differences and the optional first-year cost screen.
+`dist/i18n.js` and `urdu.js`: Urdu-first message catalog, dynamic text localization and persistent English switching.
+`dist/voice.js`, `voice-summary.js` and `speech-worker.js`: deterministic explanations, optional recognition and local speech generation.
+`dist/pitch.html`: standalone Urdu/English outcome-first presentation; build with `node scripts/example-outcomes.mjs --write` then `node scripts/build-pitch.mjs`.
 `dist/geo.js` and `geo-data.js`: map interface, NASA regional data joins and derived overlays.
-`dist/data/power-region.json`: original NASA responses for 36 regional cells and exact request lineage.
+`dist/data/power-pakistan-region.json`: original NASA responses for 90 regional cells and exact request lineage.
 `dist/vendor/leaflet/`: Leaflet 1.9.4, its stylesheet/assets and BSD-2-Clause license.
-`dist/data/power-ludhiana.json`: unmodified successful NASA API response retrieved 2026-11-14 for 2023–2024 at 30.9°N, 75.85°E.
+`dist/data/power-lahore.json`: unmodified successful NASA API response retrieved 2026-11-14 for 2023–2024 at 31.5204°N, 74.3587°E.
 `tests/`: model invariants and DOM integration checks.
 `.openai/hosting.json`: static hosting configuration.
 
-NASA query: https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M,PRECTOTCORR,GWETROOT&community=AG&longitude=75.85&latitude=30.9&start=2023&end=2024&format=JSON
+NASA query: https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M,PRECTOTCORR,GWETROOT&community=AG&longitude=74.3587&latitude=31.5204&start=2023&end=2024&format=JSON
 
 ## Scientific scope
-The crop portfolio targets Punjab/Haryana summer–winter systems. NASA POWER meteorological fields are coarse MERRA-2 reanalysis, not field-resolution satellite retrievals. Wetness and optional NDVI are contextual only. Water, soil, protection and family diversity scores use explicit illustrative coefficients, documented in the app. They are neither calibrated predictions nor agronomic prescriptions. No yield, profit, disease incidence or measured soil improvement is claimed. Annual effective rainfall does not model timing; heat uses monthly means and misses extremes. The app deliberately labels these limitations.
+The crop portfolio is an unvalidated example for summer–winter systems in the irrigated plains of Punjab, Pakistan. NASA POWER meteorological fields are coarse MERRA-2 reanalysis, not field-resolution satellite retrievals. Wetness and optional NDVI are contextual only. Water, soil, protection and family diversity scores use explicit illustrative coefficients, documented in the app. They are neither calibrated predictions nor agronomic prescriptions. No yield, profit, disease incidence or measured soil improvement is claimed. Annual effective rainfall does not model timing; heat uses monthly means and misses extremes. The app deliberately labels these limitations.
 
 See [brief mapping](docs/BRIEF.md), [methodology](docs/METHODOLOGY.md), [demo and submission draft](docs/DEMO.md), and [map documentation](docs/MAP.md).
 
@@ -45,10 +53,12 @@ See [brief mapping](docs/BRIEF.md), [methodology](docs/METHODOLOGY.md), [demo an
 `npm test` checks unit conversions, invalid-data rejection, rotation construction, monotonic scenario effects, and application DOM workflows. Managed browser tooling was unavailable during implementation: visual, real browser print and browser-specific CORS behavior remain unverified. Live upstream NASA access and one image tile from each basemap provider were verified from the execution environment. Map tests execute the actual vendored Leaflet library in JSDOM; this does not constitute visual browser QA.
 
 ## Privacy
-Plans remain in the current browser unless exported. NASA requests send latitude/longitude to NASA; map tile providers receive the viewed map area and visitor IP; the app has no analytics or backend account database. Local storage is not a backup or multi-device sync. Hosting can apply its own sign-in/access controls.
+Plans remain in the current browser unless exported. NASA requests send latitude/longitude to NASA; map tile providers receive the viewed map area and visitor IP; read-aloud text stays in a local worker, while optional browser speech recognition may send microphone audio to its provider; the app has no analytics or backend account database. Local storage is not a backup or multi-device sync. Hosting can apply its own sign-in/access controls.
 
 ## Design references
 The redesign uses [Watermelon UI](https://ui.watermelon.sh/) Gridline workspace patterns as a reference and applies [Emil Kowalski’s design-engineering skill](https://github.com/emilkowalski/skills/blob/main/skills/emil-design-eng/SKILL.md). See [design decisions](docs/DESIGN.md). UI source is original; no React source was copied.
 
 ## Attribution
 Original project code: MIT license. NASA POWER data credited to the NASA Langley Research Center POWER Project, supported by NASA Earth Science. NASA and Space Apps names describe challenge context; no affiliation or endorsement is claimed. FAO/USDA references motivate principles; they do not validate this model. Leaflet 1.9.4 is bundled under its BSD-2-Clause license, retained in `dist/vendor/leaflet/LICENSE`. Satellite basemap tiles are provided by Esri (Esri, Maxar, Earthstar Geographics and GIS User Community); street tiles by OpenStreetMap contributors, with attribution displayed on the map. Imagery is contextual and is not used to calculate recommendations.
+
+The bundled eSpeak NG engine is GPL-3.0, with its COPYING notice, package provenance and upstream source snapshot included. See [speech documentation](docs/SPEECH.md). Original application code retains the repository MIT notice; preserve all third-party notices and source materials when redistributing.
