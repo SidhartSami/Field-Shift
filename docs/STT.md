@@ -1,6 +1,6 @@
 # Primary voice feature: Urdu speech-to-text
 
-The requested voice feature is Urdu STT. It appears before optional read-aloud in the planner. Record Urdu, choose an audio clip, review/edit the Urdu transcript, then explicitly use it as a question or planning note. No transcription automatically changes crops, money inputs or a saved decision.
+The requested voice feature is Urdu STT. The English-only planner exposes it through “Dictate a field question or note in Urdu,” so recording controls do not dominate crop planning. It remains separate from optional read-aloud. Record Urdu, choose an audio clip, review/edit the Urdu transcript, then explicitly use it as a question or planning note. No transcription automatically changes crops, money inputs or a saved decision.
 
 ## Local open-source recognition
 - Runtime: self-hosted browser bundle of Transformers.js 3.8.1 (Apache-2.0), in a separate module worker.

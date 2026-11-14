@@ -1,7 +1,9 @@
 # FieldShift
-**اپنی زبان، اپنا فیصلہ۔** Compare what a crop change could mean for a Pakistani farmer’s water budget, soil management and first-year costs before committing a field. Built for Challenge 06, *Field Shift: Adapting Farms with NASA Data*.
+**A clearer case for your next crop rotation.** FieldShift helps a Pakistani farmer compare a proposed crop switch against current practice, identify water or cost blockers, and keep an evidence-backed option for local review. It is a decision-support prototype, not a validated planting prescription.
 
-Urdu is primary; the initial example is Lahore, Punjab, Pakistan, with PKR costs and hectare/acre context. English remains available. [Urdu STT and privacy](docs/STT.md) · [Optional read-aloud](docs/SPEECH.md) · [Farmer-outcome positioning](docs/POSITIONING.md) · [Claims and evidence](docs/CLAIMS.md) · [Submission text](docs/SUBMISSION.md) · [Urdu pitch](docs/PITCH-URDU.md) · [Proposed pilot](docs/PILOT.md).
+The interface is English-only. Urdu speech-to-text remains available as optional input. Save a field location once through **+ Add field**; later changes use **Edit location**. Daily planning reuses the saved location automatically.
+
+[What we do](docs/PRODUCT.md) · [Urdu STT](docs/STT.md) · [Positioning](docs/POSITIONING.md) · [Claims](docs/CLAIMS.md) · [Submission copy](docs/SUBMISSION.md) · [Proposed pilot](docs/PILOT.md).
 
 ## Run
 Requires Node 20+ for tests, Python 3 for the static server.
@@ -14,8 +16,8 @@ npm start
 Open http://localhost:8080. The application, vendored Leaflet map library and lazy-loaded eSpeak NG read-aloud engine are served locally and require no API key. Serve `dist/` on any static host. NASA retrieval needs internet access and API CORS availability; a real bundled NASA snapshot supports the default demonstration without that request. The Google Fonts enhancement is optional; system fonts work when unavailable.
 
 ## Workspace workflow
-1. Open directly into the rotation planner. Add named fields and switch between independent drafts.
-2. Enter soil, irrigation, current crops, area and priorities. Coordinates must match a successful NASA retrieval before saving decisions.
+1. Open the crop-switch planner. Use + Add field to save a field and location together, then switch between independent drafts. Location inputs appear only in field setup/edit; daily planning does not ask again.
+2. Enter soil, irrigation, current crops, area and priorities. A new or edited location is saved only after matching NASA observations load successfully.
 3. Select among the baseline and three alternatives in the comparison table. Customize a selected four-season sequence to add a fifth strategy with season-appropriate crop choices.
 4. Apply dry or hot/dry presets, move scenario sliders, change ranking order and inspect the timeline and model trade-offs.
 5. Save a named decision with notes. Search saved decisions, reopen a snapshot, export its evidence or remove it with undo.
@@ -23,7 +25,7 @@ Open http://localhost:8080. The application, vendored Leaflet map library and la
 7. Open **Field intelligence** to inspect regional rainfall, temperature, wetness and modelled water-gap overlays. Select a cell, change the period, or use a map location in the planner. Export the overlay as GeoJSON.
 8. Use the action search (Ctrl/Cmd+K), switch light/dark appearance, export the current draft or print the report.
 
-9. **Dictate Urdu into editable text** using local open-source Whisper, an audio file, or an explicitly selected Urdu browser service. Review before using it as a question or planning note. Urdu stays the recognition language under English UI. Optional read-aloud is separate.
+9. Open the optional dictation section to **dictate Urdu into editable text** using local open-source Whisper, an audio file, or an explicitly selected Urdu browser service. Review before using it as a question or planning note. Urdu stays the recognition language under English UI. Optional read-aloud is separate.
 10. Enter local costs to screen a first-year switch. Fields are blank until supplied; the output is an assumption-based calculation, not a profit forecast.
 
 Field drafts and named decisions persist separately in `fieldshift-workspace-v2`. Existing v1 plans migrate to a field draft. This is a browser-local system, not a shared multi-user database. Exported JSON includes the raw NASA evidence; this version does not import external files.
@@ -32,10 +34,10 @@ Field drafts and named decisions persist separately in `fieldshift-workspace-v2`
 `dist/index.html` and `style.css`: responsive application shell and planning views; no build step.
 `dist/app.js`: field/decision lifecycle, routing, theme, action search, NASA fetch, state, visualizations and reports.
 `dist/model.js` and `outcomes.js`: agronomic comparison proxies, outcome differences and the optional first-year cost screen.
-`dist/i18n.js` and `urdu.js`: Urdu-first message catalog, dynamic text localization and persistent English switching.
+`dist/decision-brief.js`: concrete next-step gates and crop-sequence-specific, self-reported local checks. The removed interface language selector is no longer loaded.
 `dist/stt.js`, `stt-worker.js` and `stt-audio.js`: Urdu capture, local Whisper transcription, audio preprocessing and confirmation.
 `dist/voice.js`, `voice-summary.js` and `speech-worker.js`: deterministic explanations, optional recognition and local speech generation.
-`dist/pitch.html`: standalone Urdu/English outcome-first presentation; build with `node scripts/example-outcomes.mjs --write` then `node scripts/build-pitch.mjs`.
+`dist/pitch.html`: standalone English outcome-first presentation; build with `node scripts/example-outcomes.mjs --write` then `node scripts/build-pitch.mjs`.
 `dist/geo.js` and `geo-data.js`: map interface, NASA regional data joins and derived overlays.
 `dist/data/power-pakistan-region.json`: original NASA responses for 90 regional cells and exact request lineage.
 `dist/vendor/leaflet/`: Leaflet 1.9.4, its stylesheet/assets and BSD-2-Clause license.
@@ -65,3 +67,5 @@ Original project code: MIT license. NASA POWER data credited to the NASA Langley
 The bundled eSpeak NG engine is GPL-3.0, with its COPYING notice, package provenance and upstream source snapshot included. See [speech documentation](docs/SPEECH.md). Original application code retains the repository MIT notice; preserve all third-party notices and source materials when redistributing.
 
 Transformers.js 3.8.1 is vendored with its Apache-2.0 license. Public Whisper model files and ONNX runtime load on demand; local base-model first use is about 100 MB. The browser application needs no native GPU install; `npm ci --ignore-scripts` skips optional native dependency installers. To verify actual STT model inference on the bundled Node CPU runtime, run `node --use-env-proxy scripts/verify-urdu-stt.mjs`; see [verification limits](docs/STT.md).
+
+Saved review briefs include local-check status scoped to the field and crop sequence. These checks are self-reported and do not confer planting approval. See [product workflow](docs/PRODUCT.md).
