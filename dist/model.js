@@ -9,9 +9,9 @@ export const crops = {
  mung:{name:'Mung bean',family:'legume',water:350,cover:.7,legume:true,heat:35}
 };
 export const alternatives=[
- {id:'diverse',name:'Diversify & restore',sequence:['maize','chickpea','millet','mustard'],note:'Break cereal repetition with a pulse and an oilseed. Requires buyers for new crops.'},
- {id:'water',name:'Water-wise rotation',sequence:['millet','chickpea','mung','mustard'],note:'Lower indicative water demand; millet and mung market access and drainage need checking.'},
- {id:'balanced',name:'Familiar, with a pulse',sequence:['maize','wheat','mung','wheat'],note:'Keeps wheat in the plan. Mung establishment and harvest timing need local validation.'}
+ {id:'diverse',name:'Diversify with a pulse',sequence:['maize','chickpea','millet','mustard'],note:'Break cereal repetition with a pulse and an oilseed. Requires buyers for new crops.'},
+ {id:'water',name:'Lower-demand crop mix',sequence:['millet','chickpea','mung','mustard'],note:'Lower indicative water demand; millet and mung market access and drainage need checking.'},
+ {id:'balanced',name:'Keep wheat, add a pulse',sequence:['maize','wheat','mung','wheat'],note:'Keeps wheat in the plan. Mung establishment and harvest timing need local validation.'}
 ];
 export function summarize(data,year=2024){
  const p=data.properties.parameter; const vals=k=>Array.from({length:12},(_,i)=>p[k]?.[`${year}${String(i+1).padStart(2,'0')}`]);
