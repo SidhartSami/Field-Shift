@@ -59,6 +59,11 @@
         "wheat"
       ],
       "note": "Reference strategy: your current two-season sequence repeated over two years.",
+      "waterBalance": {
+        "rain": 566.696,
+        "irrigation": 500,
+        "gap": 583.3040000000001
+      },
       "demand": 1650,
       "deficit": 583,
       "soil": 35,
@@ -79,6 +84,11 @@
         "mustard"
       ],
       "note": "Lower indicative water demand; millet and mung market access and drainage need checking.",
+      "waterBalance": {
+        "rain": 566.696,
+        "irrigation": 83.30399999999997,
+        "gap": 0
+      },
       "demand": 650,
       "deficit": 0,
       "soil": 65,
@@ -128,6 +138,11 @@
         "wheat"
       ],
       "note": "Reference strategy: your current two-season sequence repeated over two years.",
+      "waterBalance": {
+        "rain": 396.6872,
+        "irrigation": 200,
+        "gap": 1053.3128
+      },
       "demand": 1650,
       "deficit": 1053,
       "soil": 35,
@@ -148,6 +163,11 @@
         "mustard"
       ],
       "note": "Lower indicative water demand; millet and mung market access and drainage need checking.",
+      "waterBalance": {
+        "rain": 396.6872,
+        "irrigation": 200,
+        "gap": 53.31279999999998
+      },
       "demand": 650,
       "deficit": 53,
       "soil": 65,

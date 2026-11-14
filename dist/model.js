@@ -46,6 +46,6 @@ export function evaluate(input,climate){
  const water=Math.max(0,100-deficit/demand*100);
  const weights=input.priority==='water'?[.6,.2,.1,.1]:input.priority==='soil'?[.2,.45,.2,.15]:[.35,.3,.15,.2];
  const score=Math.round(water*weights[0]+soil*weights[1]+erosion*weights[2]+(breaks*100)*weights[3]-heatPenalty*.8);
- return {...o,demand:Math.round(demand),deficit:Math.round(deficit),soil:Math.round(soil),erosion,breaks:Math.round(breaks*100),score:Math.max(0,Math.min(100,score)),legumes,effectiveRain:Math.round(effectiveRain),heatPenalty};
+ return {...o,waterBalance:{rain:Math.min(demand,Math.max(0,effectiveRain)),irrigation:Math.min(input.irrigation,Math.max(0,demand-effectiveRain)),gap:deficit},demand:Math.round(demand),deficit:Math.round(deficit),soil:Math.round(soil),erosion,breaks:Math.round(breaks*100),score:Math.max(0,Math.min(100,score)),legumes,effectiveRain:Math.round(effectiveRain),heatPenalty};
  }).sort((a,b)=>b.score-a.score);
 }
