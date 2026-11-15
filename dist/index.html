@@ -73,6 +73,11 @@
     
     <div class="voice-dock" aria-label="Transcript">
       <span id="voice-live-mode" class="voice-live-mode">IDLE</span>
+      <div class="voice-live-lang" role="group" aria-label="Speech language">
+        <button type="button" data-live-lang="en-US">EN</button>
+        <button type="button" data-live-lang="multi" class="is-on" aria-pressed="true">Auto</button>
+        <button type="button" data-live-lang="ur" aria-pressed="false">اردو</button>
+      </div>
       <div id="voice-live-text" class="voice-live-text" aria-live="polite"></div>
       <span id="voice-live-status" class="voice-live-status" role="status">Mic off</span>
       <button type="button" id="voice-live-toggle" class="voice-live-toggle" aria-pressed="false" aria-label="Start live voice">

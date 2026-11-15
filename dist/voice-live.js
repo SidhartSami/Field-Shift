@@ -27,12 +27,13 @@ export const PLACE_MAP = {
 
 const DG_QUERY =
  'encoding=linear16&channels=1&interim_results=true&endpointing=true&smart_format=true';
-/** nova-3 multilingual (Urdu + English in one stream); en-US fallback if rejected. */
-const DG_BASE_ML =
- 'wss://api.deepgram.com/v1/listen?model=nova-3&multilingual=true&' + DG_QUERY;
-const DG_BASE_EN =
- 'wss://api.deepgram.com/v1/listen?model=nova-3&language=en-US&' + DG_QUERY;
-// legacy alias used by older call sites
+/** nova-3 language presets. multi = auto-detect; ur forces Urdu STT (English audio was forced to garbage before). */
+export function deepgramListenUrl(lang='multi'){
+ const l=lang==='ur'?'ur':lang==='en-US'?'en-US':'multi';
+ return `wss://api.deepgram.com/v1/listen?model=nova-3&language=${l}&` + DG_QUERY;
+}
+const DG_BASE_ML=deepgramListenUrl('multi');
+const DG_BASE_EN=deepgramListenUrl('en-US');
 const DG_BASE = DG_BASE_ML;
 
 /** Eastern Arabic / Persian digits → ASCII so number patterns match. */
@@ -299,7 +300,7 @@ const IDLE={
  */
 export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Recognition,deepgramKey}){
  const win=doc.defaultView,$=id=>doc.getElementById(id);
- let recognition=null,state={...IDLE},committed=null,partialBuffer='',stopped=false;
+ let recognition=null,state={...IDLE},committed=null,partialBuffer='',stopped=false, liveLang='multi';
  let ws=null,ctx=null,node=null,mic=null,streamStart=null,engine=null;
  const key=String(deepgramKey||'').trim();
  const browserCtor=()=>Recognition||win.SpeechRecognition||win.webkitSpeechRecognition;
@@ -398,12 +399,14 @@ export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Reco
    socket.onopen=()=>{clearTimeout(timer);resolve(socket)};
    socket.onerror=()=>{clearTimeout(timer);socket.close();reject(new Error('Deepgram WebSocket error — check API key / network'))};
   });
+  const want=deepgramListenUrl(liveLang);
   try{
-   await openStream(DG_BASE_ML);
-  }catch(mlErr){
+   await openStream(want);
+  }catch(langErr){
    ws=null;
-   try{await openStream(DG_BASE_EN)}
-   catch(enErr){throw enErr||mlErr}
+   if(want!==DG_BASE_EN){
+    try{await openStream(DG_BASE_EN)}catch(enErr){throw enErr||langErr}
+   }else throw langErr;
   }
   ws.onmessage=ev=>{if(typeof ev.data==='string')handleDeepgramMessage(ev.data)};
   ws.onclose=()=>{
@@ -577,5 +580,24 @@ export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Reco
   bar.classList.toggle('is-error',state.status==='error');
  }
  render();
- return {toggle,stop,destroy,state:()=>state,hasRecognition,render,engine:()=>engine||state.engine};
+ function syncLangButtons(){
+  for(const b of doc.querySelectorAll('[data-live-lang]')){
+   const on=b.dataset.liveLang===liveLang||(liveLang==='multi'&&b.dataset.liveLang==='multi');
+   b.classList.toggle('is-on',on);
+   b.setAttribute('aria-pressed',String(on));
+  }
+ }
+ function setLanguage(lang){
+  liveLang=lang==='ur'||lang==='en-US'?lang:'multi';
+  syncLangButtons();
+  if(state.listening||recognition||ws){
+   stop();
+   void start();
+  }
+ }
+ for(const b of doc.querySelectorAll('[data-live-lang]')){
+  b.onclick=()=>setLanguage(b.dataset.liveLang);
+ }
+ syncLangButtons();
+ return {toggle,stop,destroy,state:()=>state,hasRecognition,render,engine:()=>engine||state.engine,setLanguage,language:()=>liveLang};
 }

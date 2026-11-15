@@ -336,3 +336,11 @@ body:has(#voice-live-bar:not([hidden])) main{padding-bottom:96px}
   .voice-save-btn{width:100%}
   .voice-save-hint{text-align:center}
 }
+
+.voice-live-lang{display:flex;gap:2px;padding:3px;border:1px solid #ffffff22;border-radius:999px;background:#ffffff0a;flex-shrink:0}
+.voice-live-lang button{
+  border:0;background:transparent;color:#ffffff77;border-radius:999px;
+  padding:5px 10px;font-size:11px;cursor:pointer;font-family:'DM Sans',system-ui,sans-serif;
+}
+.voice-live-lang button.is-on{background:#7dd3a828;color:#b8f0d0;font-weight:650}
+.voice-live-lang button:hover{color:#e8f5ee}
