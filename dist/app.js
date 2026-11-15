@@ -60,7 +60,13 @@ function geoContext(){const i=input();return {inputs:i,year,customSequence,selec
 function ensureGeo(){if(!geoView)geoView=createGeoWorkspace({document,fetcher:(...args)=>fetch(...args),getContext:geoContext,onError:toast,onSelectField:fid=>{$('field-list').querySelector(`[data-field="${fid}"]`)?.click()},onUseLocation:point=>openFieldSetup({point})});return geoView}
 function currentField(){return state.fields.find(f=>f.id===state.active)}
 function snapshot(){const prev=currentField()?.draft;return {summary:prev&&'summary' in prev?prev.summary:undefined,boundary:fieldBoundary?fieldBoundary.map(p=>[...p]):null,inputs:input(),rawNASA:raw,observations:{source,url,fetchedAt:fetchTime,coordinates:{...observed},year},customSequence:customSequence?[...customSequence]:null,selected,economics:{...economics},localChecks:structuredClone(localChecks)};}
-function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));$('save-state').textContent='Draft saved on device';return true}catch{$('save-state').textContent='Draft not saved';toast('Device storage is unavailable or full. Export your plan to keep a copy.');return false}}
+function persist(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(state));
+  $('save-state').textContent='Draft saved on device';
+  try{renderProperties()}catch{}
+  return true
+ }catch{$('save-state').textContent='Draft not saved';toast('Device storage is unavailable or full. Export your plan to keep a copy.');return false}}
 function stash(){
  if(!ready)return;
  const f=currentField();
