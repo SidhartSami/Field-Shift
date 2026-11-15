@@ -851,3 +851,49 @@ body:has(.voice-dock:not([hidden])) .foot { padding-bottom: 88px; }
   color: var(--muted);
 }
 .prop-actions { display: flex; gap: 8px; }
+
+/* ── Polygon draw (extra way to pick a field) ─────────────── */
+.field-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-draw {
+  padding: 7px 11px;
+  font-size: 12px;
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  border-radius: 8px;
+  white-space: nowrap;
+}
+.btn-draw:hover { border-color: var(--water); color: var(--water); }
+.draw-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 6px 10px;
+  background: var(--deep);
+  color: var(--paper);
+  border-radius: 8px;
+  font-size: 12px;
+}
+.draw-tools[hidden] { display: none; }
+.draw-tools .btn {
+  padding: 5px 10px;
+  font-size: 12px;
+  background: rgba(245, 242, 234, 0.1);
+  color: var(--paper);
+  border: 1px solid rgba(245, 242, 234, 0.25);
+  border-radius: 6px;
+}
+.draw-tools .btn-primary {
+  background: var(--paper);
+  color: var(--deep);
+  border-color: transparent;
+}
+.draw-hint { color: rgba(245, 242, 234, 0.65); }
+.map-panel .map-controls { position: relative; }
+@media (max-width: 720px) {
+  .btn-draw { font-size: 11px; padding: 6px 8px; }
+}

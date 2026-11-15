@@ -27,6 +27,7 @@
   <div class="field-picker">
     <label class="sr-only" for="field-select">Field</label>
     <select id="field-select"></select>
+    <button type="button" id="btn-draw-poly" class="btn btn-draw" title="Draw your land on the map and match the nearest field">Draw boundary</button>
   </div>
 
   <nav class="tabs" aria-label="Sections">
@@ -52,6 +53,11 @@
       <div class="map-panel">
         <div id="map" class="map" role="application" aria-label="Satellite map of the field"></div>
         <div class="map-controls">
+          <div class="draw-tools" id="draw-tools" hidden>
+            <button type="button" class="btn btn-primary" id="draw-finish">Finish boundary</button>
+            <button type="button" class="btn" id="draw-cancel">Cancel</button>
+            <span class="draw-hint" id="draw-hint">Click the map to add corners (3+), then Finish.</span>
+          </div>
           <div class="layer-tabs" id="layer-tabs" role="tablist" aria-label="NASA layer"></div>
           <div class="date-row">
             <button class="icon-btn" id="date-prev" aria-label="Previous date">‹</button>

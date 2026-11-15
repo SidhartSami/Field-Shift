@@ -36,6 +36,11 @@ const state = {
   layer: 'ndvi',
   dateIndex: 0,
   voice: null,
+  polyMode: false,
+  polyVerts: [],
+  polyLayer: null,
+  polyPreview: null,
+  boundaryLayer: null,
 };
 
 const LAYERS = [
@@ -90,6 +95,12 @@ function bindChrome() {
   });
   $('#describe').addEventListener('change', applyDescribe);
   $('#print-btn').addEventListener('click', () => window.print());
+  const drawBtn = $('#btn-draw-poly');
+  if (drawBtn) drawBtn.addEventListener('click', startPolyDraw);
+  const finishBtn = $('#draw-finish');
+  if (finishBtn) finishBtn.addEventListener('click', finishPolyDraw);
+  const cancelBtn = $('#draw-cancel');
+  if (cancelBtn) cancelBtn.addEventListener('click', cancelPolyDraw);
   $('#save-btn').addEventListener('click', savePlan);
   $('#date-prev').addEventListener('click', () => stepDate(-1));
   $('#date-next').addEventListener('click', () => stepDate(1));
@@ -465,6 +476,134 @@ function renderMemory() {
     `The record holds <b>${years.length}</b> complete years. <b>${dry.length}</b> failed the monsoon ` +
     `(below 78% of the median). The five hottest years are ${warmest.join(', ')} — ` +
     `${recent} of the five fall after 2000.`;
+}
+
+
+/* ── polygon boundary (select field by drawing land) ──────── */
+
+const POLY_KEY = 'fieldshift-polygons-v1';
+
+function loadPolygons() {
+  try { return JSON.parse(localStorage.getItem(POLY_KEY) || '{}') || {}; }
+  catch { return {}; }
+}
+
+function savePolygons(map) {
+  try { localStorage.setItem(POLY_KEY, JSON.stringify(map)); } catch { /* ignore */ }
+}
+
+function nearestFieldIndex(lat, lon) {
+  let best = null;
+  let bestD = Infinity;
+  const cos = Math.cos((lat * Math.PI) / 180);
+  for (const f of state.index) {
+    const d = (f.lat - lat) ** 2 + (cos * (f.lon - lon)) ** 2;
+    if (d < bestD) { bestD = d; best = f; }
+  }
+  return best;
+}
+
+function ringCentroid(ring) {
+  let lat = 0; let lon = 0;
+  for (const [y, x] of ring) { lat += y; lon += x; }
+  return [lat / ring.length, lon / ring.length];
+}
+
+function startPolyDraw() {
+  if (!state.map) return;
+  location.hash = '#field';
+  cancelPolyDraw(true);
+  state.polyMode = true;
+  state.polyVerts = [];
+  const tools = $('#draw-tools');
+  if (tools) tools.hidden = false;
+  const hint = $('#draw-hint');
+  if (hint) hint.textContent = 'Click the map to add corners (3+), then Finish.';
+  state.map.getContainer().style.cursor = 'crosshair';
+  state.map.on('click', onPolyClick);
+  paintPolyPreview();
+}
+
+function onPolyClick(e) {
+  if (!state.polyMode) return;
+  state.polyVerts.push([e.latlng.lat, e.latlng.lng]);
+  paintPolyPreview();
+  const hint = $('#draw-hint');
+  if (hint) hint.textContent = state.polyVerts.length < 3
+    ? `${state.polyVerts.length} points — keep clicking…`
+    : `${state.polyVerts.length} points — Finish when the outline is complete.`;
+}
+
+function paintPolyPreview() {
+  clearPolyPreview();
+  if (!state.map || !state.polyVerts.length) return;
+  const group = L.layerGroup().addTo(state.map);
+  if (state.polyVerts.length >= 2) {
+    L.polyline(state.polyVerts, { color: '#7dd3a8', weight: 2, dashArray: '6 4', fill: false }).addTo(group);
+  }
+  for (const v of state.polyVerts) {
+    L.circleMarker(v, { radius: 4, color: '#101713', weight: 2, fillColor: '#7dd3a8', fillOpacity: 1, interactive: false }).addTo(group);
+  }
+  state.polyPreview = group;
+}
+
+function clearPolyPreview() {
+  if (state.polyPreview && state.map) state.map.removeLayer(state.polyPreview);
+  state.polyPreview = null;
+}
+
+function cancelPolyDraw(silent) {
+  state.polyMode = false;
+  state.polyVerts = [];
+  clearPolyPreview();
+  const tools = $('#draw-tools');
+  if (tools) tools.hidden = true;
+  if (state.map) {
+    state.map.off('click', onPolyClick);
+    state.map.getContainer().style.cursor = '';
+  }
+  if (!silent) {
+    const hint = $('#draw-hint');
+    if (hint) hint.textContent = 'Draw canceled.';
+  }
+}
+
+function finishPolyDraw() {
+  if (state.polyVerts.length < 3) {
+    const hint = $('#draw-hint');
+    if (hint) hint.textContent = 'Need at least 3 points to close a boundary.';
+    return;
+  }
+  const ring = state.polyVerts.map(([y, x]) => [Number(y.toFixed(6)), Number(x.toFixed(6))]);
+  const ha = polygonAreaHa(ring);
+  const [clat, clon] = ringCentroid(ring);
+  const match = nearestFieldIndex(clat, clon);
+  const polys = loadPolygons();
+  const id = match ? match.id : 'custom';
+  polys[id] = { ring, ha: Math.round(ha * 100) / 100, at: new Date().toISOString() };
+  savePolygons(polys);
+  cancelPolyDraw(true);
+  const hint = $('#draw-hint');
+  if (hint) hint.textContent = `Saved ≈${(Math.round(ha * 100) / 100)} ha.`;
+  if (match && match.id !== state.bundle?.id) {
+    $('#field-select').value = match.id;
+    loadField(match.id).then(() => {
+      renderFieldBoundary();
+      location.hash = '#field';
+    });
+  } else {
+    renderFieldBoundary();
+  }
+}
+
+function renderFieldBoundary() {
+  if (!state.map || !state.bundle) return;
+  if (state.boundaryLayer) { state.map.removeLayer(state.boundaryLayer); state.boundaryLayer = null; }
+  const rec = loadPolygons()[state.bundle.id];
+  if (!rec?.ring || rec.ring.length < 3) return;
+  state.boundaryLayer = L.polygon(rec.ring, {
+    color: '#c2622a', weight: 2, fillColor: '#c2622a', fillOpacity: 0.18,
+  }).addTo(state.map);
 }
 
 /* ── map ──────────────────────────────────────────────────── */
