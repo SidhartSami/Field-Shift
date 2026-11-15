@@ -50,20 +50,26 @@ dist/
     evaluate.js       rotation evaluation, two tiers
     pareto.js         non-dominated sorting over four objectives
     search.js         enumeration, canonicalisation, the search
+  voice-live.js       natural-language field parser (English + Urdu), from the voice branch
+  field-map.js        polygon area helpers and the Leaflet boundary layer
+  pcm-worklet.js      audio worklet for the streaming path
   ui/
     charts.js         memory strip, Pareto plot, supply curve, requirement strip
     format.js         every user-facing number goes through here
+    describe.js       maps parsed facts onto the Rotation Lab controls
   assets/shots/       four real captures of app.html, used by the landing page
   data/fields/        5 field bundles, 1991–2024 daily NASA POWER + SoilGrids
   vendor/leaflet/     Leaflet 1.9.4
 pipeline/
   fetch_fields.py     rebuilds data/fields from NASA POWER, MODIS, SoilGrids
-tests/                112 tests
+scripts/serve.mjs     Node static server, serves /runtime-config.js from .env
+tests/                129 tests
 ```
 
 ## Run
 
-Requires Node 20+ and Python 3. No build step, no bundler, no API key.
+Requires Node 20+. No build step, no bundler, no API key. The static server is
+`scripts/serve.mjs`, so Python is not needed.
 
 ```sh
 npm install
@@ -80,7 +86,22 @@ npm start          # http://localhost:8080
 | `/model.html` | the model card — equations, data, eight known errors |
 | `/pitch.html` | the seven-slide scroll deck |
 
-The landing page is documented in [`docs/LANDING.md`](docs/LANDING.md).
+The landing page is documented in [`docs/LANDING.md`](docs/LANDING.md). How the
+two branches were reconciled is in [`docs/MERGE.md`](docs/MERGE.md).
+
+## Describe it
+
+The Rotation Lab takes a sentence as well as a slider:
+
+```
+irrigation 400, keep residue, drier by 30
+```
+
+`dist/voice-live.js` parses it — English or Urdu, Eastern digits, phrasing like
+"irrigation would be 800" — and `dist/ui/describe.js` maps the facts that apply
+onto the Lab controls. Facts the Lab cannot act on are named in the readout
+rather than dropped. The streaming voice path is in the tree and tested but not
+mounted; see `docs/MERGE.md`.
 
 ## The four views
 

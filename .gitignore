@@ -9,3 +9,8 @@ __pycache__/
 
 # Local probe screenshots
 _shots/
+
+# Local secrets (Deepgram key for the optional voice input)
+.env
+.env.*
+!.env.example

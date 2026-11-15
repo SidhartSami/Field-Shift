@@ -12,6 +12,8 @@ import { evaluateRotation, buildSeasonCache, usableYears } from './engine/evalua
 import { CROPS } from './engine/crops.js';
 import { textureClass } from './engine/soil.js';
 import { memoryStrip, memoryAxis, paretoPlot, supplyCurve, requirementStrip } from './ui/charts.js';
+import { parseUtterance, hasFacts } from './voice-live.js';
+import { applyDescription, describeSummary } from './ui/describe.js';
 import {
   num, pct, money, signed, cropName, rotationLabel, chip, escapeHtml,
 } from './ui/format.js';
@@ -80,6 +82,10 @@ function bindChrome() {
     if (e.target.checked) ensureFuture();
     renderLab();
   });
+  $('#describe').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); applyDescribe(); }
+  });
+  $('#describe').addEventListener('change', applyDescribe);
   $('#print-btn').addEventListener('click', () => window.print());
   $('#save-btn').addEventListener('click', savePlan);
   $('#date-prev').addEventListener('click', () => stepDate(-1));
@@ -88,6 +94,43 @@ function bindChrome() {
     state.dateIndex = Number(e.target.value);
     applyLayer();
   });
+}
+
+/**
+ * Read the describe-it box and fold it into the Lab controls.
+ *
+ * The parser is the one from the voice-entry branch. It understands far more
+ * than the Lab can act on, so we apply what maps and name what does not —
+ * silently ignoring "clay soil" would be the dishonest option.
+ */
+function applyDescribe() {
+  const input = $('#describe');
+  const read = $('#describe-read');
+  const text = input.value.trim();
+  if (!text) { read.hidden = true; read.textContent = ''; return; }
+
+  const facts = parseUtterance(text);
+  if (!hasFacts(facts)) {
+    read.hidden = false;
+    read.innerHTML = 'Nothing in that sentence maps to a control. Try <b>irrigation 400</b> or <b>keep residue</b>.';
+    return;
+  }
+
+  const result = applyDescription(state.options, facts);
+  state.options = result.options;
+  $('#supply').value = String(state.options.irrigationMm);
+  $('#supply-out').textContent = `${state.options.irrigationMm} mm`;
+  $('#residue').checked = state.options.residueRetained;
+
+  if (result.stress && !state.future) {
+    $('#future').checked = true;
+    ensureFuture();
+  }
+
+  read.hidden = false;
+  read.innerHTML = escapeHtml(describeSummary(result));
+  recompute();
+  renderLab();
 }
 
 /* ── data ─────────────────────────────────────────────────── */
