@@ -5,7 +5,7 @@ import {extname,join,normalize,sep} from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const root=join(fileURLToPath(new URL('..',import.meta.url)),'dist');
-const port=Number(process.env.PORT)||8080;
+const preferredPort=Number(process.env.PORT)||8080;
 const types={
  '.html':'text/html; charset=utf-8',
  '.js':'text/javascript; charset=utf-8',
@@ -29,8 +29,8 @@ const types={
  '.tar':'application/x-tar'
 };
 
-createServer((req,res)=>{
- const url=new URL(req.url||'/',`http://localhost:${port}`);
+function handler(req,res){
+ const url=new URL(req.url||'/',`http://localhost:${server.address()?.port||preferredPort}`);
  let pathname=decodeURIComponent(url.pathname);
  if(pathname.endsWith('/'))pathname+='index.html';
  const filePath=normalize(join(root,pathname));
@@ -55,6 +55,19 @@ createServer((req,res)=>{
  }catch{
   res.writeHead(404,{'Content-Type':'text/plain; charset=utf-8'}).end('Not found');
  }
-}).listen(port,()=>{
+}
+
+const server=createServer(handler);
+let port=preferredPort;
+server.on('error',err=>{
+ if(err.code==='EADDRINUSE'&&port<preferredPort+20){
+  port+=1;
+  server.listen(port);
+  return;
+ }
+ console.error(err.message);
+ process.exit(1);
+});
+server.listen(port,()=>{
  console.log(`FasalPath serving dist/ at http://localhost:${port}`);
 });
