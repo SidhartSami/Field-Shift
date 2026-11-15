@@ -22,6 +22,12 @@ test('parses area, irrigation, crops and soil from plain English utterances',()=
  assert.equal(parseUtterance('the goal is to conserve water').priority,'water');
  assert.equal(parseUtterance('Winter crop would be maize').winter,'maize');
  assert.equal(parseUtterance('update the soil which is sandy').soil,'sand');
+ assert.equal(parseUtterance('irrigation would be 800').irrigation,800);
+ assert.equal(parseUtterance('area would be 30').area,30);
+ assert.equal(parseUtterance('heat should be 15 degree centigrade').heat,15);
+ assert.equal(reduceInputs(base,parseUtterance('heat should be 15 degree centigrade')).heat,5);
+ assert.equal(parseUtterance('not Lahore but Islamabad').place.key,'islamabad');
+ assert.equal(parseUtterance('my current goal is to stay with support soil').priority,'soil');
 });
 
 test('parses scenario stress, priority, residue and farm name',()=>{
@@ -40,8 +46,8 @@ test('parses scenario stress, priority, residue and farm name',()=>{
 test('reduceInputs converts acres to hectares and clamps out-of-range values',()=>{
  const acres=reduceInputs(base,parseUtterance('the field is 5 acres'));
  assert.ok(Math.abs(acres.area-2.02)<0.05);
- assert.equal(reduceInputs(base,parseUtterance('dry by 99')).dry,0);
- assert.equal(reduceInputs(base,parseUtterance('heat by 99')).heat,0);
+ assert.equal(reduceInputs(base,parseUtterance('dry by 99')).dry,60); // clamped
+ assert.equal(reduceInputs(base,parseUtterance('heat by 99')).heat,5); // clamped
  assert.equal(reduceInputs(base,parseUtterance('organic matter 99')).organic,1.2);
 });
 

@@ -42,31 +42,34 @@ export function parseUtterance(raw){
  let m=original.match(nameRe);
  if(!m)m=original.match(/\b(?:call|name)\s+(?:it|this|the field)\s+([A-Za-z][A-Za-z0-9\s'-]{1,60}?)(?=\s+[,.]|$)/i);
  if(m)facts.farm=m[1].trim().replace(/\s+/g,' ');
- // "area is 20" / "its area is 20 ha" — keyword first so bare numbers elsewhere don't win
- m=text.match(/\b(?:its?\s+|the\s+|my\s+|this\s+)?(?:field\s+|plot\s+)?(?:area|size|land(?:\s+area)?)\s*(?:is|of|=|:)?\s*(\d+(?:\.\d+)?)\s*(ha|hectares?|acres?|acreage)?\b/);
- if(m){facts.area=Number(m[1]);facts.areaUnit=UNIT_AREA[m[2]||'']??null}
+ // "area is 20" / "area would be 30" — last mention wins when corrected mid-sentence
+ const areaRe=/\b(?:its?\s+|the\s+|my\s+|this\s+)?(?:field\s+|plot\s+)?(?:area|size|land(?:\s+area)?)\s*(?:would\s+be|should\s+be|will\s+be|is|of|=|:)?\s*(\d+(?:\.\d+)?)\s*(ha|hectares?|acres?|acreage|meters?|metres?|m)?\b/gi;
+ let areaM=null,am;
+ while((am=areaRe.exec(text))!==null)areaM=am;
+ if(areaM){facts.area=Number(areaM[1]);facts.areaUnit=UNIT_AREA[areaM[2]||'']??null}
  else{
   m=text.match(/(\d+(?:\.\d+)?)\s*(acres?|acreage|hectares?|ha)\b/);
   if(m){facts.area=Number(m[1]);facts.areaUnit=UNIT_AREA[m[2]]||null}
  }
+ // Places: last city mentioned wins ("not Lahore… Islamabad")
  for(const [word,place] of Object.entries(PLACE_MAP)){
-  if(new RegExp(`\\b${word}\\b`,'i').test(text)){facts.place={...place,key:word};break}
+  if(new RegExp(`\\b${word}\\b`,'i').test(text))facts.place={...place,key:word};
  }
  m=text.match(/\b(?:organic matter|organic)\s*(?:is\s*)?(\d+(?:\.\d+)?)\s*(?:percent|%|per\s*cent)?/);
  if(!m)m=text.match(/(\d+(?:\.\d+)?)\s*(?:percent|%)\s*organic/);
  if(m)facts.organic=Number(m[1]);
  m=text.match(/\bslope\s*(?:is\s*)?(\d+(?:\.\d+)?)\s*(?:percent|%)?/);
  if(m)facts.slope=Number(m[1]);
- m=text.match(/(?:irrigation|water available|irrigation available)\s*(?:is\s+|of\s+)?(\d+(?:\.\d+)?)\s*(mm|millimet(?:er|re)s?|millimeters?)?(?:\s*(?:per|\/)\s*year)?/);
+ m=text.match(/(?:irrigation|water available|irrigation available)\s*(?:would\s+be|should\s+be|will\s+be|is|of)?\s*(\d+(?:\.\d+)?)\s*(mm|millimet(?:er|re)s?|millimeters?)?(?:\s*(?:per|\/)\s*year)?/);
  if(!m)m=text.match(/(\d+(?:\.\d+)?)\s*mm\s*(?:of\s*)?irrigation/);
  if(m)facts.irrigation=Number(m[1]);
- m=text.match(/\b(?:dry|drier|dryer)(?:\s+season)?\s*(?:by\s+)?(\d+(?:\.\d+)?)\s*(?:percent|%)?/);
+ m=text.match(/\b(?:dry|drier|dryer)(?:\s+season)?\s*(?:would\s+be|should\s+be|by\s+)?(\d+(?:\.\d+)?)\s*(?:percent|%)?/);
  if(!m)m=text.match(/\breduc\w+\s+(?:the\s+)?(?:rainfall|rain)\s+(?:by\s+)?(\d+(?:\.\d+)?)\s*(?:percent|%)?/);
  if(!m)m=text.match(/(?:rainfall\s*)?reduc\w+\s*(?:by\s+)?(\d+(?:\.\d+)?)\s*(?:percent|%)?/);
  if(!m)m=text.match(/(?:rain\s*)?down\s*(\d+(?:\.\d+)?)\s*(?:percent|%)?/);
  if(m)facts.dry=Number(m[1]);
  m=text.match(/\+(?:\s*)?(\d+(?:\.\d+)?)\s*(?:degrees?\s*)?(?:c|celsius|°\s*c)/);
- if(!m)m=text.match(/(?:heat|temperature|hotter)\s*(?:up\s*)?(?:by\s*)?(\d+(?:\.\d+)?)\s*(?:degrees?\s*)?(?:c|celsius)?/);
+ if(!m)m=text.match(/(?:heat|temperature|hotter)\s*(?:up\s*)?(?:by\s*|should\s+be\s+|would\s+be\s+|will\s+be\s+)?(\d+(?:\.\d+)?)\s*(?:degrees?\s*)?(?:c|celsius)?/);
  if(m)facts.heat=Number(m[1]);
  m=text.match(/\bndvi\s*(?:is\s*)?(-?\d+(?:\.\d+)?)/);
  if(m)facts.ndvi=Number(m[1]);
@@ -144,8 +147,8 @@ export function reduceInputs(inputs,facts){
  if(facts.winter)next.winter=facts.winter;
  if(facts.priority)next.priority=facts.priority;
  if(typeof facts.residue==='boolean')next.residue=facts.residue;
- if(Number.isFinite(facts.dry)&&facts.dry>=0&&facts.dry<=60)next.dry=Math.round(facts.dry);
- if(Number.isFinite(facts.heat)&&facts.heat>=0&&facts.heat<=5)next.heat=Math.round(facts.heat*2)/2;
+ if(Number.isFinite(facts.dry)&&facts.dry>=0)next.dry=Math.min(60,Math.round(facts.dry));
+ if(Number.isFinite(facts.heat)&&facts.heat>=0)next.heat=Math.min(5,Math.round(facts.heat*2)/2);
  if(Number.isFinite(facts.ndvi)&&facts.ndvi>=-1&&facts.ndvi<=1)next.ndvi=facts.ndvi;
  return next;
 }

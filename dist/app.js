@@ -98,7 +98,7 @@ function planGlyph(kind,i){
 }
 function planCardData(kind,i){
  const crop=(season,c)=>({label:crops[c]?.name||c,rows:[
-  [season,season==='summer'?'Summer season':'Winter season'],
+  [season,String(season).toLowerCase()==='summer'?'Summer season':'Winter season'],
   ['water',`~${n(crops[c]?.water||0)} mm demand`],
   ['family',crops[c]?.legume?'Legume · family break':crops[c]?.family==='brassica'?'Oilseed · brassica':'Cereal · grass family']
  ]});
