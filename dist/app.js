@@ -655,10 +655,10 @@ function renderDecision() {
     <div class="brief-section prediction">
       <h3>The prediction</h3>
       <p>We expect the next season on this field to show root-zone wetness above
-      <span class="mono">${predictionWetness()}</span> through the growing window${ndviPrediction
-        ? ` and a peak NDVI above <span class="mono">${ndviPrediction}</span>`
+      <span class="num">${predictionWetness()}</span> through the growing window${ndviPrediction
+        ? ` and a peak NDVI above <span class="num">${ndviPrediction}</span>`
         : ''}. We will check ${ndviPrediction ? 'both' : 'it'} against the satellite pass in
-      <span class="mono">${nextCheckMonth()}</span> and record the result in the ledger — hit, miss, or inconclusive.</p>
+      <span class="num">${nextCheckMonth()}</span> and record the result in the ledger — hit, miss, or inconclusive.</p>
       ${ndviPrediction ? '' : '<p class="ledger-note">No MODIS composite is bundled for this field yet, so the NDVI prediction is withheld rather than invented.</p>'}
     </div>
   `);
@@ -995,15 +995,18 @@ function scalePanel() {
       <h2>What this means beyond one field</h2>
       <p>
         The ${escapeHtml(state.region.name)} ${escapeHtml(state.region.baseline.map(cropName).join('–'))} system
-        covers roughly <span class="mono">${num(areaHa / 1e6, 1)} million hectares</span>
+        covers roughly <span class="num">${num(areaHa / 1e6, 1)} million hectares</span>
         (${escapeHtml(state.region.scaleAreaLabel ?? 'regional cropland')}). Our model says the current
-        rotation meets a <span class="mono">${state.options.irrigationMm} mm</span> water budget in
-        <span class="mono">${pct(base.reliability)}</span> of years on this field.
+        rotation meets a <span class="num">${state.options.irrigationMm} mm</span> water budget in
+        <span class="num">${pct(base.reliability)}</span> of years on this field.
       </p>
       <p>
-        If <span class="mono">10%</span> of that area shifted to the recommended rotation, the modelled
-        irrigation demand falls by <span class="scale-num">${km3.toFixed(2)}</span>
-        <span class="mono">km³ per year</span>.
+        If <span class="num">10%</span> of that area shifted to the recommended rotation, the modelled
+        irrigation demand falls by:
+      </p>
+      <p class="scale-figure">
+        <span class="scale-num">${km3.toFixed(2)}</span>
+        <span class="scale-unit">km³ per year</span>
       </p>
       <p class="meta">
         Area, share and demand difference are all editable in the model card. This is arithmetic on our own

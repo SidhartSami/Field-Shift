@@ -144,6 +144,19 @@ npm start          # http://localhost:8080
 | `/model.html` | the model card — equations, data, eight known errors |
 | `/pitch.html` | the seven-slide scroll deck |
 
+### Type
+
+Two self-hosted families, no external font request. **Instrument Sans** carries the interface and every
+figure — its tabular numerals keep the year columns aligned without a second mono face. **Space Grotesk**
+is the display face, used only for the large headline numbers on the landing page. Both are variable
+woff2 files under `dist/assets/fonts/` and are preloaded on the landing page.
+
+### Voice input
+
+The Describe panel accepts typed or spoken English and Urdu. Streaming speech-to-text uses Deepgram
+nova-3 over WebSocket when `DEEPGRAM_API_KEY` is set in the environment; without it the app falls back
+to the browser's own `SpeechRecognition`, so the feature degrades rather than breaks.
+
 ## Architecture
 
 ```
