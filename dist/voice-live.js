@@ -8,6 +8,8 @@
 export const SOIL_MAP = {loam:'loam',loamy:'loam',sandy:'sand',sand:'sand',clay:'clay',clayey:'clay'};
 export const SUMMER_CROPS = {rice:'rice',paddy:'rice',maize:'maize',corn:'maize',millet:'millet','pearl millet':'millet',mung:'mung','mung bean':'mung','mungbean':'mung'};
 export const WINTER_CROPS = {wheat:'wheat',chickpea:'chickpea',chana:'chickpea',mustard:'mustard'};
+// Speech-only: allow naming a summer crop as the winter crop when the speaker says so.
+export const WINTER_SPEECH_CROPS = {...WINTER_CROPS,maize:'maize',millet:'millet',rice:'rice',mung:'mung'};
 export const PRIORITY_MAP = {balanced:'balanced',balance:'balanced',water:'water',soil:'soil'};
 export const UNIT_AREA = {acre:'acres',acres:'acres',acreage:'acres',hectare:'hectares',hectares:'hectares',ha:'hectares'};
 const AREA_PER = {acres:0.40468564224,hectares:1};
@@ -80,6 +82,37 @@ export function parseUtterance(raw){
  for(const [word,key] of Object.entries(PRIORITY_MAP))if(new RegExp(`\\b(?:priority|goal|weight|focus)\\s*(?:is\\s*)?(?:a\\s+)?${word}\\b|\\b${word}\\s+(?:priority|goal|weights?)\\b`).test(text)){facts.priority=key;break}
  if(/\b(?:retain|keep|leave|with)\s+(?:the\s+)?(?:crop\s+)?residue\b|\bresidue\s+(?:on|retained|kept)\b/.test(text))facts.residue=true;
  if(/\b(?:no|drop|remove|without|turn off|clear)\s+(?:the\s+)?(?:crop\s+)?residue\b|\bresidue\s+(?:off|removed|cleared)\b/.test(text))facts.residue=false;
+ return postProcessFacts(facts,text,original);
+}
+
+/**
+ * Post-process: reconcile speech quirks the raw regexes miss.
+ * - "goal is to conserve water" → priority water
+ * - season-scoped crops: "winter crop would be maize" sets winter even when
+ *   the crop is only in the summer menu
+ * - looser soil: "update the soil … sandy"
+ */
+export function postProcessFacts(facts,text,original=String(text||'')){
+ if(!facts.priority){
+  if(/\bconserve\s+water\b|\bsave\s+water\b|\bwater\s+conservation\b/.test(text))facts.priority='water';
+  else if(/\bsoil\s+health\b|\bsupport\s+soil\b/.test(text))facts.priority='soil';
+  else if(/\bbalanced\b/.test(text)&&/\bgoal\b|\bpriority\b/.test(text))facts.priority='balanced';
+ }
+ const seasonCrop=(season,words)=>{
+  const re=new RegExp(`\\b${season}\\b[^.!?]{0,80}?\\b(${words})\\b`,'i');
+  const m=text.match(re);
+  return m?m[1].toLowerCase():null;
+ };
+ const summerWord=Object.keys(SUMMER_CROPS).sort((a,b)=>b.length-a.length).join('|');
+ const winterWord=Object.keys(WINTER_SPEECH_CROPS).sort((a,b)=>b.length-a.length).join('|');
+ const sWord=seasonCrop('summer',summerWord);
+ if(sWord)facts.summer=SUMMER_CROPS[sWord]||sWord;
+ const wWord=seasonCrop('winter',winterWord);
+ if(wWord)facts.winter=WINTER_SPEECH_CROPS[wWord]||wWord;
+ if(!facts.soil){
+  const sm=text.match(/\bsoil\b[^.!?]{0,40}?\b(loam|loamy|sandy|sand|clay|clayey)\b/);
+  if(sm)facts.soil=SOIL_MAP[sm[1]]||sm[1];
+ }
  return facts;
 }
 

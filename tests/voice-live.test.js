@@ -19,6 +19,9 @@ test('parses area, irrigation, crops and soil from plain English utterances',()=
  assert.equal(parseUtterance('I have a place in Lahore and its area is 20').place.key,'lahore');
  assert.equal(parseUtterance('field in Islamabad').place.key,'islamabad');
  assert.equal(reduceInputs(base,parseUtterance('field in Islamabad')).lat,33.6844);
+ assert.equal(parseUtterance('the goal is to conserve water').priority,'water');
+ assert.equal(parseUtterance('Winter crop would be maize').winter,'maize');
+ assert.equal(parseUtterance('update the soil which is sandy').soil,'sand');
 });
 
 test('parses scenario stress, priority, residue and farm name',()=>{
