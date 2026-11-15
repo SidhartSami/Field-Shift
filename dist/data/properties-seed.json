@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "seededAt": "2026-11-15",
+  "note": "Seed properties for a fresh browser workspace. Merged into fieldshift-workspace-v2 only when no saved workspace exists. NASA payloads are the bundled Lahore example; coordinate edits still require a refresh.",
+  "properties": [
+    {
+      "id": "field-1",
+      "label": "Demo seed",
+      "inputs": {
+        "farm": "Lahore example field",
+        "area": 10,
+        "lat": 31.5204,
+        "lon": 74.3587,
+        "soil": "loam",
+        "organic": 1.2,
+        "slope": 2,
+        "irrigation": 500,
+        "summer": "rice",
+        "winter": "wheat",
+        "priority": "balanced",
+        "ndvi": "",
+        "residue": true,
+        "dry": 0,
+        "heat": 0
+      },
+      "boundary": null,
+      "summary": "Default Punjab irrigated example — rice and wheat."
+    },
+    {
+      "id": "prop-islamabad-maize",
+      "label": "Seed property",
+      "inputs": {
+        "farm": "Islamabad maize plot",
+        "area": 30,
+        "lat": 33.6844,
+        "lon": 73.0479,
+        "soil": "sand",
+        "organic": 1.5,
+        "slope": 3,
+        "irrigation": 800,
+        "summer": "maize",
+        "winter": "mustard",
+        "priority": "soil",
+        "ndvi": "",
+        "residue": true,
+        "dry": 0,
+        "heat": 0
+      },
+      "boundary": [
+        [33.6807, 73.0441],
+        [33.6807, 73.0521],
+        [33.6867, 73.0521],
+        [33.6867, 73.0441]
+      ],
+      "summary": "Sandy plot near Islamabad — maize summer, mustard winter. Outline is a demo rectangle."
+    },
+    {
+      "id": "prop-faisalabad-wheat",
+      "label": "Seed property",
+      "inputs": {
+        "farm": "Faisalabad wheat block",
+        "area": 18,
+        "lat": 31.4504,
+        "lon": 73.135,
+        "soil": "clay",
+        "organic": 1,
+        "slope": 1.5,
+        "irrigation": 450,
+        "summer": "mung",
+        "winter": "wheat",
+        "priority": "water",
+        "ndvi": "",
+        "residue": true,
+        "dry": 10,
+        "heat": 0
+      },
+      "boundary": [
+        [31.447, 73.131],
+        [31.447, 73.139],
+        [31.454, 73.139],
+        [31.454, 73.131]
+      ],
+      "summary": "Clay block near Faisalabad — mung and wheat, water-first goal. Demo outline included."
+    }
+  ]
+}

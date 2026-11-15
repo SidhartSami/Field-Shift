@@ -68,7 +68,7 @@ function openDialog(name,keyboard=false){const d=$(name);d.classList.toggle('ins
 function closeDialog(name){if(name==='field-dialog')fieldSetupVersion++;const d=$(name);if(d.close)d.close();else d.removeAttribute('open')}
 for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>closeDialog(b.dataset.close);
 for(const d of document.querySelectorAll('dialog'))d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog(d.id)}});
-const viewInfo={voice:['Add property','Capture field details and outline the land — saved on this device.'],map:['Where could your water plan come under pressure?','Read regional rainfall and heat signals before choosing what to plant.'],planner:['Should you change your next crop rotation?','Start with your current crops. Check water limits, first-year costs and the local facts that could rule out a switch.'],observations:['Read the season before planning the next','Use past rainfall and heat to question the assumptions behind your crop choice.'],plans:['Plans for your next farm discussion','Keep the expected benefits, costs and unanswered questions together for local review.'],evidence:['Know what supports your decision','Separate NASA observations, model assumptions and the local checks still needed.']};
+const viewInfo={properties:['All properties','Every saved holding in this browser workspace, seeded from JSON on first run.'],voice:['Add property','Capture field details and outline the land — saved on this device.'],map:['Where could your water plan come under pressure?','Read regional rainfall and heat signals before choosing what to plant.'],planner:['Should you change your next crop rotation?','Start with your current crops. Check water limits, first-year costs and the local facts that could rule out a switch.'],observations:['Read the season before planning the next','Use past rainfall and heat to question the assumptions behind your crop choice.'],plans:['Plans for your next farm discussion','Keep the expected benefits, costs and unanswered questions together for local review.'],evidence:['Know what supports your decision','Separate NASA observations, model assumptions and the local checks still needed.']};
 
 function syncVoiceFields(next,{changed=[]}={}){
  for(const el of document.querySelectorAll('[data-live-field]')){
@@ -188,7 +188,50 @@ function ensureFieldMap(){
  }
  return fieldMap;
 }
-function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='voice'){renderVoiceStage();ensureFieldMap()?.show()}else if(fieldMap)fieldMap.hide?.();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
+function seedPlace(inputs){
+ return Object.values(LOCATION_PRESETS).find(p=>p.lat===inputs.lat&&p.lon===inputs.lon)?.name||`${Number(inputs.lat).toFixed(3)}°, ${Number(inputs.lon).toFixed(3)}°`;
+}
+function renderProperties(){
+ const grid=$('property-grid');
+ if(!grid)return;
+ const list=state.fields.filter(f=>f.draft?.inputs);
+ $('property-count').textContent=String(state.fields.length);
+ if(!list.length){
+  grid.innerHTML='<div class="empty-state panel"><span>⌂</span><h2>No properties yet</h2><p>Add field details or load the JSON seed on a fresh browser.</p></div>';
+  return;
+ }
+ grid.innerHTML=list.map(f=>{
+  const i=f.draft.inputs,b=f.draft.boundary;
+  const active=f.id===state.active;
+  return `<article class="property-card ${active?'is-active':''}" data-property-id="${esc(f.id)}">
+   <div class="property-top">
+     <h3>${esc(i.farm||'Unnamed property')}</h3>
+     <span class="property-badge">${active?'ACTIVE':'SAVED'}</span>
+   </div>
+   <div class="property-meta">
+     <span class="property-chip">${n(i.area)} ha</span>
+     <span class="property-chip">${esc(seedPlace(i))}</span>
+     <span class="property-chip">${esc(crops[i.summer]?.name||i.summer)} → ${esc(crops[i.winter]?.name||i.winter)}</span>
+     <span class="property-chip">${esc(i.soil)}</span>
+   </div>
+   <p class="property-summary">${esc(f.draft.summary||`${i.irrigation} mm irrigation · goal ${i.priority}.`)}</p>
+   <p class="property-boundary ${b?.length>=3?'':'missing'}">${b?.length>=3? `Land outline · ${b.length} corners` : 'No land outline yet'}</p>
+   <div class="property-footer">
+     <button type="button" class="primary" data-property-open="${esc(f.id)}">Open</button>
+     <button type="button" class="secondary" data-property-edit="${esc(f.id)}">Edit details</button>
+   </div>
+  </article>`;
+ }).join('');
+}
+function openProperty(id,edit=false){
+ const f=state.fields.find(x=>x.id===id);
+ if(!f)return;
+ if(state.active!==id){stash();requestId++;state.active=id;loadDraft(f.draft);persist();renderFields()}
+ renderProperties();
+ location.hash=edit?'voice':'planner';
+ toast(edit?'Opened property details.':'Property opened.');
+}
+function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='properties')renderProperties();if(view==='voice'){renderVoiceStage();ensureFieldMap()?.show()}else if(fieldMap)fieldMap.hide?.();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
 document.addEventListener('click',e=>{
  const add=e.target.closest('[data-add-plan]');
  if(add&&ready){
@@ -216,7 +259,7 @@ document.getElementById('voice')?.addEventListener('input',e=>{
  window.addEventListener('hashchange',route);
 function renderFields(){$('field-list').innerHTML=state.fields.map(f=>`<button class="field-item ${f.id===state.active?'active':''}" data-field="${esc(f.id)}" ${f.id===state.active?'aria-current="true"':''}><span class="field-square"></span><span>${esc(f.draft.inputs.farm||'Unnamed field')}<small>${n(f.draft.inputs.area)} ha</small></span><span class="field-indicator">${f.id===state.active?'●':''}</span></button>`).join('');$('plan-count').textContent=state.plans.length;}
 function loadDraft(d){fieldBoundary=Array.isArray(d.boundary)&&d.boundary.length>=3?d.boundary.map(p=>[...p]):null;localChecks=structuredClone(d.localChecks||{});economics={...defaultEconomics,...d.economics};setEconomicsInputs();const c=summarize(d.rawNASA,d.observations.year||2024);setInputs(d.inputs);raw=d.rawNASA;climate=c;observed={...d.observations.coordinates};source=d.observations.source;url=d.observations.url;fetchTime=d.observations.fetchedAt;year=d.observations.year||2024;customSequence=d.customSequence||null;selected=d.selected||'water';$('observation-year').value=year;$('fetch-status').textContent=`Loaded NASA observations at ${observed.lat}°, ${observed.lon}°. Coordinate changes require a refresh.`;draw();}
-$('field-list').onclick=e=>{const b=e.target.closest('[data-field]');if(!b||b.dataset.field===state.active)return;stash();requestId++;state.active=b.dataset.field;loadDraft(currentField().draft);persist();renderFields();$('field-list').querySelector(`[data-field="${state.active}"]`)?.focus();toast('Field workspace switched.')};
+$('field-list').onclick=e=>{const b=e.target.closest('[data-field]');if(!b||b.dataset.field===state.active)return;stash();requestId++;state.active=b.dataset.field;loadDraft(currentField().draft);persist();renderFields();renderProperties();$('field-list').querySelector(`[data-field="${state.active}"]`)?.focus();toast('Field workspace switched.')};
 const LOCATION_PRESETS={lahore:{name:'Lahore, Punjab, Pakistan',lat:31.5204,lon:74.3587},islamabad:{name:'Islamabad, Pakistan',lat:33.6844,lon:73.0479},faisalabad:{name:'Faisalabad, Punjab, Pakistan',lat:31.4504,lon:73.135},multan:{name:'Multan, Punjab, Pakistan',lat:30.1575,lon:71.5249},karachi:{name:'Karachi, Sindh, Pakistan',lat:24.8607,lon:67.0011},peshawar:{name:'Peshawar, Pakistan',lat:34.0151,lon:71.5249},quetta:{name:'Quetta, Pakistan',lat:30.1798,lon:66.975},rawalpindi:{name:'Rawalpindi, Punjab, Pakistan',lat:33.5651,lon:73.0169}};
 let fieldSetup={},fieldSetupVersion=0;
 function setupBusy(busy){fieldSetup.busy=busy;for(const el of $('new-field-form').querySelectorAll('input,select'))el.disabled=busy;$('field-setup-submit').disabled=busy;$('field-setup-submit').textContent=busy?'Retrieving location evidence…':'Save field & location'}
@@ -332,10 +375,12 @@ $('decision-form').onsubmit=e=>{e.preventDefault();if(!$('decision-form').report
 function planOutcomeLabel(p){const o=p.report.outcomeComparison;if(!o)return `${p.report.selectedRotation?.score??'—'} <small>model score</small>`;return `${n(Math.abs(o.demandReductionPct))}% <small>${o.demandReductionPct>=0?'lower':'higher'} demand · modelled</small>`}
 function renderPlans(){const q=$('plan-search').value.trim().toLowerCase(),plans=state.plans.filter(p=>`${p.name} ${p.notes} ${p.report.inputs.farm}`.toLowerCase().includes(q));$('saved-plans').innerHTML=plans.length?plans.map(p=>`<article class="saved-plan panel"><div class="saved-plan-header"><div><span class="review-badge">FOR LOCAL REVIEW</span><h3>${esc(p.name)}</h3><p class="caption">${esc(p.report.inputs.farm)} · ${new Date(p.createdAt).toLocaleDateString()} · ${p.report.observations.year} NASA baseline</p></div><span class="score-pill leading">${planOutcomeLabel(p)}</span></div><div class="saved-sequence">${(p.report.selectedRotation?.sequence||[]).map(c=>esc(crops[c]?.name||c)).join('<span>→</span>')}</div><p>${esc(p.notes||'Add buyer, seed and planting-window checks before committing.')}</p><div class="saved-plan-footer"><span class="caption">Rainfall −${p.report.inputs.dry}% · Temperature +${p.report.inputs.heat}°C</span><div><button class="secondary" data-plan-export="${esc(p.id)}">Export</button><button class="secondary" data-plan-restore="${esc(p.id)}">Open snapshot</button><button class="icon-button delete-button" data-plan-delete="${esc(p.id)}" aria-label="Delete ${esc(p.name)}">×</button></div></div></article>`).join(''):`<div class="empty-state panel"><span>▤</span><h2>${q?'No matching decisions':'A plan worth discussing starts with your field'}</h2><p>${q?'Try a different name or planning note.':'Weigh water demand, switching costs and local checks, then keep an option here for review.'}</p>${q?'':'<a href="#planner" class="primary">Open rotation workspace ↗</a>'}</div>`}
 $('plan-search').oninput=renderPlans;
+$('properties-export')&&($('properties-export').onclick=()=>{try{download({version:2,exportedAt:new Date().toISOString(),active:state.active,fields:state.fields,plans:state.plans},'fasalpath-properties.json')}catch(e){toast(e.message)}});
+$('add-field-from-properties')&&($('add-field-from-properties').onclick=()=>{$('add-field').click()});
 $('saved-plans').onclick=e=>{const b=e.target.closest('button');if(!b)return;const pid=b.dataset.planExport||b.dataset.planRestore||b.dataset.planDelete,p=state.plans.find(p=>p.id===pid);if(!p)return;if(b.dataset.planExport){download(p.report,`fasalpath-decision-${p.id}.json`);return}if(b.dataset.planRestore){stash();let field=state.fields.find(f=>f.id===p.report.fieldId);if(!field){field={id:id(),draft:null};state.fields.push(field)}state.active=field.id;requestId++;loadDraft(p.report);stash();location.hash='planner';toast('Decision snapshot opened as the current draft.');return}const index=state.plans.indexOf(p);state.plans.splice(index,1);if(!persist()){state.plans.splice(index,0,p);return}renderPlans();renderFields();toast('Decision removed.',()=>{state.plans.splice(index,0,p);persist();renderPlans();renderFields()})};
 function download(data,name){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000)}
 $('export').onclick=()=>{try{download(report(),'fasalpath-plan.json')}catch(e){toast(e.message)}};$('print').onclick=()=>{try{report();window.print()}catch(e){toast(e.message)}};
-const actions=[['Add property','Field details, voice input and land outline','voice'],['Check regional water pressure','Inspect rainfall and heat on the map','map'],['Plan your next rotation','Weigh water demand and switching costs','planner'],['Read seasonal conditions','Question your rainfall assumptions','observations'],['Saved decisions','Revisit plans for local review','plans'],['Model & sources','Review model assumptions','evidence'],['Add a field','Create another planning context','add'],['Save a decision','Keep the selected rotation','save'],['Switch appearance','Toggle light or dark theme','theme']];
+const actions=[['All properties','Browse land holdings on this device','properties'],['Add property','Field details, voice input and land outline','voice'],['Check regional water pressure','Inspect rainfall and heat on the map','map'],['Plan your next rotation','Weigh water demand and switching costs','planner'],['Read seasonal conditions','Question your rainfall assumptions','observations'],['Saved decisions','Revisit plans for local review','plans'],['Model & sources','Review model assumptions','evidence'],['Add a field','Create another planning context','add'],['Save a decision','Keep the selected rotation','save'],['Switch appearance','Toggle light or dark theme','theme']];
 function renderCommands(){const q=$('command-search').value.toLowerCase(),filtered=actions.filter(a=>`${a.join(' ')} ${a.slice(0,2).map(text=>locale?.translate(text)||text).join(' ')}`.toLowerCase().includes(q));$('command-results').innerHTML=filtered.length?filtered.map(a=>`<button data-command="${a[2]}"><span>${a[0]}<small>${a[1]}</small></span><span>↗</span></button>`).join(''):'<p class="caption command-hint">No matching actions. Try “field” or “observations”.</p>'}
 function openCommands(keyboard=false){$('command-search').value='';renderCommands();openDialog('command-dialog',keyboard);$('command-search').focus()}
 $('command-trigger').onclick=()=>openCommands();$('command-search').oninput=renderCommands;$('command-search').onkeydown=e=>{if(e.key==='ArrowDown'){e.preventDefault();$('command-results').querySelector('button')?.focus()}if(e.key==='Enter')$('command-results').querySelector('button')?.click()};
@@ -347,8 +392,32 @@ try{applyTheme(localStorage.getItem('fieldshift-theme')||'light')}catch{applyThe
 $('theme-toggle').onclick=()=>{const theme=document.documentElement.dataset.theme==='dark'?'light':'dark';applyTheme(theme);try{localStorage.setItem('fieldshift-theme',theme)}catch{}};
 async function init(){try{const response=await fetch('data/power-lahore.json');if(!response.ok)throw Error('Bundled NASA observations could not load');exampleRaw=await response.json();summarize(exampleRaw);let restored=false;
  try{const saved=JSON.parse(localStorage.getItem(KEY)||'null');if(saved?.version===2&&Array.isArray(saved.fields)&&saved.fields.length&&Array.isArray(saved.plans)){for(const f of saved.fields){summarize(f.draft.rawNASA,f.draft.observations.year);if(!f.draft.inputs||!f.draft.observations.coordinates)throw Error('Invalid draft')}if(!saved.fields.some(f=>f.id===saved.active))saved.active=saved.fields[0].id;state=saved;restored=true}}catch{toast('Could not restore workspace. The NASA example is available; export new work to keep a backup.')}
- if(!restored){let draft=bundledDraft();try{const old=JSON.parse(localStorage.getItem('fieldshift-plan-v1')||'null');if(old?.rawNASA&&old?.inputs){summarize(old.rawNASA);draft={...draft,...old,observations:{...old.observations,year:2024}}}}catch{}state.fields=[{id:'field-1',draft}];state.active='field-1'}
- ready=true;$('export').disabled=false;loadDraft(currentField().draft);renderFields();renderPlans();route();$('app-loading').hidden=true;
+ if(!restored){
+  const legacyRaw=localStorage.getItem('fieldshift-plan-v1');
+  let seeded=false;
+  try{
+   if(legacyRaw) throw Error('prefer legacy');
+   const seedRes=await fetch('data/properties-seed.json');
+   if(seedRes.ok){
+    const seed=await seedRes.json();
+    if(Array.isArray(seed.properties)&&seed.properties.length){
+     state={version:2,active:seed.properties[0].id,fields:seed.properties.map(p=>({id:p.id,draft:{
+      inputs:{...defaults,...p.inputs},
+      rawNASA:exampleRaw,
+      observations:{source:'saved NASA snapshot',url:api(p.inputs.lat,p.inputs.lon),fetchedAt:'2026-11-14',coordinates:{lat:Number(p.inputs.lat),lon:Number(p.inputs.lon)},year:2024},
+      customSequence:null,selected:'water',
+      boundary:Array.isArray(p.boundary)?p.boundary:null,
+      summary:p.summary||''
+     }})),plans:[]};
+     state.fields.forEach(f=>summarize(f.draft.rawNASA,2024));
+     seeded=true;
+    }
+   }
+  }catch{seeded=false}
+  if(!seeded){
+   let draft=bundledDraft();try{const old=JSON.parse(localStorage.getItem('fieldshift-plan-v1')||'null');if(old?.rawNASA&&old?.inputs){summarize(old.rawNASA);draft={...draft,...old,observations:{...old.observations,year:2024}}}}catch{}state.fields=[{id:'field-1',draft}];state.active='field-1'}
+ }
+ ready=true;$('export').disabled=false;loadDraft(currentField().draft);renderFields();renderPlans();renderProperties();route();$('app-loading').hidden=true;
  voiceLive=createVoiceLive({document,
   deepgramKey:globalThis.__FIELDSHIFT_CONFIG?.deepgramKey||'',
   onLiveInputs:(next,meta)=>{
