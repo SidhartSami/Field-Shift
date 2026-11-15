@@ -1,5 +1,5 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
-import {parseUtterance,reduceInputs,hasFacts,createVoiceLive} from '../dist/voice-live.js';
+import {parseUtterance,reduceInputs,hasFacts,createVoiceLive,normalizeDigits} from '../dist/voice-live.js';
 import {polygonAreaHa} from '../dist/field-map.js';
 
 const base={farm:'Lahore example field',area:10,lat:31.5204,lon:74.3587,soil:'loam',organic:1.2,slope:2,irrigation:500,summer:'rice',winter:'wheat',priority:'balanced',ndvi:'',residue:true,dry:0,heat:0};
@@ -67,6 +67,18 @@ test('polygon area helper estimates hectares',()=>{
   const ha=polygonAreaHa(ring);
   assert.ok(ha>50&&ha<200,ha);
  });
+ test('Urdu phrases and Eastern digits fill English form facts',()=>{
+  assert.equal(normalizeDigits('۳۰'), '30');
+  assert.equal(parseUtterance('کھیت کا رقبہ 30 ہیکٹر ہے').area, 30);
+  assert.equal(parseUtterance('مٹی ریتلی ہے').soil, 'sand');
+  assert.equal(parseUtterance('مٹی چکنی ہے').soil, 'clay');
+  assert.equal(parseUtterance('آبپاشی 800').irrigation, 800);
+  assert.equal(parseUtterance('گرمیوں میں مکئی').summer, 'maize');
+  assert.equal(parseUtterance('سردیوں میں گندم').winter, 'wheat');
+  assert.equal(parseUtterance('لاہور میں میرا کھیت ہے').place.key, 'lahore');
+  assert.equal(parseUtterance('اسلام آباد میں کھیت').place.key, 'islamabad');
+  assert.equal(parseUtterance('پانی بچاؤ اہم ہے').priority, 'water');
+});
  test('hasFacts rejects empty or irrelevant speech',()=>{
  assert.equal(hasFacts(parseUtterance('')),false);
  assert.equal(hasFacts(parseUtterance('hello there')),false);

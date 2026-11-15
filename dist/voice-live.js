@@ -25,14 +25,148 @@ export const PLACE_MAP = {
  rawalpindi:{name:'Rawalpindi, Punjab, Pakistan',lat:33.5651,lon:73.0169},
 };
 
-const DG_BASE =
- 'wss://api.deepgram.com/v1/listen' +
- '?model=nova-3&language=en-US&encoding=linear16' +
- '&channels=1&interim_results=true&endpointing=true&smart_format=true';
+const DG_QUERY =
+ 'encoding=linear16&channels=1&interim_results=true&endpointing=true&smart_format=true';
+/** nova-3 multilingual (Urdu + English in one stream); en-US fallback if rejected. */
+const DG_BASE_ML =
+ 'wss://api.deepgram.com/v1/listen?model=nova-3&multilingual=true&' + DG_QUERY;
+const DG_BASE_EN =
+ 'wss://api.deepgram.com/v1/listen?model=nova-3&language=en-US&' + DG_QUERY;
+// legacy alias used by older call sites
+const DG_BASE = DG_BASE_ML;
+
+/** Eastern Arabic / Persian digits → ASCII so number patterns match. */
+export function normalizeDigits(input){
+ return String(input||'')
+  .replace(/[٠-٩]/g,d=>String(d.charCodeAt(0)-0x0660))
+  .replace(/[۰-۹]/g,d=>String(d.charCodeAt(0)-0x06F0));
+}
+
+export function hasUrduScript(text){
+ return /[؀-ۿ]/.test(String(text||''));
+}
+
+/** Urdu (and common Roman Urdu) vocabulary → form values. */
+export const URDU = {
+ soil:[
+  [/ریتلی|ریتل|ريتلی/, 'sand'],
+  [/چکنی|چکنا|چکنی مٹی/, 'clay'],
+  [/لوم|دو روکی|دومٹی/, 'loam'],
+ ],
+ summerCrop:[
+  [/مکئی|مکی| maize /i,'maize'],
+  [/چاول|دھان| rice /i,'rice'],
+  [/باجرہ| باجرا /i,'millet'],
+  [/مونگ|مونگ bean/i,'mung'],
+ ],
+ winterCrop:[
+  [/گندم| wheat /i,'wheat'],
+  [/چولی|چنا| chickpea /i,'chickpea'],
+  [/سرسوں|م스타رد| mustard /i,'mustard'],
+ ],
+ place:[
+  [/اسلام آباد|اسلام‌آباد/,'islamabad'],
+  [/لاہور|لاهور/,'lahore'],
+  [/فیصل آباد/,'faisalabad'],
+  [/ملتان/,'multan'],
+  [/کراچی/,'karachi'],
+  [/پشاور/,'peshawar'],
+  [/کوئٹہ|کویٹہ/,'quetta'],
+  [/راولپنڈی/,'rawalpindi'],
+ ],
+ priority:[
+  [/پانی بچاؤ|آب بچاؤ|water conservation/i,'water'],
+  [/مٹی کی حفاظت|مٹی کی حفاظتی|soil health/i,'soil'],
+  [/متوازن|balanced/i,'balanced'],
+ ],
+};
+
+
+/**
+ * Map Urdu / Roman-Urdu phrases onto English form facts.
+ * Runs on every parse (live + commit); safe no-ops for pure English.
+ */
+export function applyUrduFacts(facts, original){
+ const t=String(original||'');
+ // digits already normalized by caller
+ const pick=(list)=>{
+  for(const [re,val] of list) if(re.test(t)) return val;
+  return null;
+ };
+ if(!facts.place){
+  const p=pick(URDU.place);
+  if(p)facts.place={...PLACE_MAP[p],key:p};
+ }
+ if(!facts.soil){
+  const soil=pick(URDU.soil);
+  if(soil)facts.soil=soil;
+ }
+ // Season-scoped Urdu crops: prefer گرمیوں/سردیوں windows
+ const summerIdx=t.search(/گرمی|گرمیوں|موادِ کھلی|سرمایی/);
+ const winterIdx=t.search(/سردی|سردیوں|خزاں|ربیع/);
+ const findCrop=(list)=>{
+  let best=null;
+  for(const [re,val] of list){
+   const i=t.search(re);
+   if(i<0)continue;
+   if(!best||i<best.i)best={i,val};
+  }
+  return best;
+ };
+ const sC=findCrop(URDU.summerCrop);
+ const wC=findCrop(URDU.winterCrop);
+ // If only one crop family mentioned with a season word, assign accordingly
+ if(sC&&wC){
+  if(summerIdx>=0&&winterIdx>=0){
+   if(sC.i>=summerIdx&&sC.i<=winterIdx+80)facts.summer=sC.val;
+   if(wC.i>=winterIdx)facts.winter=wC.val;
+   // fallback: closer window wins
+   if(Math.abs(sC.i-summerIdx)<Math.abs(sC.i-winterIdx))facts.summer=sC.val;else facts.winter=wC.val;
+  }else{
+   facts.summer=sC.val;facts.winter=wC.val;
+  }
+ }else if(sC){
+  if(summerIdx>=0&&sC.i>=summerIdx-20)facts.summer=sC.val;
+  else if(!facts.summer&&winterIdx<0)facts.summer=sC.val;
+ }else if(wC){
+  if(winterIdx>=0&&wC.i>=winterIdx-20)facts.winter=wC.val;
+  else if(!facts.winter&&summerIdx<0)facts.winter=wC.val;
+ }
+ // Number phrases: رقبہ/کھیت … number, آبپاشی … number, گرمی … number
+ const numAfter=(...keywords)=>{
+  for(const kw of keywords){
+   const re=new RegExp(kw+'[^0-9\u0660-\u0669\u06F0-\u06F9]{0,20}([0-9]+(?:\.[0-9]+)?)','i');
+   const m=t.match(re);
+   if(m)return Number(m[1]);
+  }
+  return null;
+ };
+ if(!Number.isFinite(facts.area)){
+  const a=numAfter('رقبہ','کھیت کا رقبہ','میدان','area');
+  if(a!==null&&a>0){
+   facts.area=a;
+   if(/ہیکٹر|ہیکٹر|hectare|ہیک/.test(t))facts.areaUnit='hectares';
+   else if(/ایکڑ|acre/.test(t))facts.areaUnit='acres';
+  }
+ }
+ if(!Number.isFinite(facts.irrigation)){
+  const v=numAfter('آبپاشی','آب پاشی','پانی','irrigation');
+  if(v!==null&&v>=0)facts.irrigation=v;
+ }
+ if(!Number.isFinite(facts.heat)){
+  const v=numAfter('گرمی','حرارت');
+  if(v!==null&&v>=0)facts.heat=v;
+ }
+ if(!facts.priority){
+  const pr=pick(URDU.priority);
+  if(pr)facts.priority=pr;
+ }
+ return facts;
+}
 
 /** Facts extracted from one utterance (or live partial). Pure. */
 export function parseUtterance(raw){
- const original=String(raw||'');
+ const original=normalizeDigits(String(raw||''));
  const text=original.toLowerCase().replace(/[’']/g,"'");
  const facts={
   farm:null,area:null,areaUnit:null,soil:null,organic:null,slope:null,irrigation:null,
@@ -85,6 +219,7 @@ export function parseUtterance(raw){
  for(const [word,key] of Object.entries(PRIORITY_MAP))if(new RegExp(`\\b(?:priority|goal|weight|focus)\\s*(?:is\\s*)?(?:a\\s+)?${word}\\b|\\b${word}\\s+(?:priority|goal|weights?)\\b`).test(text)){facts.priority=key;break}
  if(/\b(?:retain|keep|leave|with)\s+(?:the\s+)?(?:crop\s+)?residue\b|\bresidue\s+(?:on|retained|kept)\b/.test(text))facts.residue=true;
  if(/\b(?:no|drop|remove|without|turn off|clear)\s+(?:the\s+)?(?:crop\s+)?residue\b|\bresidue\s+(?:off|removed|cleared)\b/.test(text))facts.residue=false;
+ applyUrduFacts(facts,original);
  return postProcessFacts(facts,text,original);
 }
 
@@ -256,14 +391,20 @@ export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Reco
   const AudioCtx=win.AudioContext||win.webkitAudioContext;
   ctx=new AudioCtx({sampleRate:16000});
   await ctx.audioWorklet.addModule(new URL('./pcm-worklet.js',import.meta.url).href);
-  const open=new Promise((resolve,reject)=>{
-   const socket=new WebSocket(`${DG_BASE}&sample_rate=${ctx.sampleRate}`,['token',key]);
+  const openStream=base=>new Promise((resolve,reject)=>{
+   const socket=new WebSocket(`${base}&sample_rate=${ctx.sampleRate}`,['token',key]);
    ws=socket;
    const timer=setTimeout(()=>reject(new Error('Deepgram connection timeout')),10000);
-   socket.onopen=()=>{clearTimeout(timer);resolve()};
-   socket.onerror=()=>{clearTimeout(timer);reject(new Error('Deepgram WebSocket error — check API key / network'))};
+   socket.onopen=()=>{clearTimeout(timer);resolve(socket)};
+   socket.onerror=()=>{clearTimeout(timer);socket.close();reject(new Error('Deepgram WebSocket error — check API key / network'))};
   });
-  await open;
+  try{
+   await openStream(DG_BASE_ML);
+  }catch(mlErr){
+   ws=null;
+   try{await openStream(DG_BASE_EN)}
+   catch(enErr){throw enErr||mlErr}
+  }
   ws.onmessage=ev=>{if(typeof ev.data==='string')handleDeepgramMessage(ev.data)};
   ws.onclose=()=>{
    if(ws===null)return;
