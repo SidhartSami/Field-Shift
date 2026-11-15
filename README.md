@@ -61,7 +61,7 @@ The whole model is plain ES modules in `dist/engine/`. No dependencies, no build
 
 **Field** — zero input. Pick a field and the profile is already there: soil texture, 34 years of record, a memory strip showing which years the monsoon failed, and a one-sentence thesis. NASA GIBS layers (MODIS true colour, SMAP soil moisture, IMERG rainfall, GRACE-FO water storage) with a caption explaining what each one is and is not.
 
-**Rotation Lab** — the search. A Pareto plot over four objectives, a six-card shortlist with role labels ("most reliable", "best downside margin", "least water"), a supply curve showing the water supply at which each rotation becomes safe, and the 2050 stress test. It also takes a sentence: `irrigation 400, keep residue, drier by 30`.
+**Rotation Lab** — the search. A Pareto plot over four objectives, a six-card shortlist with role labels ("most reliable", "best downside margin", "least water"), a supply curve showing the water supply at which each rotation becomes safe, and the 2050 stress test. It also takes a sentence — typed, or spoken into the mic beside the box: `irrigation 400, keep residue, drier by 30`.
 
 **Decision** — the brief. 85% reliability, 28 of 33 years within budget, the requirement strip with the failing years in red, what to do in a failure year, the fallback trigger, and what would change our mind.
 
@@ -153,9 +153,16 @@ woff2 files under `dist/assets/fonts/` and are preloaded on the landing page.
 
 ### Voice input
 
-The Describe panel accepts typed or spoken English and Urdu. Streaming speech-to-text uses Deepgram
-nova-3 over WebSocket when `DEEPGRAM_API_KEY` is set in the environment; without it the app falls back
-to the browser's own `SpeechRecognition`, so the feature degrades rather than breaks.
+The Describe panel accepts typed or spoken English and Urdu. Press **Speak** beside the box and the
+sentence appears in it as you talk, then runs through the same parser and the same controls as typing —
+one code path, so a spoken constraint and a typed one cannot disagree.
+
+Streaming speech-to-text is Deepgram nova-3 over WebSocket, captured through an AudioWorklet at 16 kHz.
+The key never ships in the bundle: `api/config.js` is a Vercel function that hands it to the page at
+runtime, `Cache-Control: no-store`, on first press of the mic. Without a key the button falls back to the
+browser's own `SpeechRecognition`, so the feature degrades rather than breaks. The key is scoped to
+`listen` only — it cannot mint tokens, which is why it is delivered to the client rather than exchanged
+for a short-lived one.
 
 ## Architecture
 
@@ -186,9 +193,12 @@ dist/
     charts.js         memory strip, Pareto plot, supply curve, requirement strip
     format.js         every user-facing number goes through here
     describe.js       maps parsed facts onto the Rotation Lab controls
+    landscape.js      the 34-year record as an orbitable 3D landscape, canvas 2D
   assets/shots/       four real captures of app.html, used by the landing page
   data/fields/        5 field bundles, 1991–2024 daily NASA POWER + SoilGrids
   vendor/leaflet/     Leaflet 1.9.4
+api/
+  config.js           Vercel function: hands the Deepgram key to the page at runtime
 pipeline/
   fetch_fields.py     rebuilds data/fields from NASA POWER, MODIS, SoilGrids
 scripts/serve.mjs     Node static server, serves /runtime-config.js from .env
@@ -203,7 +213,15 @@ The Rotation Lab takes a sentence as well as a slider:
 irrigation 400, keep residue, drier by 30
 ```
 
-`dist/voice-live.js` parses it — English or Urdu, Eastern digits, phrasing like "irrigation would be 800" or "not Lahore but Islamabad" — and `dist/ui/describe.js` maps the facts that apply onto the Lab controls. Facts the Lab cannot act on are named in the readout rather than dropped: *"Not used here: soil texture, field area, location."* The streaming voice path is in the tree and tested but not mounted; see [`docs/MERGE.md`](docs/MERGE.md).
+`dist/voice-live.js` parses it — English or Urdu, Eastern digits, phrasing like "irrigation would be 800" or "not Lahore but Islamabad" — and `dist/ui/describe.js` maps the facts that apply onto the Lab controls. Facts the Lab cannot act on are named in the readout rather than dropped: *"Not used here: soil texture, field area, location."* The same parser receives the transcript from the mic, so speech and typing are one path, not two.
+
+## The record, in three dimensions
+
+The landing page's fifth section is the whole argument in one object: **33 columns, one per year, standing on the ground at that year's irrigation requirement, under a dashed sheet at the 900 mm a farmer can deliver.** A column that breaks the sheet is a year the rotation fails. Drag to orbit.
+
+Switch to cotton–chickpea and the same 33 years, the same sheet, the same weather drop below it — 6 failures instead of 20. Nothing about the climate changed between the two pictures; only what was planted.
+
+It is hand-rolled canvas 2D — a perspective projection, painter's algorithm, back-face culling by projected winding, flat shading per face — in `dist/ui/landscape.js`. No WebGL, no three.js, no library. It is the year strip given depth, which is why it earns its place: the number the product is built on becomes something you can walk around.
 
 ## Tests
 

@@ -12,7 +12,7 @@ import { evaluateRotation, buildSeasonCache, usableYears } from './engine/evalua
 import { CROPS } from './engine/crops.js';
 import { textureClass } from './engine/soil.js';
 import { memoryStrip, memoryAxis, paretoPlot, supplyCurve, requirementStrip } from './ui/charts.js';
-import { parseUtterance, hasFacts } from './voice-live.js';
+import { parseUtterance, hasFacts, createVoiceLive } from './voice-live.js';
 import { applyDescription, describeSummary } from './ui/describe.js';
 import {
   num, pct, money, signed, cropName, rotationLabel, chip, escapeHtml,
@@ -86,6 +86,7 @@ function bindChrome() {
     if (e.key === 'Enter') { e.preventDefault(); applyDescribe(); }
   });
   $('#describe').addEventListener('change', applyDescribe);
+  $('#voice-live-toggle').addEventListener('click', () => void toggleVoice());
   $('#print-btn').addEventListener('click', () => window.print());
   $('#save-btn').addEventListener('click', savePlan);
   $('#date-prev').addEventListener('click', () => stepDate(-1));
@@ -131,6 +132,62 @@ function applyDescribe() {
   read.innerHTML = escapeHtml(describeSummary(result));
   recompute();
   renderLab();
+}
+
+/* ── live voice ──────────────────────────────────────────────── */
+
+/**
+ * The Deepgram key comes from /api/config at first press, not at load: a
+ * visitor who never touches the mic never fetches it, and a deploy without the
+ * variable still works through the browser's own SpeechRecognition.
+ */
+let voice = null;
+let voiceKey = null;
+
+async function ensureVoice() {
+  if (voice) return voice;
+  if (voiceKey === null) {
+    voiceKey = '';
+    try {
+      const res = await fetch('api/config', { headers: { accept: 'application/json' } });
+      if (res.ok) voiceKey = String((await res.json()).deepgramKey || '');
+    } catch {
+      voiceKey = '';
+    }
+  }
+  voice = createVoiceLive({
+    document,
+    deepgramKey: voiceKey,
+    onCommit: applySpoken,
+    onError: (message) => {
+      const read = $('#describe-read');
+      read.hidden = false;
+      read.textContent = message;
+    },
+  });
+  return voice;
+}
+
+/**
+ * A committed phrase goes through the same parser and the same mapper as the
+ * typed box, so speaking and typing cannot drift apart.
+ */
+function applySpoken() {
+  const said = voice?.state()?.lastUtterance || '';
+  if (!said) return;
+  $('#describe').value = said;
+  applyDescribe();
+}
+
+async function toggleVoice() {
+  const button = $('#voice-live-toggle');
+  button.disabled = true;
+  try {
+    const instance = await ensureVoice();
+    instance.toggle();
+  } finally {
+    button.disabled = false;
+  }
 }
 
 /* ── data ─────────────────────────────────────────────────── */

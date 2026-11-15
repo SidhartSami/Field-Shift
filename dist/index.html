@@ -29,18 +29,18 @@
     display: flex; flex-direction: column; gap: 3px;
   }
   .lnav .brand-text em {
-    font: 400 8.5px/1 var(--sans); letter-spacing: 0;
+    font: 400 12px/1.35 var(--sans); letter-spacing: 0;
  color: var(--muted); font-style: normal;
   }
   .lnav nav { display: flex; gap: 22px; margin-left: auto; }
   .lnav nav a {
-    font: 500 11px/1 var(--sans); letter-spacing: 0;
+    font: 500 12.5px/1.35 var(--sans); letter-spacing: 0;
     color: var(--muted); text-decoration: none; padding: 6px 0;
     border-bottom: 1px solid transparent; transition: color .2s, border-color .2s;
   }
   .lnav nav a:hover { color: var(--ink); border-bottom-color: var(--ink); }
   .lnav .cta {
-    font: 500 11px/1 var(--sans); letter-spacing: 0;
+    font: 500 12.5px/1.35 var(--sans); letter-spacing: 0;
     text-decoration: none; padding: 11px 18px; border-radius: 3px;
     background: var(--ink); color: var(--paper); white-space: nowrap;
     transition: background .2s;
@@ -50,7 +50,7 @@
   @media (max-width: 560px) {
     .lnav { gap: 12px; padding: 12px 16px; }
     .lnav .brand-text em { display: none; }
-    .lnav .cta { padding: 10px 13px; font-size: 10px; letter-spacing: 0; }
+    .lnav .cta { padding: 10px 13px; font-size: 12px; letter-spacing: 0; }
   }
 
   .wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px); }
@@ -63,7 +63,7 @@
 
   .sec-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 34px; }
   .sec-num {
-    font: 500 10px/1 var(--sans); letter-spacing: 0; color: var(--muted);
+    font: 500 12px/1.35 var(--sans); letter-spacing: 0; color: var(--muted);
     padding-top: 4px; flex: none;
   }
   .band.dark .sec-num { color: rgba(232, 227, 214, .35); }
@@ -104,7 +104,7 @@
   }
   .stat-strip div { background: var(--paper); padding: 20px 22px; display: flex; flex-direction: column; gap: 7px; }
   .stat-strip b { font: 500 clamp(24px, 2.8vw, 34px)/1 var(--display); letter-spacing: -.02em; }
-  .stat-strip span { font: 500 9.5px/1.4 var(--sans); letter-spacing: 0; color: var(--muted); }
+  .stat-strip span { font: 500 12px/1.4 var(--sans); letter-spacing: 0; color: var(--muted); }
   @media (max-width: 560px) {
     .stat-strip { grid-template-columns: repeat(2, 1fr); }
     .stat-strip div:last-child { grid-column: span 2; }
@@ -126,7 +126,7 @@
   .frame-bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); display: block; }
   .band.dark .frame-bar i { background: #33403a; }
   .frame-bar span {
-    margin-left: 8px; font: 400 10px/1 var(--sans); letter-spacing: 0; color: var(--muted);
+    margin-left: 8px; font: 400 12px/1.35 var(--sans); letter-spacing: 0; color: var(--muted);
   }
   .frame img { display: block; width: 100%; height: auto; }
 
@@ -136,7 +136,7 @@
     letter-spacing: -.035em; color: #e8a06a; margin: 8px 0 4px;
   }
   .huge-label {
-    font: 500 10.5px/1.6 var(--sans); letter-spacing: 0;
+    font: 500 12px/1.6 var(--sans); letter-spacing: 0;
     color: rgba(232, 227, 214, .5); margin-bottom: 30px; max-width: 46ch;
   }
 
@@ -148,7 +148,7 @@
   .compare > div { background: var(--deep-2); padding: clamp(22px, 3vw, 34px); }
   .compare > div:first-child { border-right: 1px solid #26302a; }
   .compare h3 {
-    font: 500 9.5px/1 var(--sans); letter-spacing: 0;
+    font: 500 12px/1.35 var(--sans); letter-spacing: 0;
     color: rgba(232, 227, 214, .45); margin-bottom: 16px;
   }
   .compare .val { font: 500 clamp(34px, 4.4vw, 52px)/1 var(--display); letter-spacing: -.02em; margin-bottom: 5px; }
@@ -170,7 +170,7 @@
     font: 500 clamp(22px, 2.6vw, 32px)/1.1 var(--sans); letter-spacing: -.02em;
   }
   .surface-head .tag {
-    font: 500 9px/1 var(--sans); letter-spacing: 0;
+    font: 500 12px/1.35 var(--sans); letter-spacing: 0;
     color: var(--water); border: 1px solid var(--water-soft); background: var(--water-soft);
     padding: 5px 9px; border-radius: 2px;
   }
@@ -186,11 +186,45 @@
   .sources p { font-size: 13px; line-height: 1.6; color: var(--muted); }
   .sources .chip { align-self: flex-start; }
 
+  /* ── the landscape ─────────────────────────────────────────── */
+  .landscape-controls { display: flex; gap: 8px; margin: 30px 0 16px; flex-wrap: wrap; }
+  .landscape-tab {
+    border: 1px solid var(--rule); background: var(--paper); color: var(--ink-2);
+    padding: 9px 14px; border-radius: 6px; cursor: pointer;
+    font: 500 13px var(--sans); display: inline-flex; align-items: baseline; gap: 8px;
+    transition: border-color 120ms ease, color 120ms ease, background 120ms ease;
+  }
+  .landscape-tab .num { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .landscape-tab:active { transform: scale(.98); }
+  .landscape-tab.is-on { border-color: var(--ink); color: var(--ink); background: var(--paper-2); }
+  .landscape-tab.is-on .num { color: var(--ink); }
+  @media (hover: hover) and (pointer: fine) {
+    .landscape-tab:not(.is-on):hover { border-color: var(--ink-2); color: var(--ink); }
+  }
+
+  .landscape-figure { margin: 0; }
+  .landscape-figure canvas {
+    display: block; width: 100%; height: clamp(320px, 46vw, 520px);
+    border: 1px solid var(--rule); border-radius: 6px; background: var(--paper-2);
+    cursor: grab; touch-action: none;
+  }
+  .landscape-figure canvas.is-dragging { cursor: grabbing; }
+  .landscape-figure figcaption {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 20px;
+    margin-top: 14px; font: 400 12.5px var(--sans); color: var(--muted);
+  }
+  .landscape-key { display: inline-flex; align-items: center; gap: 7px; }
+  .landscape-key i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .key-ok { background: #0f6b5c; }
+  .key-fail { background: #a33a2a; }
+  .key-sheet { background: transparent; border-top: 1px dashed rgba(20,26,23,.55); height: 0 !important; width: 14px !important; border-radius: 0 !important; }
+  .landscape-hint { margin-left: auto; }
+
   /* ── proof ─────────────────────────────────────────────────── */
   .proof { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: clamp(24px, 3vw, 40px); margin: 34px 0 0; }
   .proof div { display: flex; flex-direction: column; gap: 8px; }
   .proof b { font: 500 clamp(30px, 3.6vw, 46px)/1 var(--display); letter-spacing: -.02em; }
-  .proof span { font: 500 10px/1.5 var(--sans); letter-spacing: 0; color: var(--muted); }
+  .proof span { font: 500 12px/1.5 var(--sans); letter-spacing: 0; color: var(--muted); }
 
   /* ── audience ──────────────────────────────────────────────── */
   .who { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
@@ -217,7 +251,7 @@
     padding: 40px clamp(20px, 4vw, 56px) 56px;
     display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;
     justify-content: space-between;
-    font: 400 11.5px/1.8 var(--sans); color: var(--muted);
+    font: 400 12.5px/1.8 var(--sans); color: var(--muted);
   }
   .lfoot p { max-width: 62ch; }
   .lfoot a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--rule); }
@@ -456,10 +490,49 @@
     </div>
   </section>
 
+  <!-- ── the record as a landscape ────────────────────────────── -->
+  <section class="band" id="record">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">05</span><p class="eyebrow">The record, in three dimensions</p></div>
+      <h2 class="big">Thirty-three years, one column each. The sheet is the water you have.</h2>
+      <p class="lede">
+        Every column is a year of the record, standing on the ground at its actual irrigation
+        requirement. The dashed sheet floats at the 900 mm a farmer can deliver. A column that
+        breaks the sheet is a year the rotation fails. Drag it.
+      </p>
+
+      <div class="landscape-controls" role="group" aria-label="Choose a rotation">
+        <button type="button" class="landscape-tab is-on" data-rotation="baseline" aria-pressed="true">
+          Rice–Wheat <span class="num">39%</span>
+        </button>
+        <button type="button" class="landscape-tab" data-rotation="recommended" aria-pressed="false">
+          Cotton–Chickpea <span class="num">82%</span>
+        </button>
+      </div>
+
+      <figure class="landscape-figure">
+        <canvas id="landscape" role="img"
+                aria-label="Thirty-three years of irrigation requirement drawn as columns, with the 900 millimetre supply level as a dashed sheet. Twenty of thirty-three columns break the sheet for rice-wheat."></canvas>
+        <figcaption>
+          <span class="landscape-key"><i class="key-ok"></i>within budget</span>
+          <span class="landscape-key"><i class="key-fail"></i>over budget</span>
+          <span class="landscape-key"><i class="key-sheet"></i>supply, 900 mm</span>
+          <span class="landscape-hint">Drag to rotate</span>
+        </figcaption>
+      </figure>
+
+      <p class="lede" style="margin-top:26px">
+        The same field, the same thirty-three years, the same sheet. Rice–wheat breaks it in
+        <strong>20 of 33</strong>. Cotton–chickpea breaks it in <strong>6</strong>. Nothing about the
+        weather changed between those two pictures — only what was planted.
+      </p>
+    </div>
+  </section>
+
   <!-- ── the data ─────────────────────────────────────────────── -->
   <section class="band" id="data">
     <div class="wrap">
-      <div class="sec-head"><span class="sec-num">05</span><p class="eyebrow">The data</p></div>
+      <div class="sec-head"><span class="sec-num">06</span><p class="eyebrow">The data</p></div>
       <h2 class="big">Six NASA products, one <em>33-year</em> record.</h2>
       <p class="lede" style="margin-bottom:clamp(32px,4vw,48px)">
         The failure rate is only meaningful because the record is long. Thirty-three years is what
@@ -505,7 +578,7 @@
   <!-- ── the honesty ──────────────────────────────────────────── -->
   <section class="band" id="honesty">
     <div class="wrap">
-      <div class="sec-head"><span class="sec-num">06</span><p class="eyebrow">The honesty</p></div>
+      <div class="sec-head"><span class="sec-num">07</span><p class="eyebrow">The honesty</p></div>
       <h2 class="big">We tested our own model, and we published the result.</h2>
 
       <div class="proof">
@@ -533,7 +606,7 @@
   <!-- ── who it is for ────────────────────────────────────────── -->
   <section class="band" id="who">
     <div class="wrap">
-      <div class="sec-head"><span class="sec-num">07</span><p class="eyebrow">Who it is for</p></div>
+      <div class="sec-head"><span class="sec-num">08</span><p class="eyebrow">Who it is for</p></div>
       <h2 class="big">Built for the people who have to decide <em>before</em> the season.</h2>
 
       <div class="who">
@@ -598,5 +671,26 @@
   </div>
 </footer>
 
+<script type="module">
+  import { landscape } from './ui/landscape.js';
+  const data = {"supply":900,"baseline":{"label":"Rice\u2013Wheat","reliability":0.3939393939393939,"years":[{"year":1991,"requirement":1105,"ok":false},{"year":1992,"requirement":943,"ok":false},{"year":1993,"requirement":1118,"ok":false},{"year":1994,"requirement":916,"ok":false},{"year":1995,"requirement":998,"ok":false},{"year":1996,"requirement":983,"ok":false},{"year":1997,"requirement":1179,"ok":false},{"year":1998,"requirement":1123,"ok":false},{"year":1999,"requirement":1211,"ok":false},{"year":2000,"requirement":1298,"ok":false},{"year":2001,"requirement":988,"ok":false},{"year":2002,"requirement":976,"ok":false},{"year":2003,"requirement":905,"ok":false},{"year":2004,"requirement":858,"ok":true},{"year":2005,"requirement":980,"ok":false},{"year":2006,"requirement":644,"ok":true},{"year":2007,"requirement":904,"ok":false},{"year":2008,"requirement":849,"ok":true},{"year":2009,"requirement":1172,"ok":false},{"year":2010,"requirement":895,"ok":true},{"year":2011,"requirement":808,"ok":true},{"year":2012,"requirement":974,"ok":false},{"year":2013,"requirement":904,"ok":false},{"year":2014,"requirement":888,"ok":true},{"year":2015,"requirement":982,"ok":false},{"year":2016,"requirement":888,"ok":true},{"year":2017,"requirement":911,"ok":false},{"year":2018,"requirement":855,"ok":true},{"year":2019,"requirement":722,"ok":true},{"year":2020,"requirement":692,"ok":true},{"year":2021,"requirement":736,"ok":true},{"year":2022,"requirement":755,"ok":true},{"year":2023,"requirement":780,"ok":true}]},"recommended":{"label":"Cotton\u2013Chickpea","reliability":0.8181818181818182,"years":[{"year":1991,"requirement":1058,"ok":false},{"year":1992,"requirement":497,"ok":true},{"year":1993,"requirement":1020,"ok":false},{"year":1994,"requirement":496,"ok":true},{"year":1995,"requirement":902,"ok":false},{"year":1996,"requirement":492,"ok":true},{"year":1997,"requirement":1083,"ok":false},{"year":1998,"requirement":698,"ok":true},{"year":1999,"requirement":1115,"ok":false},{"year":2000,"requirement":896,"ok":true},{"year":2001,"requirement":896,"ok":true},{"year":2002,"requirement":599,"ok":true},{"year":2003,"requirement":758,"ok":true},{"year":2004,"requirement":399,"ok":true},{"year":2005,"requirement":887,"ok":true},{"year":2006,"requirement":201,"ok":true},{"year":2007,"requirement":805,"ok":true},{"year":2008,"requirement":394,"ok":true},{"year":2009,"requirement":980,"ok":false},{"year":2010,"requirement":494,"ok":true},{"year":2011,"requirement":714,"ok":true},{"year":2012,"requirement":600,"ok":true},{"year":2013,"requirement":810,"ok":true},{"year":2014,"requirement":600,"ok":true},{"year":2015,"requirement":889,"ok":true},{"year":2016,"requirement":492,"ok":true},{"year":2017,"requirement":816,"ok":true},{"year":2018,"requirement":394,"ok":true},{"year":2019,"requirement":726,"ok":true},{"year":2020,"requirement":300,"ok":true},{"year":2021,"requirement":642,"ok":true},{"year":2022,"requirement":391,"ok":true},{"year":2023,"requirement":637,"ok":true}]}};
+  const canvas = document.getElementById('landscape');
+  const view = landscape(canvas, { years: data.baseline.years, supply: data.supply });
+  const tabs = [...document.querySelectorAll('.landscape-tab')];
+  for (const tab of tabs) {
+    tab.addEventListener('click', () => {
+      const key = tab.dataset.rotation;
+      view.setData({ years: data[key].years, supply: data.supply });
+      for (const other of tabs) {
+        const on = other === tab;
+        other.classList.toggle('is-on', on);
+        other.setAttribute('aria-pressed', String(on));
+      }
+      canvas.setAttribute('aria-label',
+        'Thirty-three years of irrigation requirement for ' + data[key].label +
+        ', with the ' + data.supply + ' millimetre supply level as a dashed sheet.');
+    });
+  }
+</script>
 </body>
 </html>

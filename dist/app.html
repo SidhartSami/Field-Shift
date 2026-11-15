@@ -126,13 +126,29 @@
         <input type="checkbox" id="future">
         <span>2050 stress test <em>+1.9 °C, −6% rain</em></span>
       </label>
-      <label class="control control-describe">
-        <span>Or describe it</span>
-        <input type="text" id="describe" autocomplete="off" spellcheck="false"
-               placeholder="irrigation 400, keep residue, drier by 30">
-      </label>
+      <div class="control control-describe">
+        <label for="describe">Or describe it</label>
+        <div class="describe-row">
+          <input type="text" id="describe" autocomplete="off" spellcheck="false"
+                 placeholder="irrigation 400, keep residue, drier by 30">
+          <button type="button" id="voice-live-toggle" class="mic-btn"
+                  aria-label="Start live voice" aria-pressed="false">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor"
+                 stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <rect x="9" y="2.5" width="6" height="11" rx="3"></rect>
+              <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"></path>
+            </svg>
+            <span>Speak</span>
+          </button>
+        </div>
+      </div>
     </div>
     <p class="describe-read" id="describe-read" hidden></p>
+    <div class="voice-live-bar" id="voice-live-bar" hidden>
+      <span class="voice-live-status" id="voice-live-status">Mic off</span>
+      <span class="voice-live-text" id="voice-live-text"></span>
+      <span class="voice-live-mode" id="voice-live-mode">IDLE</span>
+    </div>
 
     <div class="lab-grid">
       <figure class="pareto-wrap">
