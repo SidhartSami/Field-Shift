@@ -22,17 +22,17 @@ Nothing on the landing page is a mockup. Every screenshot is a real capture of
 
 | # | Section | Anchor | What it does |
 |---|---------|--------|--------------|
-| — | Hero | — | The claim, the five headline counts, one screenshot |
+| — | Hero | — | The claim, the five headline counts, no eyebrow |
 | 01 | The problem | `#problem` | Rice–wheat at 39%, and what 39% actually counts |
 | 02 | The insight | `#insight` | A score out of 100 cannot be wrong; a failure rate names years |
-| 03 | What we built | `#built` | Four surfaces, each with a real screenshot |
+| 03 | What we built | `#built` | Four surfaces in a bento grid, three real screenshots |
 | 04 | The finding | `#finding` | 39% vs 85%, and why maize–wheat at 100% is rejected |
 | 05 | The data | `#data` | Six NASA products, each with a provenance chip |
 | 06 | The honesty | `#honesty` | 5 of 5, 0.06, 20 — and the eight known errors |
 | 07 | Who it is for | `#who` | Six audiences, one sentence each |
 | — | Closing | `#open` | 0.99 km³, labelled as arithmetic on our own output |
 
-The funnel is story → tool. "Open the field →" appears in the sticky nav, the
+The funnel is story → tool. "Open the field →" appears in the floating nav, the
 hero, and the closing block, so the CTA is never more than one scroll away.
 
 ## Design
@@ -47,16 +47,39 @@ fork the palette — if the app's tokens move, the landing page moves with them.
 | `--deep` | `#101713` | the two dark bands |
 | `--water` | `#0f6b5c` | italic emphasis, links, the good number |
 | `--amber` | `#c2622a` | the 39% figure |
-| `--display` | Fraunces | headlines, with italic for the turn in the sentence |
-| `--body` | Inter | prose |
+| `--display` | Instrument Sans | headlines, nav, buttons |
+| `--serif` | Instrument Serif italic | the turn in a headline |
+| `--body` | Instrument Sans | prose |
 | `--mono` | IBM Plex Mono | every number, every label, every chip |
 
 Two rules the page follows:
 
 - **Numbers are mono, prose is not.** A figure in IBM Plex Mono reads as
-  measured; the same figure in Inter reads as written.
-- **Italic marks the turn.** "Every crop rotation *fails sometimes*" — the
-  italic lands on the half of the sentence that is the argument.
+  measured; the same figure in Instrument Sans reads as written.
+- **Italic marks the turn.** "Rice–wheat worked for your father. *It works 13
+  years out of 33.*" — the roman half is the thing the farmer already believes;
+  the italic half is the number that contradicts it. Instrument Serif is the
+  companion face to Instrument Sans (same foundry), so the switch reads as
+  emphasis rather than as a second voice. Both are self-hosted woff2 in
+  `dist/assets/fonts/`; no Google Fonts request at runtime.
+
+## Chrome
+
+The nav is a **floating pill**, not a sticky full-width bar: `position: fixed`,
+`top: 16px`, centred, `border-radius: 999px`, dark translucent with a
+`backdrop-filter` blur so the paper ground reads through it. It floats over the
+hero rather than pushing it down, which is what lets the headline sit high on
+the page. `html { scroll-padding-top: 96px }` keeps anchor jumps clear of it.
+
+Section headers use a two-column `.sec-row`: the headline on the left, the
+supporting paragraph right-aligned on the same baseline. The eyebrow above each
+headline is an outlined capsule, sentence case — never uppercase, never
+letter-spaced.
+
+The "What we built" section is a six-column bento grid (`.bento`), not a row of
+equal cards: Field spans 4, Rotation Lab spans 2 and carries a stat instead of a
+screenshot (a 1440×1694 capture in a 300 px column was unreadable), Decision and
+Ledger span 3 each. Screenshots bleed off the bottom edge of their card.
 
 ## Regenerating the screenshots
 

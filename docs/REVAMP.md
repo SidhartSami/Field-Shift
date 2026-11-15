@@ -71,6 +71,11 @@ exactly what the reframe below does.
 One sentence. A judge can repeat it. It is true, it is specific, and no other
 team will have it.
 
+> **Shipped headline.** The site does not use this sentence verbatim — a truism
+> about the world is weaker than a number about the farmer's field. The hero
+> reads: "Rice–wheat worked for your father. *It works 13 years out of 33.*"
+> The thesis above is still the elevator pitch; the headline is the proof.
+
 The supporting sentence, for the technical judge:
 
 > We reconstruct 34 years of NASA satellite and reanalysis history for a single
