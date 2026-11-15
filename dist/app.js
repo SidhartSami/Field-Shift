@@ -38,6 +38,24 @@ function flashLiveFocus(ids){
  flashLiveFocus._t=setTimeout(()=>{for(const el of document.querySelectorAll('.live-focus'))el.classList.remove('live-focus')},2200);
 }
 let voicePlanAdded=new Set();
+let editingPropertyId=null;
+function uniquePropertyName(name){
+ const base=String(name||'New property').trim()||'New property';
+ const taken=new Set(state.fields.map(f=>String(f.draft?.inputs?.farm||'').toLowerCase()));
+ if(!taken.has(base.toLowerCase()))return base;
+ let i=2;
+ while(taken.has(`${base} (${i})`.toLowerCase()))i++;
+ return `${base} (${i})`;
+}
+function resetNewPropertyForm(){
+ editingPropertyId=null;
+ fieldBoundary=null;
+ voicePlanAdded.clear();
+ setInputs(defaults);
+ if(ready)draw();
+ renderVoiceStage();
+ fieldMap?.show();
+}
 function planKeyFor(id){
  if(id==='lat'||id==='lon')return 'place';
  if(id==='farm')return 'field';
@@ -245,11 +263,14 @@ function openProperty(id,edit=false){
  const f=state.fields.find(x=>x.id===id);
  if(!f)return;
  if(state.active!==id){requestId++;state.active=id;loadDraft(f.draft);persist();renderFields()}
+ else if(edit)loadDraft(f.draft);
+ editingPropertyId=edit?id:null;
+ if(edit)voicePlanAdded.clear();
  renderProperties();
  location.hash=edit?'voice':'planner';
- toast(edit?'Opened property details.':'Property opened.');
+ toast(edit?'Editing this property — Save updates it.':'Property opened.');
 }
-function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='properties')renderProperties();if(view==='voice'){renderVoiceStage();ensureFieldMap()?.show()}else if(fieldMap)fieldMap.hide?.();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
+function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='properties')renderProperties();if(view==='voice'){if(!editingPropertyId&&!voicePlanAdded.size&&!fieldBoundary){/* keep current working copy */}renderVoiceStage();ensureFieldMap()?.show()}else if(fieldMap)fieldMap.hide?.();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
 document.addEventListener('click',e=>{
  const add=e.target.closest('[data-add-plan]');
  if(add&&ready){
@@ -398,20 +419,31 @@ $('save-property')&&($('save-property').onclick=()=>{
    if(ready&&!$('farm-form').reportValidity()){toast('Fix highlighted field inputs before saving.');return}
    const draft=snapshot();
    draft.boundary=fieldBoundary&&fieldBoundary.length>=3?fieldBoundary.map(p=>[...p]):null;
-   const field={id:id(),draft};
-   state.fields.push(field);
-   state.active=field.id;
+   const editing=editingPropertyId?state.fields.find(x=>x.id===editingPropertyId):null;
+   let message;
+   if(editing){
+    editing.draft=draft;
+    state.active=editing.id;
+    message=`Property updated: ${draft.inputs.farm||'This property'}.`;
+   }else{
+    draft.inputs.farm=uniquePropertyName(draft.inputs.farm);
+    const field={id:id(),draft};
+    state.fields.push(field);
+    state.active=field.id;
+    message=`Property added: ${draft.inputs.farm}${draft.boundary?' + land outline':''}.`;
+   }
    persist();
    renderFields();
    renderProperties();
-   const name=draft.inputs.farm||'This property';
-   const outline=draft.boundary?' + land outline':'';
-   toast(`Property added: ${name}${outline}. Previous properties unchanged.`);
+   toast(message);
+   // Fresh working copy for the next Add property
+   resetNewPropertyForm();
+   editingPropertyId=null;
    location.hash='properties';
   }catch(e){toast(e.message)}
  });
 $('properties-export')&&($('properties-export').onclick=()=>{try{download({version:2,exportedAt:new Date().toISOString(),active:state.active,fields:state.fields,plans:state.plans},'fasalpath-properties.json')}catch(e){toast(e.message)}});
-$('add-field-from-properties')&&($('add-field-from-properties').onclick=()=>{$('add-field').click()});
+$('add-field-from-properties')&&($('add-field-from-properties').onclick=()=>{resetNewPropertyForm();location.hash='voice'});
 $('saved-plans').onclick=e=>{const b=e.target.closest('button');if(!b)return;const pid=b.dataset.planExport||b.dataset.planRestore||b.dataset.planDelete,p=state.plans.find(p=>p.id===pid);if(!p)return;if(b.dataset.planExport){download(p.report,`fasalpath-decision-${p.id}.json`);return}if(b.dataset.planRestore){stash();let field=state.fields.find(f=>f.id===p.report.fieldId);if(!field){field={id:id(),draft:null};state.fields.push(field)}state.active=field.id;requestId++;loadDraft(p.report);stash();location.hash='planner';toast('Decision snapshot opened as the current draft.');return}const index=state.plans.indexOf(p);state.plans.splice(index,1);if(!persist()){state.plans.splice(index,0,p);return}renderPlans();renderFields();toast('Decision removed.',()=>{state.plans.splice(index,0,p);persist();renderPlans();renderFields()})};
 function download(data,name){const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),link=document.createElement('a');link.href=URL.createObjectURL(blob);link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(link.href),1000)}
 $('export').onclick=()=>{try{download(report(),'fasalpath-plan.json')}catch(e){toast(e.message)}};$('print').onclick=()=>{try{report();window.print()}catch(e){toast(e.message)}};
