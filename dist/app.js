@@ -196,6 +196,7 @@ async function init(){try{const response=await fetch('data/power-lahore.json');i
  if(!restored){let draft=bundledDraft();try{const old=JSON.parse(localStorage.getItem('fieldshift-plan-v1')||'null');if(old?.rawNASA&&old?.inputs){summarize(old.rawNASA);draft={...draft,...old,observations:{...old.observations,year:2024}}}}catch{}state.fields=[{id:'field-1',draft}];state.active='field-1'}
  ready=true;$('export').disabled=false;loadDraft(currentField().draft);renderFields();renderPlans();route();$('app-loading').hidden=true;
  voiceLive=createVoiceLive({document,
+  deepgramKey:globalThis.__FIELDSHIFT_CONFIG?.deepgramKey||'',
   onLiveInputs:(next,meta)=>{
    const before=input();
    const ids=LIVE_FIELD_IDS.filter(k=>String(before[k]??'')!==String(next[k]??''));

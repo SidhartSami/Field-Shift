@@ -1,3 +1,8 @@
 node_modules/
 *.tar.gz
 .DS_Store
+
+# Local secrets (Deepgram key for live voice)
+.env
+.env.*
+!.env.example
