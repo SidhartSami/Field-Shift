@@ -68,6 +68,8 @@ async function boot() {
   await loadField(state.index[0].id);
   renderProperties();
   initVoice();
+  bindAddProperty();
+  renderLocalProps();
   route();
 }
 
@@ -216,6 +218,123 @@ function initVoice() {
   if (toggle) toggle.addEventListener('click', () => state.voice && state.voice.toggle());
 }
 
+
+/* ── add property (local + basic intel) ───────────────────── */
+
+const LOCAL_PROPS_KEY = 'fieldshift-local-props-v1';
+
+function loadLocalProps() {
+  try {
+    const v = JSON.parse(localStorage.getItem(LOCAL_PROPS_KEY) || '[]');
+    return Array.isArray(v) ? v : [];
+  } catch { return []; }
+}
+
+function saveLocalProps(list) {
+  try { localStorage.setItem(LOCAL_PROPS_KEY, JSON.stringify(list)); } catch { /* ignore */ }
+}
+
+function readAddPropForm() {
+  return {
+    name: $('#ap-name').value.trim() || 'Untitled property',
+    area: Number($('#ap-area').value) || 10,
+    soil: $('#ap-soil').value,
+    irrigation: Number($('#ap-irrigation').value) || 0,
+    summer: $('#ap-summer').value,
+    winter: $('#ap-winter').value,
+    residue: $('#ap-residue').checked,
+    dry: Number($('#ap-dry').value) || 0,
+    heat: Number($('#ap-heat').value) || 0,
+    notes: $('#ap-notes').value.trim(),
+  };
+}
+
+function renderAddPropIntel() {
+  const body = $('#ap-intel-body');
+  if (!body) return;
+  const p = readAddPropForm();
+  const r = basicIntel(p);
+  body.innerHTML = [
+    '<div class="intel-score"><b>' + r.score + '</b><span>/100 basic screen</span></div>',
+    '<ul class="intel-facts">',
+    '<li><b>' + r.demand + ' mm</b> indicative annual demand</li>',
+    '<li><b>' + r.effectiveRain + ' mm</b> effective rain' + (p.dry ? ' (after −' + p.dry + '%)' : '') + '</li>',
+    '<li><b>' + r.irrigation + ' mm</b> your supply</li>',
+    '<li><b>' + r.gap + ' mm</b> unmet after rain + supply</li>',
+    '</ul>',
+    r.flags.length ? '<ul class="intel-flags">' + r.flags.map((f) => '<li>' + escapeHtml(f) + '</li>').join('') + '</ul>' : '',
+    '<p class="intel-note">' + escapeHtml(r.note) + '</p>',
+  ].join('');
+}
+
+function renderLocalProps() {
+  const grid = $('#ap-saved-grid');
+  if (!grid) return;
+  const list = loadLocalProps();
+  if (!list.length) {
+    grid.innerHTML = '<p class="lede">Nothing saved here yet.</p>';
+    return;
+  }
+  grid.innerHTML = list.map((p) => {
+    const r = basicIntel(p);
+    return '<article class="prop-card">' +
+      '<div class="prop-card-top">' +
+        '<span class="prop-logo" aria-hidden="true">⌂</span>' +
+        '<div class="prop-name"><h3>' + escapeHtml(p.name) + '</h3>' +
+        '<span class="prop-badge">LOCAL · ' + r.score + '</span></div>' +
+      '</div>' +
+      '<div class="prop-chips"><span>' + escapeHtml(String(p.area)) + ' ha</span>' +
+      '<span>' + escapeHtml(p.soil) + '</span>' +
+      '<span>' + escapeHtml(p.summer) + ' → ' + escapeHtml(p.winter) + '</span>' +
+      '<span>' + escapeHtml(String(p.irrigation)) + ' mm</span></div>' +
+      '<p class="prop-note">' + escapeHtml(localIntelSummary(r)) + '</p>' +
+      (p.notes ? '<p class="prop-note">' + escapeHtml(p.notes) + '</p>' : '') +
+      '<div class="prop-actions"><button type="button" class="btn" data-ap-del="' + escapeHtml(p.id) + '">Delete</button></div>' +
+    '</article>';
+  }).join('');
+}
+
+function bindAddProperty() {
+  const form = $('#addprop-form');
+  if (!form) return;
+  const refresh = () => {
+    $('#ap-dry-out').textContent = String($('#ap-dry').value) + '%';
+    $('#ap-heat-out').textContent = '+' + $('#ap-heat').value;
+    renderAddPropIntel();
+  };
+  form.addEventListener('input', refresh);
+  form.addEventListener('change', refresh);
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const p = readAddPropForm();
+    const list = loadLocalProps();
+    list.unshift({
+      id: 'local-' + Date.now().toString(36),
+      createdAt: new Date().toISOString(),
+      ...p,
+    });
+    saveLocalProps(list);
+    renderLocalProps();
+    renderProperties();
+    location.hash = '#properties';
+  });
+  $('#ap-clear')?.addEventListener('click', () => {
+    form.reset();
+    $('#ap-area').value = '10';
+    $('#ap-irrigation').value = '500';
+    $('#ap-residue').checked = true;
+    refresh();
+  });
+  refresh();
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-ap-del]');
+  if (!btn) return;
+  const id = btn.getAttribute('data-ap-del');
+  saveLocalProps(loadLocalProps().filter((p) => p.id !== id));
+  renderLocalProps();
+});
 /* ── properties ───────────────────────────────────────────── */
 
 function renderProperties() {
@@ -1264,13 +1383,14 @@ function scalePanel() {
 
 function route() {
   const view = (location.hash.replace('#', '') || 'field');
-  state.view = ['field', 'lab', 'decision', 'ledger', 'properties'].includes(view) ? view : 'field';
-  for (const v of ['field', 'lab', 'decision', 'ledger', 'properties']) {
+  state.view = ['field', 'lab', 'decision', 'ledger', 'properties', 'add-property'].includes(view) ? view : 'field';
+  for (const v of ['field', 'lab', 'decision', 'ledger', 'properties', 'add-property']) {
     $(`#view-${v}`).hidden = v !== state.view;
   }
   document.querySelectorAll('.tabs a').forEach((a) => {
     a.setAttribute('aria-current', a.dataset.view === state.view ? 'page' : 'false');
   });
+  if (state.view === 'add-property') { renderAddPropIntel(); renderLocalProps(); }
   if (state.view === 'field' && state.map) setTimeout(() => state.map.invalidateSize(), 60);
   window.scrollTo({ top: 0, behavior: 'instant' });
 }

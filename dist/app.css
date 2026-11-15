@@ -897,3 +897,97 @@ body:has(.voice-dock:not([hidden])) .foot { padding-bottom: 88px; }
 @media (max-width: 720px) {
   .btn-draw { font-size: 11px; padding: 6px 8px; }
 }
+
+/* ── Add property + basic intel ───────────────────────────── */
+.addprop-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(260px, 0.9fr);
+  gap: 20px;
+  align-items: start;
+  margin-top: 8px;
+}
+.addprop-form {
+  background: #fff;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+.addprop-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+}
+.addprop-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.addprop-intel {
+  background: var(--deep);
+  color: var(--paper);
+  border-radius: 12px;
+  padding: 20px;
+  position: sticky;
+  top: 72px;
+}
+.addprop-intel .eyebrow { color: rgba(245, 242, 234, 0.55); }
+.addprop-intel .lede { color: rgba(245, 242, 234, 0.7); font-size: 14px; }
+.intel-score {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 8px 0 14px;
+}
+.intel-score b {
+  font: 600 48px var(--display);
+  letter-spacing: -0.03em;
+  color: #7dd3a8;
+  line-height: 1;
+}
+.intel-score span { color: rgba(245, 242, 234, 0.55); font-size: 13px; }
+.intel-facts {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.intel-facts li {
+  font-size: 13px;
+  color: rgba(245, 242, 234, 0.75);
+  padding: 8px 10px;
+  background: rgba(245, 242, 234, 0.06);
+  border-radius: 8px;
+}
+.intel-facts b { color: var(--paper); font-family: var(--mono); font-weight: 500; }
+.intel-flags {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.intel-flags li {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #f0d9c6;
+  padding-left: 14px;
+  position: relative;
+}
+.intel-flags li::before {
+  content: '!';
+  position: absolute;
+  left: 0;
+  color: var(--amber);
+  font-weight: 700;
+}
+.intel-note {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.55;
+  color: rgba(245, 242, 234, 0.45);
+}
+.addprop-saved { margin-top: 28px; }
+.addprop-saved .memory-head { margin-bottom: 14px; }
+@media (max-width: 900px) {
+  .addprop-grid { grid-template-columns: 1fr; }
+  .addprop-intel { position: static; }
+}
