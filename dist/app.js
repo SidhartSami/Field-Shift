@@ -59,9 +59,22 @@ function matches(){const i=input();return i.lat===observed.lat&&i.lon===observed
 function geoContext(){const i=input();return {inputs:i,year,customSequence,selected,selectedName:results.find(r=>r.id===selected)?.name,valid:ready&&$('farm-form').checkValidity()&&matches(),fields:state.fields.map(f=>{const d=f.id===state.active?{inputs:i,observations:{coordinates:observed}}:f.draft;return {id:f.id,name:d.inputs.farm,area:d.inputs.area,lat:Number(d.inputs.lat),lon:Number(d.inputs.lon),active:f.id===state.active,matched:Number(d.inputs.lat)===d.observations.coordinates.lat&&Number(d.inputs.lon)===d.observations.coordinates.lon}})}}
 function ensureGeo(){if(!geoView)geoView=createGeoWorkspace({document,fetcher:(...args)=>fetch(...args),getContext:geoContext,onError:toast,onSelectField:fid=>{$('field-list').querySelector(`[data-field="${fid}"]`)?.click()},onUseLocation:point=>openFieldSetup({point})});return geoView}
 function currentField(){return state.fields.find(f=>f.id===state.active)}
-function snapshot(){return {boundary:fieldBoundary?fieldBoundary.map(p=>[...p]):null,inputs:input(),rawNASA:raw,observations:{source,url,fetchedAt:fetchTime,coordinates:{...observed},year},customSequence:customSequence?[...customSequence]:null,selected,economics:{...economics},localChecks:structuredClone(localChecks)};}
+function snapshot(){const prev=currentField()?.draft;return {summary:prev&&'summary' in prev?prev.summary:undefined,boundary:fieldBoundary?fieldBoundary.map(p=>[...p]):null,inputs:input(),rawNASA:raw,observations:{source,url,fetchedAt:fetchTime,coordinates:{...observed},year},customSequence:customSequence?[...customSequence]:null,selected,economics:{...economics},localChecks:structuredClone(localChecks)};}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));$('save-state').textContent='Draft saved on device';return true}catch{$('save-state').textContent='Draft not saved';toast('Device storage is unavailable or full. Export your plan to keep a copy.');return false}}
-function stash(){if(!ready)return;const f=currentField();if(f)f.draft=snapshot();persist();renderFields();geoView?.update();voiceView?.contextChanged()}
+function stash(){
+ if(!ready)return;
+ const f=currentField();
+ if(f){
+  const summary=f.draft?.summary;
+  f.draft=snapshot();
+  if(summary!=null&&f.draft.summary===undefined)f.draft.summary=summary;
+ }
+ persist();
+ renderFields();
+ renderProperties();
+ geoView?.update();
+ voiceView?.contextChanged();
+}
 function validate(){if(!ready)throw Error('Wait for the observations to load.');if(!$('farm-form').reportValidity())throw Error('Correct the highlighted field inputs.');if(!matches())throw Error('Refresh NASA observations for these coordinates before saving or exporting.');evaluate({...input(),customSequence},climate)}
 function report(){validate();return {project:'FasalPath',version:'2.4.0',createdAt:new Date().toISOString(),outcomeComparison:compareOutcomes(results.find(r=>r.id==='baseline'),results.find(r=>r.id===selected),input().area),financialScreen:economicAnalysis(),decisionBrief:currentDecisionBrief(),fieldId:state.active,mapEvidence:geoView?.evidence(),...snapshot(),climate,results,selectedRotation:results.find(r=>r.id===selected),limitations:'Illustrative, uncalibrated decision proxies. Regional crop set for the irrigated plains of Punjab, Pakistan; not an agronomic prescription.'}}
 function openDialog(name,keyboard=false){const d=$(name);d.classList.toggle('instant',keyboard);if(d.showModal)d.showModal();else d.setAttribute('open','');d.querySelector('input,button')?.focus()}
