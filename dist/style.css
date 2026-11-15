@@ -265,8 +265,13 @@ body:has(#voice-live-bar:not([hidden])) main{padding-bottom:96px}
 
 /* Field boundary card on the voice tab */
 .voice-map-card{
-  width:min(960px,100%);margin:0 auto;display:grid;gap:12px;
-  padding:16px;border-radius:16px;background:#0f1c16;border:1px solid #ffffff14;
+  width:min(960px,100%);margin:20px auto 0;display:grid;gap:14px;
+  padding:18px;border-radius:16px;
+  background:#0b1610;border:1px solid #d7aa5244;
+  box-shadow:0 12px 36px #00000055;
+}
+.voice-map-title{
+  margin:0 0 4px;font:650 17px Manrope,sans-serif;letter-spacing:-.3px;color:#f3f6f4;
 }
 .voice-map-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:flex-end}
 .voice-map-copy .voice-opt-heading{margin-bottom:4px}
