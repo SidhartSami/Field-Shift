@@ -324,3 +324,10 @@ body:has(#voice-live-bar:not([hidden])) main{padding-bottom:96px}
 .property-boundary{font-size:10px;color:var(--green);font-weight:600}
 .property-boundary.missing{color:var(--muted);font-weight:500}
 @media(max-width:700px){.property-grid{grid-template-columns:1fr}.property-actions{width:100%}.property-actions button{flex:1}}
+
+.voice-save-row{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;
+  width:100%;margin-top:22px;padding-top:18px;border-top:1px solid #ffffff14;
+}
+.voice-save-btn{min-width:180px;min-height:42px;font-size:13px;padding:12px 22px;border-radius:12px}
+.voice-save-hint{margin:0;font-size:10px;color:#ffffff55;max-width:280px;line-height:1.5;text-align:left}
