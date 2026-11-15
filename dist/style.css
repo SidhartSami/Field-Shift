@@ -65,7 +65,9 @@ button,.primary,.secondary{transition:transform 130ms var(--ease-out),opacity 13
 }
 
 /* CoffeeBrew-style horizontal option cards (above the form) */
-.voice-stage-body{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:28px;padding-top:28px}
+.voice-stage-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:28px;padding:28px 24px 32px;width:100%}
+.voice-stage-body .voice-opt-wrap{width:min(960px,100%);margin-inline:auto}
+.voice-stage-body .voice-live-card{width:min(960px,100%);margin:4px auto 0}
 
 .voice-plan-empty{
   display:grid;gap:14px;justify-items:start;padding:28px 22px;
@@ -130,10 +132,6 @@ button,.primary,.secondary{transition:transform 130ms var(--ease-out),opacity 13
   .voice-stage-body{gap:20px;padding-top:16px}
 }
 
-  flex:1;display:flex;align-items:center;justify-content:center;
-  padding:48px 24px 28px;min-height:340px;
-}
-.voice-stage-body .voice-live-card{margin-top:4px}
 .voice-live-card{
   width:min(960px,100%);text-align:center;display:flex;flex-direction:column;align-items:center;gap:6px;
 }
