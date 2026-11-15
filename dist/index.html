@@ -1,20 +1,234 @@
-<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Field Shift — every rotation fails sometimes</title>
-<meta name="description" content="Field Shift reconstructs 34 years of NASA satellite and reanalysis history for a single field, replays every candidate crop rotation through it, and returns a failure rate instead of a score.">
+<title>Field Shift — every crop rotation fails sometimes</title>
+<meta name="description" content="Field Shift replays every crop rotation a region allows through 34 years of NASA Earth observation, and tells a farmer how often their rotation fails, in which years, and what to do when it does.">
 <meta name="theme-color" content="#101713">
+<meta property="og:title" content="Field Shift — every crop rotation fails sometimes">
+<meta property="og:description" content="A decision-support tool for crop rotation, built on 34 years of NASA Earth observation. Five fields, five regions, one model.">
+<meta property="og:type" content="website">
 <link rel="icon" href="assets/fieldshift-mark.svg" type="image/svg+xml">
-<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
 <link rel="stylesheet" href="app.css">
+<style>
+  /* ── landing shell ─────────────────────────────────────────── */
+  .lnav {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; gap: 28px;
+    padding: 14px clamp(20px, 4vw, 56px);
+    background: rgba(245, 242, 234, .88);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .lnav .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+  .lnav .brand-mark { width: 26px; height: 26px; color: var(--ink); flex: none; }
+  .lnav .brand-text {
+    font: 500 15px/1.1 var(--display); letter-spacing: -.01em;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .lnav .brand-text em {
+    font: 400 8.5px/1 var(--mono); letter-spacing: .13em;
+    text-transform: uppercase; color: var(--muted); font-style: normal;
+  }
+  .lnav nav { display: flex; gap: 22px; margin-left: auto; }
+  .lnav nav a {
+    font: 500 11px/1 var(--mono); letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); text-decoration: none; padding: 6px 0;
+    border-bottom: 1px solid transparent; transition: color .2s, border-color .2s;
+  }
+  .lnav nav a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  .lnav .cta {
+    font: 500 11px/1 var(--mono); letter-spacing: .09em; text-transform: uppercase;
+    text-decoration: none; padding: 11px 18px; border-radius: 3px;
+    background: var(--ink); color: var(--paper); white-space: nowrap;
+    transition: background .2s;
+  }
+  .lnav .cta:hover { background: var(--water); }
+  @media (max-width: 860px) { .lnav nav { display: none; } }
+  @media (max-width: 560px) {
+    .lnav { gap: 12px; padding: 12px 16px; }
+    .lnav .brand-text em { display: none; }
+    .lnav .cta { padding: 10px 13px; font-size: 10px; letter-spacing: .06em; }
+  }
+
+  .wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px); }
+  .band { padding: clamp(64px, 9vw, 132px) 0; border-bottom: 1px solid var(--rule); }
+  .band.dark { background: var(--deep); color: #e8e3d6; border-bottom-color: #000; }
+  .band.dark .eyebrow { color: rgba(232, 227, 214, .45); }
+  .band.dark p { color: rgba(232, 227, 214, .8); }
+  .band.dark strong { color: #f2eee4; }
+  .band.dark .rule { border-color: #26302a; }
+
+  .sec-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 34px; }
+  .sec-num {
+    font: 500 10px/1 var(--mono); letter-spacing: .14em; color: var(--muted);
+    padding-top: 4px; flex: none;
+  }
+  .band.dark .sec-num { color: rgba(232, 227, 214, .35); }
+
+  h2.big {
+    font: 500 clamp(30px, 4.2vw, 58px)/1.06 var(--display);
+    letter-spacing: -.03em; max-width: 22ch; margin-bottom: 26px;
+  }
+  h2.big em { font-style: italic; color: var(--water); }
+  .band.dark h2.big em { color: #6fc2ae; }
+  .lede { font-size: clamp(15px, 1.5vw, 18px); line-height: 1.65; color: var(--ink-2); max-width: 62ch; }
+  .band.dark .lede { color: rgba(232, 227, 214, .8); }
+
+  /* ── hero ──────────────────────────────────────────────────── */
+  .hero { padding: clamp(56px, 8vw, 104px) 0 clamp(40px, 5vw, 64px); }
+  .hero h1 {
+    font: 500 clamp(40px, 7.4vw, 104px)/0.98 var(--display);
+    letter-spacing: -.04em; max-width: 17ch; margin: 20px 0 26px;
+  }
+  .hero h1 em { font-style: italic; color: var(--water); }
+  .hero .lede { font-size: clamp(16px, 1.7vw, 20px); max-width: 56ch; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 34px 0 0; }
+  .btn-lg {
+    display: inline-flex; align-items: center; gap: 10px;
+    font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+    text-decoration: none; padding: 16px 26px; border-radius: 3px;
+    transition: background .2s, color .2s, border-color .2s;
+  }
+  .btn-lg.solid { background: var(--ink); color: var(--paper); }
+  .btn-lg.solid:hover { background: var(--water); }
+  .btn-lg.ghost { border: 1px solid var(--rule); color: var(--ink); }
+  .btn-lg.ghost:hover { border-color: var(--ink); }
+
+  .stat-strip {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+    gap: 1px; margin: clamp(44px, 6vw, 72px) 0 0;
+    background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden;
+  }
+  .stat-strip div { background: var(--paper); padding: 20px 22px; display: flex; flex-direction: column; gap: 7px; }
+  .stat-strip b { font: 500 clamp(24px, 2.8vw, 34px)/1 var(--mono); letter-spacing: -.03em; }
+  .stat-strip span { font: 500 9.5px/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  @media (max-width: 560px) {
+    .stat-strip { grid-template-columns: repeat(2, 1fr); }
+    .stat-strip div:last-child { grid-column: span 2; }
+  }
+
+  /* ── screenshot frame ──────────────────────────────────────── */
+  .frame {
+    margin: clamp(36px, 5vw, 60px) 0 0;
+    border: 1px solid var(--rule); border-radius: 6px; overflow: hidden;
+    background: var(--paper-2);
+    box-shadow: 0 1px 2px rgba(20, 26, 23, .04), 0 18px 48px -24px rgba(20, 26, 23, .28);
+  }
+  .band.dark .frame { border-color: #26302a; box-shadow: 0 18px 48px -24px rgba(0, 0, 0, .7); }
+  .frame-bar {
+    display: flex; align-items: center; gap: 7px;
+    padding: 10px 14px; border-bottom: 1px solid var(--rule); background: var(--paper-2);
+  }
+  .band.dark .frame-bar { border-color: #26302a; background: var(--deep-2); }
+  .frame-bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); display: block; }
+  .band.dark .frame-bar i { background: #33403a; }
+  .frame-bar span {
+    margin-left: 8px; font: 400 10px/1 var(--mono); letter-spacing: .06em; color: var(--muted);
+  }
+  .frame img { display: block; width: 100%; height: auto; }
+
+  /* ── the number ────────────────────────────────────────────── */
+  .huge {
+    font: 500 clamp(76px, 15vw, 200px)/0.86 var(--mono);
+    letter-spacing: -.055em; color: #e8a06a; margin: 8px 0 4px;
+  }
+  .huge-label {
+    font: 500 10.5px/1.6 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+    color: rgba(232, 227, 214, .5); margin-bottom: 30px; max-width: 46ch;
+  }
+
+  /* ── comparison ────────────────────────────────────────────── */
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    border: 1px solid #26302a; border-radius: 6px; overflow: hidden; margin: 34px 0 0;
+  }
+  .compare > div { background: var(--deep-2); padding: clamp(22px, 3vw, 34px); }
+  .compare > div:first-child { border-right: 1px solid #26302a; }
+  .compare h3 {
+    font: 500 9.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase;
+    color: rgba(232, 227, 214, .45); margin-bottom: 16px;
+  }
+  .compare .val { font: 500 clamp(34px, 4.4vw, 52px)/1 var(--mono); letter-spacing: -.03em; margin-bottom: 5px; }
+  .compare .val.bad { color: #e08a76; }
+  .compare .val.good { color: #6fc2ae; }
+  .compare .sub { font-size: 12.5px; color: rgba(232, 227, 214, .5); }
+  .compare ul { margin: 16px 0 0; padding: 0; }
+  .compare li {
+    list-style: none; font: 400 12.5px/1.95 var(--mono);
+    color: rgba(232, 227, 214, .78);
+  }
+  @media (max-width: 640px) { .compare { grid-template-columns: 1fr; } .compare > div:first-child { border-right: 0; border-bottom: 1px solid #26302a; } }
+
+  /* ── surfaces ──────────────────────────────────────────────── */
+  .surfaces { display: grid; gap: clamp(40px, 5vw, 64px); }
+  .surface { display: grid; grid-template-columns: 1fr; gap: 22px; }
+  .surface-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  .surface-head h3 {
+    font: 500 clamp(22px, 2.6vw, 32px)/1.1 var(--display); letter-spacing: -.02em;
+  }
+  .surface-head .tag {
+    font: 500 9px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase;
+    color: var(--water); border: 1px solid var(--water-soft); background: var(--water-soft);
+    padding: 5px 9px; border-radius: 2px;
+  }
+  .surface p { font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 68ch; }
+  .surface .frame { margin-top: 4px; }
+
+  /* ── data grid ─────────────────────────────────────────────── */
+  .sources { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  @media (max-width: 900px) { .sources { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .sources { grid-template-columns: 1fr; } }
+  .sources > div { background: var(--paper); padding: 22px 24px; display: flex; flex-direction: column; gap: 9px; }
+  .sources h4 { font: 500 14px/1.3 var(--body); letter-spacing: -.005em; }
+  .sources p { font-size: 13px; line-height: 1.6; color: var(--muted); }
+  .sources .chip { align-self: flex-start; }
+
+  /* ── proof ─────────────────────────────────────────────────── */
+  .proof { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: clamp(24px, 3vw, 40px); margin: 34px 0 0; }
+  .proof div { display: flex; flex-direction: column; gap: 8px; }
+  .proof b { font: 500 clamp(30px, 3.6vw, 46px)/1 var(--mono); letter-spacing: -.03em; }
+  .proof span { font: 500 10px/1.5 var(--mono); letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+
+  /* ── audience ──────────────────────────────────────────────── */
+  .who { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
+  @media (max-width: 900px) { .who { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .who { grid-template-columns: 1fr; } }
+  .who > div { background: var(--paper); padding: 24px 26px; }
+  .who h4 { font: 500 15px/1.3 var(--body); margin-bottom: 8px; }
+  .who p { font-size: 13.5px; line-height: 1.65; color: var(--muted); }
+
+  /* ── closing ───────────────────────────────────────────────── */
+  .closing { text-align: left; }
+  .closing h2 {
+    font: 500 clamp(34px, 5.6vw, 76px)/1.02 var(--display);
+    letter-spacing: -.035em; max-width: 18ch; margin-bottom: 28px;
+  }
+  .closing h2 em { font-style: italic; color: #6fc2ae; }
+  .closing .hero-actions { margin-top: 30px; }
+  .closing .btn-lg.solid { background: #f2eee4; color: var(--deep); }
+  .closing .btn-lg.solid:hover { background: #6fc2ae; }
+  .closing .btn-lg.ghost { border-color: #33403a; color: #e8e3d6; }
+  .closing .btn-lg.ghost:hover { border-color: #6fc2ae; }
+
+  .lfoot {
+    padding: 40px clamp(20px, 4vw, 56px) 56px;
+    display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start;
+    justify-content: space-between;
+    font: 400 11.5px/1.8 var(--mono); color: var(--muted);
+  }
+  .lfoot p { max-width: 62ch; }
+  .lfoot a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--rule); }
+  .lfoot a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  .lfoot-links { display: flex; gap: 20px; flex-wrap: wrap; }
+</style>
 </head>
 <body>
+
 <a class="skip" href="#main">Skip to content</a>
 
-<header class="topbar">
-  <a class="brand" href="#field">
+<header class="lnav">
+  <a class="brand" href="index.html">
     <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
       <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="currentColor" stroke-width="1.4"/>
       <path d="M7 23c4-1 6-4 7-8s3-7 7-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -23,179 +237,364 @@
     </svg>
     <span class="brand-text">Field Shift<em>every rotation fails sometimes</em></span>
   </a>
-
-  <div class="field-picker">
-    <label class="sr-only" for="field-select">Field</label>
-    <select id="field-select"></select>
-  </div>
-
-  <nav class="tabs" aria-label="Sections">
-    <a href="#field" data-view="field">Field</a>
-    <a href="#lab" data-view="lab">Rotation lab</a>
-    <a href="#decision" data-view="decision">Decision</a>
-    <a href="#ledger" data-view="ledger">Ledger</a>
+  <nav aria-label="Sections">
+    <a href="#problem">Problem</a>
+    <a href="#built">What we built</a>
+    <a href="#data">The data</a>
+    <a href="#honesty">The honesty</a>
+    <a href="model.html">Model card</a>
   </nav>
-
-  <div class="provenance" id="provenance" title="Every figure in this app is tagged by how it was produced">
-    <span class="chip chip-observed">observed</span>
-    <span class="chip chip-reanalysis">reanalysis</span>
-    <span class="chip chip-simulated">simulated</span>
-  </div>
+  <a class="cta" href="app.html">Open the field →</a>
 </header>
 
 <main id="main">
 
-  <!-- ───────────────────────── FIELD ───────────────────────── -->
-  <section class="view" id="view-field" aria-labelledby="field-title">
-    <div class="field-grid">
-      <div class="map-panel">
-        <div id="map" class="map" role="application" aria-label="Satellite map of the field"></div>
-        <div class="map-controls">
-          <div class="layer-tabs" id="layer-tabs" role="tablist" aria-label="NASA layer"></div>
-          <div class="date-row">
-            <button class="icon-btn" id="date-prev" aria-label="Previous date">‹</button>
-            <input type="range" id="date-slider" min="0" max="100" value="100" aria-label="Observation date">
-            <button class="icon-btn" id="date-next" aria-label="Next date">›</button>
-            <output id="date-label" class="mono">—</output>
-          </div>
-        </div>
-        <p class="map-why" id="map-why"></p>
-        <p class="map-credit" id="map-credit">NASA GIBS</p>
+  <!-- ── hero ─────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">NASA Space Apps Challenge · Challenge 6 · Agriculture &amp; Earth Observation</p>
+      <h1>Every crop rotation <em>fails sometimes.</em></h1>
+      <p class="lede">
+        Field Shift replays every rotation a region allows through 34 years of NASA Earth
+        observation, and tells a farmer <strong>how often</strong> theirs fails,
+        <strong>in which years</strong>, and <strong>what to do when it does</strong>.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-lg solid" href="app.html">Open the field →</a>
+        <a class="btn-lg ghost" href="model.html">Read the model card</a>
       </div>
 
-      <aside class="profile">
-        <p class="eyebrow">Field profile</p>
-        <h1 id="field-title" class="display">—</h1>
-        <p class="lede" id="field-lede">—</p>
-
-        <div class="thesis" id="thesis"></div>
-
-        <dl class="facts" id="facts"></dl>
-
-        <div class="sources" id="sources"></div>
-      </aside>
-    </div>
-
-    <section class="memory" aria-labelledby="memory-title">
-      <div class="memory-head">
-        <div>
-          <p class="eyebrow">The field's memory</p>
-          <h2 id="memory-title" class="display-sm">Thirty-four years, one column per year</h2>
-        </div>
-        <div class="memory-legend">
-          <span><i class="sw sw-rain"></i>Rainfall</span>
-          <span><i class="sw sw-heat"></i>Heat days</span>
-          <span><i class="sw sw-ndvi"></i>Peak NDVI</span>
-          <span><i class="sw sw-dry"></i>Failed monsoon</span>
-        </div>
+      <div class="stat-strip">
+        <div><b>2,304</b><span>rotation sequences</span></div>
+        <div><b>1,176</b><span>distinct cycles</span></div>
+        <div><b>33</b><span>years of record</span></div>
+        <div><b>152,064</b><span>simulated seasons</span></div>
+        <div><b>5</b><span>fields, five regions</span></div>
       </div>
-      <div class="memory-strip" id="memory-strip" role="img" aria-label="Annual climate record"></div>
-      <div class="memory-axis" id="memory-axis"></div>
-      <p class="memory-read" id="memory-read">Hover or focus a year to read its record.</p>
-    </section>
-  </section>
 
-  <!-- ───────────────────────── LAB ───────────────────────── -->
-  <section class="view" id="view-lab" aria-labelledby="lab-title" hidden>
-    <header class="view-head">
-      <div>
-        <p class="eyebrow">Rotation lab</p>
-        <h1 id="lab-title" class="display">Every rotation we could find, replayed through every year</h1>
-      </div>
-      <div class="lab-stats" id="lab-stats"></div>
-    </header>
-
-    <div class="controls">
-      <label class="control">
-        <span>Water you can supply <b id="supply-out" class="mono">—</b></span>
-        <input type="range" id="supply" min="0" max="1600" step="25">
-      </label>
-      <label class="control control-check">
-        <input type="checkbox" id="residue" checked>
-        <span>Residue retained</span>
-      </label>
-      <label class="control">
-        <span>Erosion practice</span>
-        <select id="practice">
-          <option value="none">None</option>
-          <option value="contour">Contour</option>
-          <option value="terrace">Terrace</option>
-        </select>
-      </label>
-      <label class="control control-check">
-        <input type="checkbox" id="future">
-        <span>2050 stress test <em>+1.9 °C, −6% rain</em></span>
-      </label>
-    </div>
-
-    <div class="lab-grid">
-      <figure class="pareto-wrap">
-        <figcaption>
-          <strong>Water reliability</strong> against <strong>nitrogen balance</strong>.
-          Dot size is downside margin; colour is soil loss.
-          The frontier is the set of rotations nothing else beats on all four.
-        </figcaption>
-        <div id="pareto" class="pareto"></div>
+      <figure class="frame">
+        <div class="frame-bar"><i></i><i></i><i></i><span>app.html · Field</span></div>
+        <img src="assets/shots/field.jpg" width="1440" height="1158" alt="The Field view: a satellite map of Sheikhupura, Punjab, with the field's soil, rainfall and 34-year record, and a one-sentence recommendation.">
       </figure>
-      <div class="frontier-list" id="frontier-list"></div>
     </div>
-
-    <div class="future-banner" id="future-banner" hidden></div>
-
-    <figure class="supply-wrap">
-      <figcaption>
-        <strong>Where each rotation becomes safe.</strong>
-        Reliability against the water you can supply. The dashed line is your current supply.
-        This is the chart that answers "how much water do I need to stop worrying".
-      </figcaption>
-      <div id="supply-curve" class="supply-curve"></div>
-      <div class="supply-legend" id="supply-legend"></div>
-    </figure>
   </section>
 
-  <!-- ───────────────────────── DECISION ───────────────────────── -->
-  <section class="view" id="view-decision" aria-labelledby="decision-title" hidden>
-    <header class="view-head">
-      <div>
-        <p class="eyebrow">Decision brief</p>
-        <h1 id="decision-title" class="display">—</h1>
-      </div>
-      <div class="head-actions">
-        <button class="btn" id="print-btn">Print</button>
-        <button class="btn btn-primary" id="save-btn">Save this plan</button>
-      </div>
-    </header>
+  <!-- ── the problem ──────────────────────────────────────────── -->
+  <section class="band dark" id="problem">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">01</span><p class="eyebrow">The problem</p></div>
+      <h2 class="big">A farmer in Sheikhupura plants rice every June because his father did.</h2>
+      <p class="lede">
+        The water that made that decision correct is gone. The aquifer under the Pakistani Punjab
+        has been falling for two decades, measured from orbit by GRACE-FO. Rice–wheat still covers
+        four million hectares.
+      </p>
 
-    <div class="decision-body" id="decision-body"></div>
+      <div class="huge">39%</div>
+      <p class="huge-label">of the last 33 years, rice–wheat fitted inside this field's water supply</p>
+
+      <p class="lede">
+        Not 39% of yield. Not a score out of 100. <strong>Thirteen years out of thirty-three</strong>
+        where the crop's irrigation requirement was smaller than the water the farmer could deliver.
+        The other twenty, the field ran short.
+      </p>
+    </div>
   </section>
 
-  <!-- ───────────────────────── LEDGER ───────────────────────── -->
-  <section class="view" id="view-ledger" aria-labelledby="ledger-title" hidden>
-    <header class="view-head">
-      <div>
-        <p class="eyebrow">Ledger</p>
-        <h1 id="ledger-title" class="display">What we predicted, and what the satellites saw</h1>
+  <!-- ── the insight ──────────────────────────────────────────── -->
+  <section class="band" id="insight">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">02</span><p class="eyebrow">The insight</p></div>
+      <h2 class="big">A score out of 100 cannot be wrong. That is why nobody should trust it.</h2>
+      <p class="lede">
+        Every agri-advisory tool returns a number that goes up when things are good. You can never
+        catch it being wrong — and neither can a judge, and neither can a farmer.
+      </p>
+      <p class="lede" style="margin-top:22px;font-family:var(--display);font-size:clamp(20px,2.4vw,30px);line-height:1.3;letter-spacing:-.02em;color:var(--ink)">
+        We replaced the score with a failure rate.
+      </p>
+      <p class="lede" style="margin-top:22px">
+        A failure rate names years. <strong>Twenty of the last thirty-three</strong>, and every one
+        of them is in the record: 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+        2002, 2003, 2005, 2007, 2009, 2012, 2013, 2015, 2017. Those years can be checked against the
+        rainfall record, the soil-moisture record, the satellite archive. If we are wrong, you will
+        know exactly where.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── what we built ────────────────────────────────────────── -->
+  <section class="band" id="built">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">03</span><p class="eyebrow">What we built</p></div>
+      <h2 class="big">Four surfaces, one question: <em>does this fit?</em></h2>
+      <p class="lede" style="margin-bottom:clamp(40px,5vw,64px)">
+        A working static application with no build step and no API key. Every figure carries one of
+        three tags — <span class="chip chip-observed">observed</span>
+        <span class="chip chip-reanalysis">reanalysis</span>
+        <span class="chip chip-simulated">simulated</span> — so nothing modelled is ever presented
+        as measured.
+      </p>
+
+      <div class="surfaces">
+
+        <article class="surface">
+          <div class="surface-head">
+            <h3>Field</h3>
+            <span class="tag">zero input</span>
+          </div>
+          <p>
+            Pick a field and the profile is already there: soil texture from SoilGrids, 12,419 days
+            of NASA POWER, 301 MODIS NDVI composites, and a 34-year memory strip that shows which
+            years the monsoon failed. No form to fill in before you see anything.
+          </p>
+          <figure class="frame">
+            <div class="frame-bar"><i></i><i></i><i></i><span>Field · Sheikhupura, Punjab</span></div>
+            <img src="assets/shots/field.jpg" width="1440" height="1158" loading="lazy" alt="Field view showing soil texture, organic carbon, available water and the 34-year memory strip.">
+          </figure>
+        </article>
+
+        <article class="surface">
+          <div class="surface-head">
+            <h3>Rotation Lab</h3>
+            <span class="tag">2,304 sequences</span>
+          </div>
+          <p>
+            Every legal four-season sequence in the region is enumerated and evaluated against the
+            whole record — 152,064 simulated seasons in about 45 milliseconds. A Pareto plot over
+            four objectives at once, a shortlist with role labels, and a supply curve showing the
+            water supply at which each rotation becomes reliable.
+          </p>
+          <figure class="frame">
+            <div class="frame-bar"><i></i><i></i><i></i><span>Rotation Lab · Pareto frontier</span></div>
+            <img src="assets/shots/lab.jpg" width="1440" height="1050" loading="lazy" alt="Rotation Lab showing the Pareto plot, the recommended rotation card and the supply curve.">
+          </figure>
+        </article>
+
+        <article class="surface">
+          <div class="surface-head">
+            <h3>Decision</h3>
+            <span class="tag">the brief</span>
+          </div>
+          <p>
+            One page a farmer can act on: the requirement strip year by year, the five years it
+            fails, the fallback trigger, and a plain-language account of what changes — including
+            the trade-offs we would rather not admit. Soil loss rises by 0.20 t/ha/yr under the
+            recommended rotation, and the page says so.
+          </p>
+          <figure class="frame">
+            <div class="frame-bar"><i></i><i></i><i></i><span>Decision · Cotton · Chickpea</span></div>
+            <img src="assets/shots/decision.jpg" width="1440" height="1060" loading="lazy" alt="Decision brief showing 85% water reliability, 28 of 33 years within budget, and the requirement strip.">
+          </figure>
+        </article>
+
+        <article class="surface">
+          <div class="surface-head">
+            <h3>Ledger</h3>
+            <span class="tag">the model checks itself</span>
+          </div>
+          <p>
+            The page most tools do not ship. All five of the driest years in the record are flagged
+            as failures, years the model passes are 0.06 m³/m³ wetter in the reanalysis root zone,
+            and every prediction we have made is scored against what the satellites saw.
+          </p>
+          <figure class="frame">
+            <div class="frame-bar"><i></i><i></i><i></i><span>Ledger · validation</span></div>
+            <img src="assets/shots/ledger.jpg" width="1440" height="1254" loading="lazy" alt="Ledger showing 5 of 5 driest years flagged, the wetness delta, and scored predictions.">
+          </figure>
+        </article>
+
       </div>
-    </header>
-    <div class="ledger-body" id="ledger-body"></div>
+    </div>
+  </section>
+
+  <!-- ── the finding ──────────────────────────────────────────── -->
+  <section class="band dark" id="finding">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">04</span><p class="eyebrow">The finding</p></div>
+      <h2 class="big">One rotation beats rice–wheat on water, nitrogen and money at the same time.</h2>
+
+      <div class="compare">
+        <div>
+          <h3>Current practice</h3>
+          <div class="val bad">39%</div>
+          <div class="sub">water reliability</div>
+          <ul>
+            <li>938 mm irrigation need</li>
+            <li>−74 kg N / ha / yr</li>
+            <li>156k PKR downside</li>
+            <li>0 family breaks</li>
+          </ul>
+        </div>
+        <div>
+          <h3>Cotton · Chickpea · Cotton · Chickpea</h3>
+          <div class="val good">85%</div>
+          <div class="sub">water reliability</div>
+          <ul>
+            <li>703 mm irrigation need</li>
+            <li>+9 kg N / ha / yr</li>
+            <li>160k PKR downside</li>
+            <li>4 family breaks</li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="lede" style="margin-top:30px">
+        It is not the most reliable rotation we found. Maize–wheat is 100% reliable and we
+        <strong>do not recommend it</strong>: it mines 121 kg of nitrogen a hectare a year, worse
+        than the rice–wheat it would replace. The tool states its rule out loud — prefer a rotation
+        that wins on money, nitrogen and water together — and when nothing does, it says that
+        instead.
+      </p>
+      <p class="lede" style="margin-top:18px">
+        Under <strong>+1.9 °C and −6% rainfall</strong> — the IPCC AR6 SSP2-4.5 South Asia delta —
+        rice–wheat falls from 39% to <strong>27%</strong> reliable. The recommended rotation falls
+        from 85% to 79%. The gap widens.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── the data ─────────────────────────────────────────────── -->
+  <section class="band" id="data">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">05</span><p class="eyebrow">The data</p></div>
+      <h2 class="big">Six NASA products, one <em>33-year</em> record.</h2>
+      <p class="lede" style="margin-bottom:clamp(32px,4vw,48px)">
+        The failure rate is only meaningful because the record is long. Thirty-three years is what
+        lets us say "twenty failing years" instead of "risky". No commercial agronomy product has
+        that record; NASA does.
+      </p>
+
+      <div class="sources">
+        <div>
+          <span class="chip chip-reanalysis">reanalysis</span>
+          <h4>NASA POWER · MERRA-2</h4>
+          <p>Daily temperature, precipitation, humidity, wind, solar radiation and root-zone wetness, 1991–2024. 12,419 days per field. This drives the water balance.</p>
+        </div>
+        <div>
+          <span class="chip chip-observed">observed</span>
+          <h4>MODIS MOD13Q1</h4>
+          <p>250 m, 16-day NDVI. 301 composites per field, read as a 3×3 pixel mean. Observed canopy response, used as corroboration rather than as an input.</p>
+        </div>
+        <div>
+          <span class="chip chip-observed">observed</span>
+          <h4>SMAP L4</h4>
+          <p>Root-zone soil moisture, rendered as a live map layer so the reanalysis the model runs on can be compared against a satellite retrieval.</p>
+        </div>
+        <div>
+          <span class="chip chip-observed">observed</span>
+          <h4>GPM IMERG</h4>
+          <p>Satellite precipitation, rendered as a live map layer alongside the reanalysis — where the monsoon actually arrived.</p>
+        </div>
+        <div>
+          <span class="chip chip-observed">observed</span>
+          <h4>GRACE-FO</h4>
+          <p>Terrestrial water storage anomaly. The evidence that the aquifer trend makes the current rotation untenable.</p>
+        </div>
+        <div>
+          <span class="chip chip-observed">observed</span>
+          <h4>ISRIC SoilGrids 250 m</h4>
+          <p>Clay, sand, silt, organic carbon, pH and bulk density, read through the WCS endpoint as a neighbourhood median. Every field carries a real texture.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── the honesty ──────────────────────────────────────────── -->
+  <section class="band" id="honesty">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">06</span><p class="eyebrow">The honesty</p></div>
+      <h2 class="big">We tested our own model, and we published the result.</h2>
+
+      <div class="proof">
+        <div><b>5 of 5</b><span>driest years in the record are flagged as failures</span></div>
+        <div><b>0.06</b><span>m³/m³ wetter root zone in years we pass than in years we fail</span></div>
+        <div><b>20</b><span>years rice–wheat misses the budget at 900 mm</span></div>
+      </div>
+
+      <p class="lede" style="margin-top:34px">
+        That is a directional check on a reanalysis product, not an independent satellite
+        validation, and the app says so in those words. The model card lists eight things we know
+        are wrong — including that MERRA-2 under-reports Punjab monsoon rainfall, which makes our
+        irrigation requirement an upper bound.
+      </p>
+      <p class="lede" style="margin-top:18px;font-family:var(--display);font-size:clamp(19px,2.2vw,27px);line-height:1.35;letter-spacing:-.02em;color:var(--ink)">
+        A tool that will not tell you where it is weak is not a tool. It is marketing.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-lg ghost" href="model.html">Read the model card</a>
+        <a class="btn-lg ghost" href="pitch.html">See the pitch deck</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── who it is for ────────────────────────────────────────── -->
+  <section class="band" id="who">
+    <div class="wrap">
+      <div class="sec-head"><span class="sec-num">07</span><p class="eyebrow">Who it is for</p></div>
+      <h2 class="big">Built for the people who have to decide <em>before</em> the season.</h2>
+
+      <div class="who">
+        <div>
+          <h4>Smallholder farmers</h4>
+          <p>One question answered in one page: does this rotation fit the water I actually have, and in which years will it not?</p>
+        </div>
+        <div>
+          <h4>Extension officers</h4>
+          <p>A defensible answer to "what should I plant" that names its years and can be checked against the record in front of the farmer.</p>
+        </div>
+        <div>
+          <h4>Irrigation and canal authorities</h4>
+          <p>Where a rotation change moves demand, and by how much. 235 mm a year per hectare, modelled, with the arithmetic shown.</p>
+        </div>
+        <div>
+          <h4>Agronomists and researchers</h4>
+          <p>Every equation, every input and every known error in one model card. If a number in the app is not derivable from that page, it is a bug.</p>
+        </div>
+        <div>
+          <h4>Insurers and lenders</h4>
+          <p>A failure rate with named years is closer to an underwriting input than a suitability score ever was.</p>
+        </div>
+        <div>
+          <h4>Anyone adapting to a hotter decade</h4>
+          <p>The 2050 stress test is a sensitivity run, not a forecast — and it is labelled as one.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── closing ──────────────────────────────────────────────── -->
+  <section class="band dark closing" id="open">
+    <div class="wrap">
+      <h2>Ten percent of one cropping system is <em>a cubic kilometre</em> of water a year.</h2>
+      <p class="lede">
+        That is arithmetic on our own model output, not a measured saving, and the app labels it
+        that way. But the direction is not in doubt: the rotation that survives the century is not
+        the one that maximises this year's margin.
+      </p>
+      <div class="hero-actions">
+        <a class="btn-lg solid" href="app.html">Open the field →</a>
+        <a class="btn-lg ghost" href="model.html">Model card</a>
+        <a class="btn-lg ghost" href="pitch.html">Pitch deck</a>
+      </div>
+    </div>
   </section>
 
 </main>
 
-<footer class="foot">
+<footer class="lfoot">
   <p>
-    NASA POWER (MERRA-2 reanalysis) · NASA MODIS MOD13Q1 (LP DAAC, read via the Planetary Computer COG mirror) ·
-    NASA GIBS (MODIS, SMAP, IMERG, GRACE-FO) · ISRIC SoilGrids.
-    NASA and Space Apps names describe challenge context; no affiliation or endorsement is claimed.
+    NASA POWER (MERRA-2 reanalysis) · NASA MODIS MOD13Q1 (LP DAAC, read via the Planetary Computer
+    COG mirror) · NASA GIBS (MODIS, SMAP, IMERG, GRACE-FO) · ISRIC SoilGrids.<br>
+    NASA and Space Apps names describe challenge context. No affiliation or endorsement is claimed.
   </p>
-  <p class="foot-links">
+  <div class="lfoot-links">
+    <a href="app.html">App</a>
     <a href="model.html">Model card</a>
     <a href="pitch.html">Pitch</a>
     <a href="https://github.com/SidhartSami/Field-Shift">Source</a>
-  </p>
+  </div>
 </footer>
 
-<script src="vendor/leaflet/leaflet.js"></script>
-<script type="module" src="app.js"></script>
 </body>
 </html>
