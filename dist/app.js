@@ -17,6 +17,8 @@ import { applyDescription, describeSummary } from './ui/describe.js';
 import {
   num, pct, money, signed, cropName, rotationLabel, chip, escapeHtml,
 } from './ui/format.js';
+import { polygonAreaHa } from './field-map.js';
+import { basicIntel, localIntelSummary } from './ui/local-intel.js';
 
 const state = {
   index: [],
