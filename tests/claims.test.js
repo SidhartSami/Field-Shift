@@ -157,7 +157,7 @@ test('the model card cites every NASA product the app actually uses', () => {
 
 test('the pitch deck has seven slides and a working link back to the app', () => {
   assert.equal((pitch.match(/class="slide[ "]/g) ?? []).length, 7);
-  assert.ok(pitch.includes('href="index.html"'), 'pitch has no link back to the app');
+  assert.ok(pitch.includes('href="app.html"'), 'pitch has no link back to the app');
 });
 
 test('no page claims an affiliation with NASA', () => {

@@ -32,7 +32,8 @@ We ran that check. All five of the driest years in the Punjab record are flagged
 
 ```
 dist/
-  index.html          four views: Field, Rotation Lab, Decision, Ledger
+  index.html          the landing page — the argument, eight sections
+  app.html            the tool: Field, Rotation Lab, Decision, Ledger
   app.js              state, routing, rendering
   app.css             stylesheet
   model.html          the model card — equations, data, eight known errors
@@ -52,11 +53,12 @@ dist/
   ui/
     charts.js         memory strip, Pareto plot, supply curve, requirement strip
     format.js         every user-facing number goes through here
+  assets/shots/       four real captures of app.html, used by the landing page
   data/fields/        5 field bundles, 1991–2024 daily NASA POWER + SoilGrids
   vendor/leaflet/     Leaflet 1.9.4
 pipeline/
   fetch_fields.py     rebuilds data/fields from NASA POWER, MODIS, SoilGrids
-tests/                98 tests
+tests/                112 tests
 ```
 
 ## Run
@@ -70,6 +72,15 @@ npm start          # http://localhost:8080
 ```
 
 `dist/` is a static site. Serve it from anything.
+
+| Path | What it is |
+|------|------------|
+| `/` | the landing page — why a failure rate, what we built, what it found |
+| `/app.html` | the tool — Field, Rotation Lab, Decision, Ledger |
+| `/model.html` | the model card — equations, data, eight known errors |
+| `/pitch.html` | the seven-slide scroll deck |
+
+The landing page is documented in [`docs/LANDING.md`](docs/LANDING.md).
 
 ## The four views
 

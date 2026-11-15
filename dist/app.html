@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Field Shift — every rotation fails sometimes</title>
+<meta name="description" content="Field Shift reconstructs 34 years of NASA satellite and reanalysis history for a single field, replays every candidate crop rotation through it, and returns a failure rate instead of a score.">
+<meta name="theme-color" content="#101713">
+<link rel="icon" href="assets/fieldshift-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="topbar">
+  <a class="brand" href="#field">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M7 23c4-1 6-4 7-8s3-7 7-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="21" cy="7" r="2.1" fill="currentColor"/>
+      <path d="M7 23h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>
+    </svg>
+    <span class="brand-text">Field Shift<em>every rotation fails sometimes</em></span>
+  </a>
+
+  <div class="field-picker">
+    <label class="sr-only" for="field-select">Field</label>
+    <select id="field-select"></select>
+  </div>
+
+  <nav class="tabs" aria-label="Sections">
+    <a href="#field" data-view="field">Field</a>
+    <a href="#lab" data-view="lab">Rotation lab</a>
+    <a href="#decision" data-view="decision">Decision</a>
+    <a href="#ledger" data-view="ledger">Ledger</a>
+  </nav>
+
+  <div class="provenance" id="provenance" title="Every figure in this app is tagged by how it was produced">
+    <span class="chip chip-observed">observed</span>
+    <span class="chip chip-reanalysis">reanalysis</span>
+    <span class="chip chip-simulated">simulated</span>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ───────────────────────── FIELD ───────────────────────── -->
+  <section class="view" id="view-field" aria-labelledby="field-title">
+    <div class="field-grid">
+      <div class="map-panel">
+        <div id="map" class="map" role="application" aria-label="Satellite map of the field"></div>
+        <div class="map-controls">
+          <div class="layer-tabs" id="layer-tabs" role="tablist" aria-label="NASA layer"></div>
+          <div class="date-row">
+            <button class="icon-btn" id="date-prev" aria-label="Previous date">‹</button>
+            <input type="range" id="date-slider" min="0" max="100" value="100" aria-label="Observation date">
+            <button class="icon-btn" id="date-next" aria-label="Next date">›</button>
+            <output id="date-label" class="mono">—</output>
+          </div>
+        </div>
+        <p class="map-why" id="map-why"></p>
+        <p class="map-credit" id="map-credit">NASA GIBS</p>
+      </div>
+
+      <aside class="profile">
+        <p class="eyebrow">Field profile</p>
+        <h1 id="field-title" class="display">—</h1>
+        <p class="lede" id="field-lede">—</p>
+
+        <div class="thesis" id="thesis"></div>
+
+        <dl class="facts" id="facts"></dl>
+
+        <div class="sources" id="sources"></div>
+      </aside>
+    </div>
+
+    <section class="memory" aria-labelledby="memory-title">
+      <div class="memory-head">
+        <div>
+          <p class="eyebrow">The field's memory</p>
+          <h2 id="memory-title" class="display-sm">Thirty-four years, one column per year</h2>
+        </div>
+        <div class="memory-legend">
+          <span><i class="sw sw-rain"></i>Rainfall</span>
+          <span><i class="sw sw-heat"></i>Heat days</span>
+          <span><i class="sw sw-ndvi"></i>Peak NDVI</span>
+          <span><i class="sw sw-dry"></i>Failed monsoon</span>
+        </div>
+      </div>
+      <div class="memory-strip" id="memory-strip" role="img" aria-label="Annual climate record"></div>
+      <div class="memory-axis" id="memory-axis"></div>
+      <p class="memory-read" id="memory-read">Hover or focus a year to read its record.</p>
+    </section>
+  </section>
+
+  <!-- ───────────────────────── LAB ───────────────────────── -->
+  <section class="view" id="view-lab" aria-labelledby="lab-title" hidden>
+    <header class="view-head">
+      <div>
+        <p class="eyebrow">Rotation lab</p>
+        <h1 id="lab-title" class="display">Every rotation we could find, replayed through every year</h1>
+      </div>
+      <div class="lab-stats" id="lab-stats"></div>
+    </header>
+
+    <div class="controls">
+      <label class="control">
+        <span>Water you can supply <b id="supply-out" class="mono">—</b></span>
+        <input type="range" id="supply" min="0" max="1600" step="25">
+      </label>
+      <label class="control control-check">
+        <input type="checkbox" id="residue" checked>
+        <span>Residue retained</span>
+      </label>
+      <label class="control">
+        <span>Erosion practice</span>
+        <select id="practice">
+          <option value="none">None</option>
+          <option value="contour">Contour</option>
+          <option value="terrace">Terrace</option>
+        </select>
+      </label>
+      <label class="control control-check">
+        <input type="checkbox" id="future">
+        <span>2050 stress test <em>+1.9 °C, −6% rain</em></span>
+      </label>
+    </div>
+
+    <div class="lab-grid">
+      <figure class="pareto-wrap">
+        <figcaption>
+          <strong>Water reliability</strong> against <strong>nitrogen balance</strong>.
+          Dot size is downside margin; colour is soil loss.
+          The frontier is the set of rotations nothing else beats on all four.
+        </figcaption>
+        <div id="pareto" class="pareto"></div>
+      </figure>
+      <div class="frontier-list" id="frontier-list"></div>
+    </div>
+
+    <div class="future-banner" id="future-banner" hidden></div>
+
+    <figure class="supply-wrap">
+      <figcaption>
+        <strong>Where each rotation becomes safe.</strong>
+        Reliability against the water you can supply. The dashed line is your current supply.
+        This is the chart that answers "how much water do I need to stop worrying".
+      </figcaption>
+      <div id="supply-curve" class="supply-curve"></div>
+      <div class="supply-legend" id="supply-legend"></div>
+    </figure>
+  </section>
+
+  <!-- ───────────────────────── DECISION ───────────────────────── -->
+  <section class="view" id="view-decision" aria-labelledby="decision-title" hidden>
+    <header class="view-head">
+      <div>
+        <p class="eyebrow">Decision brief</p>
+        <h1 id="decision-title" class="display">—</h1>
+      </div>
+      <div class="head-actions">
+        <button class="btn" id="print-btn">Print</button>
+        <button class="btn btn-primary" id="save-btn">Save this plan</button>
+      </div>
+    </header>
+
+    <div class="decision-body" id="decision-body"></div>
+  </section>
+
+  <!-- ───────────────────────── LEDGER ───────────────────────── -->
+  <section class="view" id="view-ledger" aria-labelledby="ledger-title" hidden>
+    <header class="view-head">
+      <div>
+        <p class="eyebrow">Ledger</p>
+        <h1 id="ledger-title" class="display">What we predicted, and what the satellites saw</h1>
+      </div>
+    </header>
+    <div class="ledger-body" id="ledger-body"></div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <p>
+    NASA POWER (MERRA-2 reanalysis) · NASA MODIS MOD13Q1 (LP DAAC, read via the Planetary Computer COG mirror) ·
+    NASA GIBS (MODIS, SMAP, IMERG, GRACE-FO) · ISRIC SoilGrids.
+    NASA and Space Apps names describe challenge context; no affiliation or endorsement is claimed.
+  </p>
+  <p class="foot-links">
+    <a href="model.html">Model card</a>
+    <a href="pitch.html">Pitch</a>
+    <a href="https://github.com/SidhartSami/Field-Shift">Source</a>
+  </p>
+</footer>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>
