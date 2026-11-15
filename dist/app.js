@@ -239,10 +239,14 @@ function renderProperties(){
  grid.innerHTML=list.map(f=>{
   const i=f.draft.inputs,b=f.draft.boundary;
   const active=f.id===state.active;
+  const crop=String(i.summer||'').trim()||'wheat';
   return `<article class="property-card ${active?'is-active':''}" data-property-id="${esc(f.id)}">
    <div class="property-top">
-     <h3>${esc(i.farm||'Unnamed property')}</h3>
-     <span class="property-badge">${active?'ACTIVE':'SAVED'}</span>
+     <span class="property-logo" aria-hidden="true"><span class="crop-icon ${crops[crop]?.legume?'legume':''} crop-${crop}">${cropIllustration(crop)}</span></span>
+     <div class="property-name-wrap">
+       <h3>${esc(i.farm||'Unnamed property')}</h3>
+       <span class="property-badge">${active?'ACTIVE':'SAVED'}</span>
+     </div>
    </div>
    <div class="property-meta">
      <span class="property-chip">${n(i.area)} ha</span>
