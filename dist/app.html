@@ -33,6 +33,7 @@
     <a href="#field" data-view="field">Field</a>
     <a href="#lab" data-view="lab">Rotation lab</a>
     <a href="#decision" data-view="decision">Decision</a>
+    <a href="#properties" data-view="properties">Properties</a>
     <a href="#ledger" data-view="ledger">Ledger</a>
   </nav>
 
@@ -175,6 +176,18 @@
     <div class="decision-body" id="decision-body"></div>
   </section>
 
+  <!-- ───────────────────── PROPERTIES ───────────────────── -->
+  <section class="view" id="view-properties" aria-labelledby="properties-title" hidden>
+    <header class="view-head">
+      <div>
+        <p class="eyebrow">Properties</p>
+        <h1 id="properties-title" class="display">Every field bundle on this machine</h1>
+        <p class="lede">Five precomputed holdings with 34 years of NASA history each. Pick one to open it in the Field view.</p>
+      </div>
+    </header>
+    <div class="prop-grid" id="prop-grid"></div>
+  </section>
+
   <!-- ───────────────────────── LEDGER ───────────────────────── -->
   <section class="view" id="view-ledger" aria-labelledby="ledger-title" hidden>
     <header class="view-head">
@@ -186,6 +199,21 @@
     <div class="ledger-body" id="ledger-body"></div>
   </section>
 
+<div id="voice-live-bar" class="voice-dock" hidden role="region" aria-label="Live voice">
+  <div class="voice-dock-pill">
+    <span id="voice-live-mode" class="voice-dock-mode">IDLE</span>
+    <div class="voice-dock-lang" role="group" aria-label="Speech language">
+      <button type="button" data-live-lang="en-US">EN</button>
+      <button type="button" data-live-lang="multi" class="is-on" aria-pressed="true">Auto</button>
+      <button type="button" data-live-lang="ur" aria-pressed="false">اردو</button>
+    </div>
+    <div id="voice-live-text" class="voice-dock-text" aria-live="polite"></div>
+    <span id="voice-live-status" class="voice-dock-status" role="status">Mic off</span>
+    <button type="button" id="voice-live-toggle" class="voice-dock-mic" aria-pressed="false" aria-label="Start live voice">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.93V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z"/></svg>
+    </button>
+  </div>
+</div>
 </main>
 
 <footer class="foot">
@@ -201,6 +229,7 @@
   </p>
 </footer>
 
+<script src="runtime-config.js"></script>
 <script src="vendor/leaflet/leaflet.js"></script>
 <script type="module" src="app.js"></script>
 </body>

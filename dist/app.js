@@ -12,7 +12,7 @@ import { evaluateRotation, buildSeasonCache, usableYears } from './engine/evalua
 import { CROPS } from './engine/crops.js';
 import { textureClass } from './engine/soil.js';
 import { memoryStrip, memoryAxis, paretoPlot, supplyCurve, requirementStrip } from './ui/charts.js';
-import { parseUtterance, hasFacts } from './voice-live.js';
+import { parseUtterance, hasFacts, createVoiceLive } from './voice-live.js';
 import { applyDescription, describeSummary } from './ui/describe.js';
 import {
   num, pct, money, signed, cropName, rotationLabel, chip, escapeHtml,
@@ -35,6 +35,7 @@ const state = {
   map: null,
   layer: 'ndvi',
   dateIndex: 0,
+  voice: null,
 };
 
 const LAYERS = [
@@ -60,6 +61,8 @@ async function boot() {
 
   bindChrome();
   await loadField(state.index[0].id);
+  renderProperties();
+  initVoice();
   route();
 }
 
@@ -103,6 +106,40 @@ function bindChrome() {
  * than the Lab can act on, so we apply what maps and name what does not —
  * silently ignoring "clay soil" would be the dishonest option.
  */
+function syncLabControls() {
+  $('#supply').value = String(state.options.irrigationMm);
+  $('#supply-out').textContent = `${state.options.irrigationMm} mm`;
+  $('#residue').checked = state.options.residueRetained;
+}
+
+/** Fold parsed facts into Lab options (describe box + live mic). */
+function applyFacts(facts, { commit = true } = {}) {
+  if (!hasFacts(facts)) return null;
+  const result = applyDescription(state.options, facts);
+  state.options = result.options;
+  syncLabControls();
+  if (result.stress && !state.future) {
+    $('#future').checked = true;
+    ensureFuture();
+  }
+  if (commit) {
+    recompute();
+    renderLab();
+  } else {
+    scheduleVoiceRecompute();
+  }
+  return result;
+}
+
+let voiceRecomputeTimer = 0;
+function scheduleVoiceRecompute() {
+  clearTimeout(voiceRecomputeTimer);
+  voiceRecomputeTimer = setTimeout(() => {
+    recompute();
+    renderLab();
+  }, 350);
+}
+
 function applyDescribe() {
   const input = $('#describe');
   const read = $('#describe-read');
@@ -116,22 +153,92 @@ function applyDescribe() {
     return;
   }
 
-  const result = applyDescription(state.options, facts);
-  state.options = result.options;
-  $('#supply').value = String(state.options.irrigationMm);
-  $('#supply-out').textContent = `${state.options.irrigationMm} mm`;
-  $('#residue').checked = state.options.residueRetained;
-
-  if (result.stress && !state.future) {
-    $('#future').checked = true;
-    ensureFuture();
+  const result = applyFacts(facts, { commit: true });
+  if (result) {
+    read.hidden = false;
+    read.innerHTML = escapeHtml(describeSummary(result));
   }
-
-  read.hidden = false;
-  read.innerHTML = escapeHtml(describeSummary(result));
-  recompute();
-  renderLab();
 }
+
+/* ── live voice dock ──────────────────────────────────────── */
+
+function initVoice() {
+  const key = globalThis.__FIELDSHIFT_CONFIG?.deepgramKey || '';
+  globalThis.__fieldshiftReadInputs = () => ({
+    irrigation: state.options.irrigationMm,
+    residue: state.options.residueRetained,
+    dry: state.future ? 30 : 0,
+    heat: state.future ? 2 : 0,
+    farm: '', area: 1, soil: 'loam', organic: 0, slope: 0,
+    summer: 'rice', winter: 'wheat', priority: 'balanced', ndvi: '',
+    lat: 0, lon: 0,
+  });
+
+  const setRead = (html) => {
+    const el = document.querySelector('#describe-read');
+    if (!el) return;
+    el.hidden = false;
+    el.innerHTML = html;
+  };
+
+  state.voice = createVoiceLive({
+    document,
+    deepgramKey: key,
+    onLiveInputs: (_next, meta) => {
+      const facts = meta?.facts;
+      if (!facts || !hasFacts(facts)) return;
+      const result = applyFacts(facts, { commit: false });
+      if (result) setRead(escapeHtml(describeSummary(result)));
+    },
+    onCommit: () => {
+      const st = state.voice && state.voice.state ? state.voice.state() : null;
+      const last = (st?.lastUtterance || '').trim();
+      if (!last) return;
+      const facts = parseUtterance(last);
+      const result = applyFacts(facts, { commit: true });
+      if (result) setRead(escapeHtml(describeSummary(result)));
+      else setRead('Heard you, but nothing mapped to a Lab control.');
+    },
+    onError: (msg) => setRead('<span class="voice-err">' + escapeHtml(msg) + '</span>'),
+  });
+  const toggle = document.querySelector('#voice-live-toggle');
+  if (toggle) toggle.addEventListener('click', () => state.voice && state.voice.toggle());
+}
+
+/* ── properties ───────────────────────────────────────────── */
+
+function renderProperties() {
+  const grid = document.querySelector('#prop-grid');
+  if (!grid) return;
+  const activeId = state.bundle && state.bundle.id;
+  grid.innerHTML = state.index.map((f) => {
+    const active = f.id === activeId;
+    const badge = active ? 'OPEN' : f.country;
+    return '<article class="prop-card' + (active ? ' is-active' : '') + '">' +
+      '<div class="prop-card-top">' +
+        '<span class="prop-logo" aria-hidden="true">' +
+          '<svg viewBox="0 0 32 32" width="28" height="28"><rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M7 23c4-1 6-4 7-8s3-7 7-8" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="21" cy="7" r="2.1" fill="currentColor"/></svg>' +
+        '</span>' +
+        '<div class="prop-name"><h3>' + escapeHtml(f.name) + '</h3>' +
+        '<span class="prop-badge">' + escapeHtml(badge) + '</span></div>' +
+      '</div>' +
+      '<div class="prop-chips"><span>' + escapeHtml(f.system) + '</span><span>' + escapeHtml(f.region) + '</span>' +
+      '<span class="mono">' + f.lat.toFixed(2) + '°, ' + f.lon.toFixed(2) + '°</span></div>' +
+      '<p class="prop-note">' + escapeHtml(f.note) + '</p>' +
+      '<div class="prop-actions"><button type="button" class="btn btn-primary" data-prop-open="' + escapeHtml(f.id) + '">Open field</button></div>' +
+    '</article>';
+  }).join('');
+}
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-prop-open]');
+  if (!btn) return;
+  const id = btn.getAttribute('data-prop-open');
+  document.querySelector('#field-select').value = id;
+  loadField(id).then(() => {
+    location.hash = '#field';
+  });
+});
 
 /* ── data ─────────────────────────────────────────────────── */
 
@@ -154,6 +261,7 @@ async function loadField(id) {
   renderMemory();
   renderDecision();
   renderLedger();
+  renderProperties();
   initMap();
 }
 
@@ -1017,8 +1125,8 @@ function scalePanel() {
 
 function route() {
   const view = (location.hash.replace('#', '') || 'field');
-  state.view = ['field', 'lab', 'decision', 'ledger'].includes(view) ? view : 'field';
-  for (const v of ['field', 'lab', 'decision', 'ledger']) {
+  state.view = ['field', 'lab', 'decision', 'ledger', 'properties'].includes(view) ? view : 'field';
+  for (const v of ['field', 'lab', 'decision', 'ledger', 'properties']) {
     $(`#view-${v}`).hidden = v !== state.view;
   }
   document.querySelectorAll('.tabs a').forEach((a) => {
