@@ -65,7 +65,7 @@ test('fold is pure and idempotent for the same facts',()=>{
 test('polygon area helper estimates hectares',()=>{
   const ring=[[31.5,74.35],[31.51,74.35],[31.51,74.36],[31.5,74.36]];
   const ha=polygonAreaHa(ring);
-  assert.ok(ha>1&&ha<50,ha);
+  assert.ok(ha>50&&ha<200,ha);
  });
  test('hasFacts rejects empty or irrelevant speech',()=>{
  assert.equal(hasFacts(parseUtterance('')),false);
