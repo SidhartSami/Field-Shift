@@ -27,6 +27,7 @@ function setInputs(i){for(const k of fields){const value=i[k]??defaults[k];if($(
 // Live voice: expose a reader so voice-live can fold facts without importing state.
 globalThis.__fieldshiftReadInputs=()=>input();
 const LIVE_FIELD_IDS=['farm','area','soil','organic','slope','irrigation','summer','winter','priority','ndvi','residue','dry','heat'];
+const VOICE_CHANGE_KEYS=[...LIVE_FIELD_IDS,'lat','lon'];
 function flashLiveFocus(ids){
  for(const el of document.querySelectorAll('.live-focus'))el.classList.remove('live-focus');
  const list=(ids||[]).filter(id=>$(id));
@@ -120,7 +121,7 @@ document.getElementById('voice')?.addEventListener('input',e=>{
 function renderFields(){$('field-list').innerHTML=state.fields.map(f=>`<button class="field-item ${f.id===state.active?'active':''}" data-field="${esc(f.id)}" ${f.id===state.active?'aria-current="true"':''}><span class="field-square"></span><span>${esc(f.draft.inputs.farm||'Unnamed field')}<small>${n(f.draft.inputs.area)} ha</small></span><span class="field-indicator">${f.id===state.active?'●':''}</span></button>`).join('');$('plan-count').textContent=state.plans.length;}
 function loadDraft(d){localChecks=structuredClone(d.localChecks||{});economics={...defaultEconomics,...d.economics};setEconomicsInputs();const c=summarize(d.rawNASA,d.observations.year||2024);setInputs(d.inputs);raw=d.rawNASA;climate=c;observed={...d.observations.coordinates};source=d.observations.source;url=d.observations.url;fetchTime=d.observations.fetchedAt;year=d.observations.year||2024;customSequence=d.customSequence||null;selected=d.selected||'water';$('observation-year').value=year;$('fetch-status').textContent=`Loaded NASA observations at ${observed.lat}°, ${observed.lon}°. Coordinate changes require a refresh.`;draw();}
 $('field-list').onclick=e=>{const b=e.target.closest('[data-field]');if(!b||b.dataset.field===state.active)return;stash();requestId++;state.active=b.dataset.field;loadDraft(currentField().draft);persist();renderFields();$('field-list').querySelector(`[data-field="${state.active}"]`)?.focus();toast('Field workspace switched.')};
-const LOCATION_PRESETS={lahore:{name:'Lahore, Punjab, Pakistan',lat:31.5204,lon:74.3587},faisalabad:{name:'Faisalabad, Punjab, Pakistan',lat:31.4504,lon:73.135},multan:{name:'Multan, Punjab, Pakistan',lat:30.1575,lon:71.5249}};
+const LOCATION_PRESETS={lahore:{name:'Lahore, Punjab, Pakistan',lat:31.5204,lon:74.3587},islamabad:{name:'Islamabad, Pakistan',lat:33.6844,lon:73.0479},faisalabad:{name:'Faisalabad, Punjab, Pakistan',lat:31.4504,lon:73.135},multan:{name:'Multan, Punjab, Pakistan',lat:30.1575,lon:71.5249},karachi:{name:'Karachi, Sindh, Pakistan',lat:24.8607,lon:67.0011},peshawar:{name:'Peshawar, Pakistan',lat:34.0151,lon:71.5249},quetta:{name:'Quetta, Pakistan',lat:30.1798,lon:66.975},rawalpindi:{name:'Rawalpindi, Punjab, Pakistan',lat:33.5651,lon:73.0169}};
 let fieldSetup={},fieldSetupVersion=0;
 function setupBusy(busy){fieldSetup.busy=busy;for(const el of $('new-field-form').querySelectorAll('input,select'))el.disabled=busy;$('field-setup-submit').disabled=busy;$('field-setup-submit').textContent=busy?'Retrieving location evidence…':'Save field & location'}
 function setupPreset(){const lat=Number($('setup-lat').value),lon=Number($('setup-lon').value);$('setup-preset').value=Object.entries(LOCATION_PRESETS).find(([,p])=>p.lat===lat&&p.lon===lon)?.[0]||'custom'}
@@ -256,14 +257,21 @@ async function init(){try{const response=await fetch('data/power-lahore.json');i
   deepgramKey:globalThis.__FIELDSHIFT_CONFIG?.deepgramKey||'',
   onLiveInputs:(next,meta)=>{
    const before=input();
-   const ids=LIVE_FIELD_IDS.filter(k=>String(before[k]??'')!==String(next[k]??''));
+   const ids=VOICE_CHANGE_KEYS.filter(k=>String(before[k]??'')!==String(next[k]??''));
    applyLiveInputs(next,{live:true,ids});
   },
   onCommit:next=>{
    const before=input();
-   const ids=LIVE_FIELD_IDS.filter(k=>String(before[k]??'')!==String(next[k]??''));
+   const ids=VOICE_CHANGE_KEYS.filter(k=>String(before[k]??'')!==String(next[k]??''));
    if(!ids.length)return;
    applyLiveInputs(next,{live:false,ids});
+   const moved=ids.includes('lat')||ids.includes('lon');
+   if(moved&&!matches()){
+    toast('Location set from voice — refreshing NASA observations…');
+    $('fetch').click();
+    return;
+   }
+   if(moved){toast('Location updated from voice.');return}
    toast(ids.some(k=>k==='dry'||k==='heat')?'Scenario updated by voice.':'Comparison updated by live voice.');
   },
   onError:message=>toast(message)

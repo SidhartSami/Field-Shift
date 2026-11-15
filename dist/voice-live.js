@@ -11,6 +11,17 @@ export const WINTER_CROPS = {wheat:'wheat',chickpea:'chickpea',chana:'chickpea',
 export const PRIORITY_MAP = {balanced:'balanced',balance:'balanced',water:'water',soil:'soil'};
 export const UNIT_AREA = {acre:'acres',acres:'acres',acreage:'acres',hectare:'hectares',hectares:'hectares',ha:'hectares'};
 const AREA_PER = {acres:0.40468564224,hectares:1};
+/** Known Pakistan places → coordinates (same set as planner LOCATION_PRESETS + extras). */
+export const PLACE_MAP = {
+ lahore:{name:'Lahore, Punjab, Pakistan',lat:31.5204,lon:74.3587},
+ islamabad:{name:'Islamabad, Pakistan',lat:33.6844,lon:73.0479},
+ faisalabad:{name:'Faisalabad, Punjab, Pakistan',lat:31.4504,lon:73.135},
+ multan:{name:'Multan, Punjab, Pakistan',lat:30.1575,lon:71.5249},
+ karachi:{name:'Karachi, Sindh, Pakistan',lat:24.8607,lon:67.0011},
+ peshawar:{name:'Peshawar, Pakistan',lat:34.0151,lon:71.5249},
+ quetta:{name:'Quetta, Pakistan',lat:30.1798,lon:66.975},
+ rawalpindi:{name:'Rawalpindi, Punjab, Pakistan',lat:33.5651,lon:73.0169},
+};
 
 const DG_BASE =
  'wss://api.deepgram.com/v1/listen' +
@@ -23,14 +34,22 @@ export function parseUtterance(raw){
  const text=original.toLowerCase().replace(/[’']/g,"'");
  const facts={
   farm:null,area:null,areaUnit:null,soil:null,organic:null,slope:null,irrigation:null,
-  summer:null,winter:null,priority:null,residue:null,dry:null,heat:null,ndvi:null
+  summer:null,winter:null,priority:null,residue:null,dry:null,heat:null,ndvi:null,place:null
  };
  const nameRe=/\b(?:my\s+)?(?:farm|field|plot)\s+(?:name\s+)?(?:is\s+)?(?:called|named)?\s+([A-Za-z][A-Za-z0-9\s'-]{1,60}?)(?=\s+(?:name\s+)?(?:is|has|with|area|size)\b|[,.]|$)/i;
  let m=original.match(nameRe);
  if(!m)m=original.match(/\b(?:call|name)\s+(?:it|this|the field)\s+([A-Za-z][A-Za-z0-9\s'-]{1,60}?)(?=\s+[,.]|$)/i);
  if(m)facts.farm=m[1].trim().replace(/\s+/g,' ');
- m=text.match(/(\d+(?:\.\d+)?)\s*(acres?|acreage|hectares?|ha)\b/);
- if(m){facts.area=Number(m[1]);facts.areaUnit=UNIT_AREA[m[2]]||null}
+ // "area is 20" / "its area is 20 ha" — keyword first so bare numbers elsewhere don't win
+ m=text.match(/\b(?:its?\s+|the\s+|my\s+|this\s+)?(?:field\s+|plot\s+)?(?:area|size|land(?:\s+area)?)\s*(?:is|of|=|:)?\s*(\d+(?:\.\d+)?)\s*(ha|hectares?|acres?|acreage)?\b/);
+ if(m){facts.area=Number(m[1]);facts.areaUnit=UNIT_AREA[m[2]||'']??null}
+ else{
+  m=text.match(/(\d+(?:\.\d+)?)\s*(acres?|acreage|hectares?|ha)\b/);
+  if(m){facts.area=Number(m[1]);facts.areaUnit=UNIT_AREA[m[2]]||null}
+ }
+ for(const [word,place] of Object.entries(PLACE_MAP)){
+  if(new RegExp(`\\b${word}\\b`,'i').test(text)){facts.place={...place,key:word};break}
+ }
  m=text.match(/\b(?:organic matter|organic)\s*(?:is\s*)?(\d+(?:\.\d+)?)\s*(?:percent|%|per\s*cent)?/);
  if(!m)m=text.match(/(\d+(?:\.\d+)?)\s*(?:percent|%)\s*organic/);
  if(m)facts.organic=Number(m[1]);
@@ -79,6 +98,10 @@ export function reduceInputs(inputs,facts){
  if(Number.isFinite(facts.area)&&facts.area>0){
   const unit=facts.areaUnit||'hectares';
   next.area=unit==='acres'?Math.round(facts.area*AREA_PER.acres*10)/10:Math.round(facts.area*10)/10;
+ }
+ if(facts.place){
+  next.lat=facts.place.lat;
+  next.lon=facts.place.lon;
  }
  if(facts.soil)next.soil=facts.soil;
  if(Number.isFinite(facts.organic)&&facts.organic>=0&&facts.organic<=10)next.organic=facts.organic;
@@ -361,6 +384,11 @@ export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Reco
    btn.setAttribute('aria-pressed',String(state.listening));
    btn.setAttribute('aria-label',state.listening?'Stop live voice':'Start live voice');
    btn.disabled=!hasRecognition();
+  }
+  const cardLive=$('voice-card-live');
+  if(cardLive){
+   cardLive.textContent=text;
+   cardLive.classList.toggle('is-live',Boolean(state.listening&&(state.partial||state.utterance)));
   }
   if(modeEl){
    modeEl.textContent=state.listening

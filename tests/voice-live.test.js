@@ -14,6 +14,11 @@ test('parses area, irrigation, crops and soil from plain English utterances',()=
  assert.equal(d.area,12);assert.equal(d.areaUnit,'acres');
  assert.equal(parseUtterance('make it drier by 30').dry,30);
  assert.equal(parseUtterance('reduce rainfall by 30 percent').dry,30);
+ assert.equal(parseUtterance('area is 20').area,20);
+ assert.equal(parseUtterance('its area is 20').area,20);
+ assert.equal(parseUtterance('I have a place in Lahore and its area is 20').place.key,'lahore');
+ assert.equal(parseUtterance('field in Islamabad').place.key,'islamabad');
+ assert.equal(reduceInputs(base,parseUtterance('field in Islamabad')).lat,33.6844);
 });
 
 test('parses scenario stress, priority, residue and farm name',()=>{
