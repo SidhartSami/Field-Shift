@@ -66,7 +66,16 @@ button,.primary,.secondary{transition:transform 130ms var(--ease-out),opacity 13
 
 /* CoffeeBrew-style horizontal option cards (above the form) */
 .voice-stage-body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:28px;padding:28px 24px 32px;width:100%}
-.voice-stage-body .voice-opt-wrap{width:min(960px,100%);margin-inline:auto}
+.voice-stage-body .voice-opt-wrap{width:100%;max-width:none;margin-inline:0}
+@media(min-width:1100px){
+  .voice-opt-grid{
+    grid-auto-flow:row;
+    grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+    overflow-x:visible;
+    scroll-snap-type:none;
+  }
+  .voice-opt-card{scroll-snap-align:none}
+}
 .voice-stage-body .voice-live-card{width:min(960px,100%);margin:4px auto 0}
 
 .voice-plan-empty{
