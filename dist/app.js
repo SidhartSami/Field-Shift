@@ -36,10 +36,18 @@ function flashLiveFocus(ids){
  clearTimeout(flashLiveFocus._t);
  flashLiveFocus._t=setTimeout(()=>{for(const el of document.querySelectorAll('.live-focus'))el.classList.remove('live-focus')},2200);
 }
+let voicePlanAdded=new Set();
+function planKeyFor(id){
+ if(id==='lat'||id==='lon')return 'place';
+ if(id==='farm')return 'field';
+ if(id==='dry'||id==='heat')return 'stress';
+ return id;
+}
 function applyLiveInputs(next,{live=false,ids=[]}={}){
  if(!ready)return;
  setInputs(next);
  draw();
+ for(const id of ids)voicePlanAdded.add(planKeyFor(id));
  renderVoiceStage(ids);
  if(!live){
   stash();
