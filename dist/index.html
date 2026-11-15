@@ -65,6 +65,28 @@
           </div></li>
         </ul>
       </div>
+
+      <article class="voice-map-card" aria-label="Field boundary map">
+        <div class="voice-map-head">
+          <div class="voice-map-copy">
+            <p class="voice-opt-heading">Your land</p>
+            <p class="voice-map-hint">Pick a basemap, then draw a polygon around the field.</p>
+          </div>
+          <div class="voice-map-tools">
+            <div class="voice-map-basemaps" role="group" aria-label="Basemap">
+              <button type="button" data-voice-basemap="satellite" class="is-on" aria-pressed="true">Satellite</button>
+              <button type="button" data-voice-basemap="streets" aria-pressed="false">Streets</button>
+              <button type="button" data-voice-basemap="none" aria-pressed="false">Data only</button>
+            </div>
+            <button type="button" id="voice-map-draw" class="voice-map-btn" aria-pressed="false">Draw polygon</button>
+            <button type="button" id="voice-map-undo" class="voice-map-btn" hidden>Undo</button>
+            <button type="button" id="voice-map-finish" class="voice-map-btn is-primary" hidden>Finish</button>
+            <button type="button" id="voice-map-clear" class="voice-map-btn" hidden>Clear</button>
+          </div>
+        </div>
+        <div id="voice-field-map" class="voice-field-map" role="application" aria-label="Click to draw your field boundary"></div>
+        <p id="voice-map-status" class="voice-map-status" role="status">Boundary map loads when you open Live voice.</p>
+      </article>
     </div>
     <div class="voice-dock" aria-label="Transcript">
       <span id="voice-live-mode" class="voice-live-mode">IDLE</span>

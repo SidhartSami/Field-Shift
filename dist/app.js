@@ -6,6 +6,7 @@ import {createVoiceHelp} from './voice.js';
 import {createVoiceLive} from './voice-live.js';
 import {compareOutcomes,screenEconomics} from './outcomes.js';
 import {createGeoWorkspace} from './geo.js';
+import {createFieldBoundaryMap} from './field-map.js';
 import {crops,summarize,evaluate} from './model.js';
 const $=id=>document.getElementById(id),KEY='fieldshift-workspace-v2';
 const fields=['farm','area','lat','lon','soil','organic','slope','irrigation','summer','winter','priority','ndvi','residue','dry','heat'];
@@ -13,7 +14,7 @@ const defaults={farm:'Lahore example field',area:10,lat:31.5204,lon:74.3587,soil
 const defaultEconomics={currency:'PKR',pumpingCost:'',marginChange:'',transitionCost:''};
 let economics={...defaultEconomics},localChecks={};
 const locale={language:'en',translate:text=>text};
-let voiceView=null,dictation=null,voiceLive=null;
+let voiceView=null,dictation=null,voiceLive=null,fieldMap=null,fieldBoundary=null;
 let geoView=null;
 let state={version:2,active:'field-1',fields:[],plans:[]},raw,climate,results=[],observed={lat:31.5204,lon:74.3587},source='saved NASA snapshot',url='',fetchTime='2026-11-14',year=2024,selected='water',customSequence=null,ready=false,toastTimer,requestId=0,month=6;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -58,7 +59,7 @@ function matches(){const i=input();return i.lat===observed.lat&&i.lon===observed
 function geoContext(){const i=input();return {inputs:i,year,customSequence,selected,selectedName:results.find(r=>r.id===selected)?.name,valid:ready&&$('farm-form').checkValidity()&&matches(),fields:state.fields.map(f=>{const d=f.id===state.active?{inputs:i,observations:{coordinates:observed}}:f.draft;return {id:f.id,name:d.inputs.farm,area:d.inputs.area,lat:Number(d.inputs.lat),lon:Number(d.inputs.lon),active:f.id===state.active,matched:Number(d.inputs.lat)===d.observations.coordinates.lat&&Number(d.inputs.lon)===d.observations.coordinates.lon}})}}
 function ensureGeo(){if(!geoView)geoView=createGeoWorkspace({document,fetcher:(...args)=>fetch(...args),getContext:geoContext,onError:toast,onSelectField:fid=>{$('field-list').querySelector(`[data-field="${fid}"]`)?.click()},onUseLocation:point=>openFieldSetup({point})});return geoView}
 function currentField(){return state.fields.find(f=>f.id===state.active)}
-function snapshot(){return {inputs:input(),rawNASA:raw,observations:{source,url,fetchedAt:fetchTime,coordinates:{...observed},year},customSequence:customSequence?[...customSequence]:null,selected,economics:{...economics},localChecks:structuredClone(localChecks)};}
+function snapshot(){return {boundary:fieldBoundary?fieldBoundary.map(p=>[...p]):null,inputs:input(),rawNASA:raw,observations:{source,url,fetchedAt:fetchTime,coordinates:{...observed},year},customSequence:customSequence?[...customSequence]:null,selected,economics:{...economics},localChecks:structuredClone(localChecks)};}
 function persist(){try{localStorage.setItem(KEY,JSON.stringify(state));$('save-state').textContent='Draft saved on device';return true}catch{$('save-state').textContent='Draft not saved';toast('Device storage is unavailable or full. Export your plan to keep a copy.');return false}}
 function stash(){if(!ready)return;const f=currentField();if(f)f.draft=snapshot();persist();renderFields();geoView?.update();voiceView?.contextChanged()}
 function validate(){if(!ready)throw Error('Wait for the observations to load.');if(!$('farm-form').reportValidity())throw Error('Correct the highlighted field inputs.');if(!matches())throw Error('Refresh NASA observations for these coordinates before saving or exporting.');evaluate({...input(),customSequence},climate)}
@@ -170,7 +171,23 @@ function renderVoiceStage(changedIds){
  syncVoiceFields(i,{changed:changedIds||[]});
 }
 
-function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='voice')renderVoiceStage();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
+function ensureFieldMap(){
+ if(!fieldMap&&ready&&globalThis.L){
+  fieldMap=createFieldBoundaryMap({
+   document,
+   leaflet:globalThis.L,
+   getCenter:()=>({lat:input().lat,lon:input().lon}),
+   getBoundary:()=>fieldBoundary,
+   setBoundary:ring=>{
+    fieldBoundary=ring&&ring.length>=3?ring:null;
+    stash();
+   },
+   onError:toast
+  });
+ }
+ return fieldMap;
+}
+function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='voice'){renderVoiceStage();ensureFieldMap()?.show()}else if(fieldMap)fieldMap.hide?.();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
 document.addEventListener('click',e=>{
  const add=e.target.closest('[data-add-plan]');
  if(add&&ready){
@@ -197,7 +214,7 @@ document.getElementById('voice')?.addEventListener('input',e=>{
  });
  window.addEventListener('hashchange',route);
 function renderFields(){$('field-list').innerHTML=state.fields.map(f=>`<button class="field-item ${f.id===state.active?'active':''}" data-field="${esc(f.id)}" ${f.id===state.active?'aria-current="true"':''}><span class="field-square"></span><span>${esc(f.draft.inputs.farm||'Unnamed field')}<small>${n(f.draft.inputs.area)} ha</small></span><span class="field-indicator">${f.id===state.active?'●':''}</span></button>`).join('');$('plan-count').textContent=state.plans.length;}
-function loadDraft(d){localChecks=structuredClone(d.localChecks||{});economics={...defaultEconomics,...d.economics};setEconomicsInputs();const c=summarize(d.rawNASA,d.observations.year||2024);setInputs(d.inputs);raw=d.rawNASA;climate=c;observed={...d.observations.coordinates};source=d.observations.source;url=d.observations.url;fetchTime=d.observations.fetchedAt;year=d.observations.year||2024;customSequence=d.customSequence||null;selected=d.selected||'water';$('observation-year').value=year;$('fetch-status').textContent=`Loaded NASA observations at ${observed.lat}°, ${observed.lon}°. Coordinate changes require a refresh.`;draw();}
+function loadDraft(d){fieldBoundary=Array.isArray(d.boundary)&&d.boundary.length>=3?d.boundary.map(p=>[...p]):null;localChecks=structuredClone(d.localChecks||{});economics={...defaultEconomics,...d.economics};setEconomicsInputs();const c=summarize(d.rawNASA,d.observations.year||2024);setInputs(d.inputs);raw=d.rawNASA;climate=c;observed={...d.observations.coordinates};source=d.observations.source;url=d.observations.url;fetchTime=d.observations.fetchedAt;year=d.observations.year||2024;customSequence=d.customSequence||null;selected=d.selected||'water';$('observation-year').value=year;$('fetch-status').textContent=`Loaded NASA observations at ${observed.lat}°, ${observed.lon}°. Coordinate changes require a refresh.`;draw();}
 $('field-list').onclick=e=>{const b=e.target.closest('[data-field]');if(!b||b.dataset.field===state.active)return;stash();requestId++;state.active=b.dataset.field;loadDraft(currentField().draft);persist();renderFields();$('field-list').querySelector(`[data-field="${state.active}"]`)?.focus();toast('Field workspace switched.')};
 const LOCATION_PRESETS={lahore:{name:'Lahore, Punjab, Pakistan',lat:31.5204,lon:74.3587},islamabad:{name:'Islamabad, Pakistan',lat:33.6844,lon:73.0479},faisalabad:{name:'Faisalabad, Punjab, Pakistan',lat:31.4504,lon:73.135},multan:{name:'Multan, Punjab, Pakistan',lat:30.1575,lon:71.5249},karachi:{name:'Karachi, Sindh, Pakistan',lat:24.8607,lon:67.0011},peshawar:{name:'Peshawar, Pakistan',lat:34.0151,lon:71.5249},quetta:{name:'Quetta, Pakistan',lat:30.1798,lon:66.975},rawalpindi:{name:'Rawalpindi, Punjab, Pakistan',lat:33.5651,lon:73.0169}};
 let fieldSetup={},fieldSetupVersion=0;
@@ -346,6 +363,7 @@ async function init(){try{const response=await fetch('data/power-lahore.json');i
    const moved=ids.includes('lat')||ids.includes('lon');
    if(moved&&!matches()){
     toast('Location set from voice — refreshing NASA observations…');
+    fieldMap?.refreshCenter();
     $('fetch').click();
     return;
    }

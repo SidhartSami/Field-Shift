@@ -1,5 +1,6 @@
 import {test} from 'node:test';import assert from 'node:assert/strict';
 import {parseUtterance,reduceInputs,hasFacts,createVoiceLive} from '../dist/voice-live.js';
+import {polygonAreaHa} from '../dist/field-map.js';
 
 const base={farm:'Lahore example field',area:10,lat:31.5204,lon:74.3587,soil:'loam',organic:1.2,slope:2,irrigation:500,summer:'rice',winter:'wheat',priority:'balanced',ndvi:'',residue:true,dry:0,heat:0};
 
@@ -61,7 +62,12 @@ test('fold is pure and idempotent for the same facts',()=>{
  assert.equal(base.irrigation,500);
 });
 
-test('hasFacts rejects empty or irrelevant speech',()=>{
+test('polygon area helper estimates hectares',()=>{
+  const ring=[[31.5,74.35],[31.51,74.35],[31.51,74.36],[31.5,74.36]];
+  const ha=polygonAreaHa(ring);
+  assert.ok(ha>1&&ha<50,ha);
+ });
+ test('hasFacts rejects empty or irrelevant speech',()=>{
  assert.equal(hasFacts(parseUtterance('')),false);
  assert.equal(hasFacts(parseUtterance('hello there')),false);
  assert.equal(hasFacts(parseUtterance('wheat')),true);
@@ -109,3 +115,4 @@ test('createVoiceLive commits final phrases and applies interim folds',()=>{
  assert.equal(api.state().status,'idle');
  delete globalThis.__fieldshiftReadInputs;
 });
+
