@@ -63,11 +63,7 @@
             <input id="voice-heat" data-live-field="heat" type="range" min="0" max="5" step="0.5">
           </div></li>
         </ul>
-        <div class="voice-save-row">
-          <button type="button" id="save-property" class="primary voice-save-btn">Save property</button>
-          <span class="caption voice-save-hint">Writes field details + land outline to this browser workspace.</span>
-        </div>
-      </div>
+              </div>
 
       
     </div>
@@ -105,7 +101,12 @@
         <div id="voice-field-map" class="voice-field-map" role="application" aria-label="Click to draw your field boundary"></div>
         <p id="voice-map-status" class="voice-map-status" role="status">Boundary map loads when you open Add property.</p>
       </article>
-</section>
+
+    <div class="voice-save-row">
+          <button type="button" id="save-property" class="primary voice-save-btn">Save property</button>
+          <span class="caption voice-save-hint">Writes field details + land outline to this browser workspace.</span>
+        </div>
+  </section>
 <section id="map" class="view" hidden aria-label="Field intelligence map">
 <div class="geo-toolbar"><div class="geo-layer-tabs" role="group" aria-label="Map data layer"><button data-geo-layer="rain" class="active" aria-pressed="true">◈ Rainfall</button><button data-geo-layer="temp" aria-pressed="false">☼ Temperature</button><button data-geo-layer="wet" aria-pressed="false">◉ Soil wetness</button><button data-geo-layer="gap" aria-pressed="false">↗ Water gap <small>MODEL</small></button></div><div class="geo-toolbar-actions"><button id="geo-fit" class="secondary">Fit region</button><button id="geo-export" class="secondary" disabled>↓ GeoJSON</button></div></div>
 <div class="geo-layout"><div class="geo-map-shell"><div id="geo-map" aria-label="Interactive Punjab and nearby region map. Use arrow keys to pan, plus and minus to zoom, or select a cell from the inspector."></div><div class="geo-basemap-controls" role="group" aria-label="Basemap"><button data-basemap="satellite" class="active" aria-pressed="true">Satellite</button><button data-basemap="streets" aria-pressed="false">Streets</button><button data-basemap="none" aria-pressed="false">Data only</button></div><div class="geo-north" aria-hidden="true">N<span>↑</span></div><div class="geo-map-badge"><span class="status-dot"></span><span id="geo-coverage">Loading NASA regional data…</span></div><div class="geo-legend"><div><strong id="geo-legend-title">Rainfall</strong><span id="geo-legend-unit">mm</span></div><div id="geo-color-scale"></div><div id="geo-legend-ticks"></div><p>Approximate NASA grid cells · not field boundaries</p></div></div>
