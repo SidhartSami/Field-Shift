@@ -74,6 +74,35 @@ function syncVoiceFields(next,{changed=[]}={}){
  if(dryOut)dryOut.textContent=`${next.dry??0}%`;
  if(heatOut)heatOut.textContent=`+${next.heat??0}°C`;
 }
+function renderVoiceOptionCards(i,changed=[]){
+ const box=$('voice-option-cards');
+ if(!box)return;
+ const cropArt=c=>`<span class="crop-icon ${crops[c]?.legume?'legume':''} crop-${c}">${cropIllustration(c)}</span>`;
+ const cards=[
+  {key:'summer',title:'Summer crop',art:cropArt(i.summer),value:String(i.summer),
+   options:[['rice','Rice'],['maize','Maize'],['millet','Pearl millet'],['mung','Mung bean']]},
+  {key:'winter',title:'Winter crop',art:cropArt(i.winter),value:String(i.winter),
+   options:[['wheat','Wheat'],['chickpea','Chickpea'],['mustard','Mustard'],['maize','Maize']]},
+  {key:'soil',title:'Soil texture',art:`<span class="voice-opt-glyph-big">${i.soil==='sand'?'▨':i.soil==='clay'?'▦':'⊞'}</span>`,value:String(i.soil),
+   options:[['loam','Loam'],['sand','Sandy'],['clay','Clay']]},
+  {key:'priority',title:'Goal',art:`<span class="voice-opt-glyph-big">◎</span>`,value:String(i.priority),
+   options:[['balanced','Balanced'],['water','Conserve water'],['soil','Soil health']]}
+ ];
+ box.innerHTML=cards.map(c=>{
+  const rows=c.options.map(([val,label])=>{
+   const on=val===c.value;
+   const glyph=c.key==='summer'||c.key==='winter'?cropArt(val)
+    :c.key==='soil'?(val==='sand'?'▨':val==='clay'?'▦':'⊞')
+    :val==='water'?'≋':val==='soil'?'◍':'◎';
+   return `<li><button type="button" class="voice-opt-pick ${on?'is-on':''}" data-opt-key="${c.key}" data-opt-val="${esc(val)}" aria-pressed="${on}"><span class="voice-opt-glyph" aria-hidden="true">${glyph}</span><span class="voice-opt-label">${esc(label)}</span></button></li>`;
+  }).join('');
+  return `<article class="voice-opt-card ${changed.includes(c.key)?'is-changed':''}" role="listitem">
+   <div class="voice-opt-art">${c.art}</div>
+   <h3>${esc(c.title)}</h3>
+   <ul class="voice-opt-rows">${rows}</ul>
+  </article>`;
+ }).join('');
+}
 function renderVoiceStage(changedIds){
  const section=$('voice');
  if(!section||section.hidden||!ready)return;
@@ -88,6 +117,7 @@ function renderVoiceStage(changedIds){
  if(sIcon)sIcon.innerHTML=cropIllustration(i.summer);
  if(wIcon)wIcon.innerHTML=cropIllustration(i.winter);
  syncVoiceFields(i,{changed:changedIds||[]});
+ renderVoiceOptionCards(i,changedIds||[]);
  const metrics=$('voice-live-metrics');
  if(metrics&&baseline&&chosen){
   metrics.innerHTML=[
@@ -106,7 +136,14 @@ function renderVoiceStage(changedIds){
 }
 
 function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='voice')renderVoiceStage();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
-document.addEventListener('click',e=>{const b=e.target.closest('#voice-live-strategies [data-select]');if(!b)return;selected=b.dataset.select;renderComparison();renderTimeline();renderVoiceStage();stash()});
+document.addEventListener('click',e=>{
+ const pick=e.target.closest('[data-opt-key][data-opt-val]');
+ if(pick&&ready){
+  const next={...input(),[pick.dataset.optKey]:pick.dataset.optVal};
+  applyLiveInputs(next,{live:false,ids:[pick.dataset.optKey]});
+  return;
+ }
+ const b=e.target.closest('#voice-live-strategies [data-select]');if(!b)return;selected=b.dataset.select;renderComparison();renderTimeline();renderVoiceStage();stash()});
 document.getElementById('voice')?.addEventListener('input',e=>{
   const el=e.target.closest('[data-live-field]');if(!el||!ready)return;
   const next={...input(),[el.dataset.liveField]:el.type==='number'||el.type==='range'?Number(el.value):el.value};
