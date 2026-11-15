@@ -581,7 +581,8 @@ export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Reco
  }
  render();
  function syncLangButtons(){
-  for(const b of doc.querySelectorAll('[data-live-lang]')){
+  const nodes=typeof doc.querySelectorAll==='function'?doc.querySelectorAll('[data-live-lang]'):([]);
+  for(const b of nodes){
    const on=b.dataset.liveLang===liveLang||(liveLang==='multi'&&b.dataset.liveLang==='multi');
    b.classList.toggle('is-on',on);
    b.setAttribute('aria-pressed',String(on));
@@ -595,7 +596,8 @@ export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Reco
    void start();
   }
  }
- for(const b of doc.querySelectorAll('[data-live-lang]')){
+ const langBtns=typeof doc.querySelectorAll==='function'?doc.querySelectorAll('[data-live-lang]'):([]);
+ for(const b of langBtns){
   b.onclick=()=>setLanguage(b.dataset.liveLang);
  }
  syncLangButtons();
