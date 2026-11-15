@@ -199,8 +199,7 @@ function ensureFieldMap(){
    getBoundary:()=>fieldBoundary,
    setBoundary:ring=>{
     fieldBoundary=ring&&ring.length>=3?ring.map(p=>[...p]):null;
-    stash();
-    if(fieldBoundary)toast('Land boundary saved with this property.');
+    if(fieldBoundary)toast('Outline ready — Save property to keep it with a new card.');
    },
    onError:toast
   });
@@ -245,7 +244,7 @@ function renderProperties(){
 function openProperty(id,edit=false){
  const f=state.fields.find(x=>x.id===id);
  if(!f)return;
- if(state.active!==id){stash();requestId++;state.active=id;loadDraft(f.draft);persist();renderFields()}
+ if(state.active!==id){requestId++;state.active=id;loadDraft(f.draft);persist();renderFields()}
  renderProperties();
  location.hash=edit?'voice':'planner';
  toast(edit?'Opened property details.':'Property opened.');
@@ -397,12 +396,17 @@ $('plan-search').oninput=renderPlans;
 $('save-property')&&($('save-property').onclick=()=>{
   try{
    if(ready&&!$('farm-form').reportValidity()){toast('Fix highlighted field inputs before saving.');return}
-   stash();
-   const name=input().farm||'This property';
-   const outline=fieldBoundary&&fieldBoundary.length>=3?' + land outline':'';
-   toast(`Property saved on this device: ${name}${outline}.`);
-   // Land on Properties so the saved card is visible immediately
+   const draft=snapshot();
+   draft.boundary=fieldBoundary&&fieldBoundary.length>=3?fieldBoundary.map(p=>[...p]):null;
+   const field={id:id(),draft};
+   state.fields.push(field);
+   state.active=field.id;
+   persist();
+   renderFields();
    renderProperties();
+   const name=draft.inputs.farm||'This property';
+   const outline=draft.boundary?' + land outline':'';
+   toast(`Property added: ${name}${outline}. Previous properties unchanged.`);
    location.hash='properties';
   }catch(e){toast(e.message)}
  });
