@@ -168,21 +168,6 @@ function renderVoiceStage(changedIds){
  if(sIcon)sIcon.innerHTML=cropIllustration(i.summer);
  if(wIcon)wIcon.innerHTML=cropIllustration(i.winter);
  syncVoiceFields(i,{changed:changedIds||[]});
- const metrics=$('voice-live-metrics');
- if(metrics&&baseline&&chosen){
-  metrics.innerHTML=[
-   ['Score',chosen.score,'/100'],
-   ['Demand',n(chosen.demand),'mm/yr'],
-   ['Water gap',n(chosen.deficit),'mm/yr'],
-   ['Rain',n(climate.rain*(1-i.dry/100)),'mm']
-  ].map(([l,v,u])=>`<div><span>${l}</span><strong>${v} <small>${u}</small></strong></div>`).join('');
- }
- const budget=$('voice-live-budget');
- if(budget&&baseline&&chosen)budget.innerHTML=waterBudgetGraphic(baseline,chosen);
- const strategies=$('voice-live-strategies');
- if(strategies&&results.length){
-  strategies.innerHTML=results.map(r=>`<button type="button" data-select="${r.id}" class="voice-strategy ${r.id===selected?'is-selected':''}" aria-pressed="${r.id===selected}"><span>${r.name}</span><strong>${r.score}</strong></button>`).join('');
- }
 }
 
 function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='voice')renderVoiceStage();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
