@@ -64,7 +64,7 @@ function persist(){
  try{
   localStorage.setItem(KEY,JSON.stringify(state));
   $('save-state').textContent='Draft saved on device';
-  try{renderProperties()}catch{}
+  try{renderProperties()}catch(err){console.error('renderProperties failed',err)}
   return true
  }catch{$('save-state').textContent='Draft not saved';toast('Device storage is unavailable or full. Export your plan to keep a copy.');return false}}
 function stash(){
@@ -401,6 +401,9 @@ $('save-property')&&($('save-property').onclick=()=>{
    const name=input().farm||'This property';
    const outline=fieldBoundary&&fieldBoundary.length>=3?' + land outline':'';
    toast(`Property saved on this device: ${name}${outline}.`);
+   // Land on Properties so the saved card is visible immediately
+   renderProperties();
+   location.hash='properties';
   }catch(e){toast(e.message)}
  });
 $('properties-export')&&($('properties-export').onclick=()=>{try{download({version:2,exportedAt:new Date().toISOString(),active:state.active,fields:state.fields,plans:state.plans},'fasalpath-properties.json')}catch(e){toast(e.message)}});
