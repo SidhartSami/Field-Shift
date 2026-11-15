@@ -60,24 +60,33 @@ for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>closeDial
 for(const d of document.querySelectorAll('dialog'))d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog(d.id)}});
 const viewInfo={voice:['Plan by voice','Speak to update field inputs and the comparison in real time.'],map:['Where could your water plan come under pressure?','Read regional rainfall and heat signals before choosing what to plant.'],planner:['Should you change your next crop rotation?','Start with your current crops. Check water limits, first-year costs and the local facts that could rule out a switch.'],observations:['Read the season before planning the next','Use past rainfall and heat to question the assumptions behind your crop choice.'],plans:['Plans for your next farm discussion','Keep the expected benefits, costs and unanswered questions together for local review.'],evidence:['Know what supports your decision','Separate NASA observations, model assumptions and the local checks still needed.']};
 
+function syncVoiceFields(next,{changed=[]}={}){
+ for(const el of document.querySelectorAll('[data-live-field]')){
+  const key=el.dataset.liveField;
+  const row=el.closest('li')||el;row.classList.toggle('is-changed',changed.includes(key));
+  if(el===document.activeElement)continue;
+  const value=next[key];
+  if(el.type==='checkbox')el.checked=value;
+  else el.value=value??'';
+ }
+ const dryOut=$('voice-dry-out'),heatOut=$('voice-heat-out');
+ if(dryOut)dryOut.textContent=`${next.dry??0}%`;
+ if(heatOut)heatOut.textContent=`+${next.heat??0}°C`;
+}
 function renderVoiceStage(changedIds){
  const section=$('voice');
  if(!section||section.hidden||!ready)return;
  const i=input();
  const baseline=results.find(r=>r.id==='baseline'),chosen=results.find(r=>r.id===selected);
- const chip=(k,label,value)=>`<span class="voice-chip ${changedIds?.includes(k)?'is-changed':''}"><small>${label}</small><strong>${value}</strong></span>`;
- const chips=[
-  chip('farm','Field',esc(i.farm||'—')),
-  chip('area','Area',`${i.area} ha`),
-  chip('soil','Soil',i.soil),
-  chip('irrigation','Irrigation',`${n(i.irrigation)} mm`),
-  chip('summer','Summer',crops[i.summer]?.name||i.summer),
-  chip('winter','Winter',crops[i.winter]?.name||i.winter),
-  chip('priority','Goal',i.priority==='water'?'Conserve water':i.priority==='soil'?'Soil health':'Balanced'),
-  chip('dry','Dry stress',`${i.dry}%`),
-  chip('heat','Heat stress',`+${i.heat}°C`)
- ].join('');
- const el=$('voice-live-chips');if(el)el.innerHTML=chips;
+ // Card header art + title
+ const art=$('voice-card-art');
+ if(art)art.innerHTML=`<span class="crop-icon ${crops[i.summer]?.legume?'legume':''} crop-${i.summer}">${cropIllustration(i.summer)}</span>`;
+ const title=$('voice-card-title');
+ if(title)title.textContent=i.farm||'Your field';
+ const sIcon=$('voice-summer-icon'),wIcon=$('voice-winter-icon');
+ if(sIcon)sIcon.innerHTML=cropIllustration(i.summer);
+ if(wIcon)wIcon.innerHTML=cropIllustration(i.winter);
+ syncVoiceFields(i,{changed:changedIds||[]});
  const metrics=$('voice-live-metrics');
  if(metrics&&baseline&&chosen){
   metrics.innerHTML=[
@@ -91,12 +100,23 @@ function renderVoiceStage(changedIds){
  if(budget&&baseline&&chosen)budget.innerHTML=waterBudgetGraphic(baseline,chosen);
  const strategies=$('voice-live-strategies');
  if(strategies&&results.length){
-  strategies.innerHTML=results.map(r=>`<button type="button" data-select="${r.id}" class=\"voice-strategy ${r.id===selected?'is-selected':''}\" aria-pressed="${r.id===selected}"><span>${r.name}</span><strong>${r.score}</strong></button>`).join('');
+  strategies.innerHTML=results.map(r=>`<button type="button" data-select="${r.id}" class="voice-strategy ${r.id===selected?'is-selected':''}" aria-pressed="${r.id===selected}"><span>${r.name}</span><strong>${r.score}</strong></button>`).join('');
  }
 }
+
 function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='voice')renderVoiceStage();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
 document.addEventListener('click',e=>{const b=e.target.closest('#voice-live-strategies [data-select]');if(!b)return;selected=b.dataset.select;renderComparison();renderTimeline();renderVoiceStage();stash()});
-window.addEventListener('hashchange',route);
+document.getElementById('voice')?.addEventListener('input',e=>{
+  const el=e.target.closest('[data-live-field]');if(!el||!ready)return;
+  const next={...input(),[el.dataset.liveField]:el.type==='number'||el.type==='range'?Number(el.value):el.value};
+  applyLiveInputs(next,{live:true,ids:[el.dataset.liveField]});
+ });
+ document.getElementById('voice')?.addEventListener('change',e=>{
+  const el=e.target.closest('[data-live-field]');if(!el||!ready)return;
+  const next={...input(),[el.dataset.liveField]:el.type==='number'||el.type==='range'?Number(el.value):el.value};
+  applyLiveInputs(next,{live:false,ids:[el.dataset.liveField]});
+ });
+ window.addEventListener('hashchange',route);
 function renderFields(){$('field-list').innerHTML=state.fields.map(f=>`<button class="field-item ${f.id===state.active?'active':''}" data-field="${esc(f.id)}" ${f.id===state.active?'aria-current="true"':''}><span class="field-square"></span><span>${esc(f.draft.inputs.farm||'Unnamed field')}<small>${n(f.draft.inputs.area)} ha</small></span><span class="field-indicator">${f.id===state.active?'●':''}</span></button>`).join('');$('plan-count').textContent=state.plans.length;}
 function loadDraft(d){localChecks=structuredClone(d.localChecks||{});economics={...defaultEconomics,...d.economics};setEconomicsInputs();const c=summarize(d.rawNASA,d.observations.year||2024);setInputs(d.inputs);raw=d.rawNASA;climate=c;observed={...d.observations.coordinates};source=d.observations.source;url=d.observations.url;fetchTime=d.observations.fetchedAt;year=d.observations.year||2024;customSequence=d.customSequence||null;selected=d.selected||'water';$('observation-year').value=year;$('fetch-status').textContent=`Loaded NASA observations at ${observed.lat}°, ${observed.lon}°. Coordinate changes require a refresh.`;draw();}
 $('field-list').onclick=e=>{const b=e.target.closest('[data-field]');if(!b||b.dataset.field===state.active)return;stash();requestId++;state.active=b.dataset.field;loadDraft(currentField().draft);persist();renderFields();$('field-list').querySelector(`[data-field="${state.active}"]`)?.focus();toast('Field workspace switched.')};

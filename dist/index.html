@@ -24,27 +24,46 @@
 <article class="timeline-panel panel"><div class="panel-heading"><div><p class="overline">WHAT YOU WOULD PLANT</p><h2 id="selected-title">Rotation detail</h2></div><button id="customize" class="secondary">Customize sequence</button></div><div id="timeline" class="timeline"></div><p id="custom-hint" class="caption" hidden>Custom sequence: edit any season below. Seasonal suitability requires local review.</p><div id="recommendation" class="recommendation"></div><div class="detail-footer"><span id="selected-note"></span><button id="save-selected" class="primary">Keep this option for review ↗</button></div></article>
 <article class="panel economics-panel"><div class="panel-heading"><div><p class="overline">COULD THE SWITCH PAY FOR ITSELF?</p><h2>Check the costs before changing crops</h2></div><span class="review-badge">YOUR ASSUMPTIONS</span></div><p class="economics-intro">A lower water requirement is only part of the decision. Enter your local variable pumping cost, the expected change in crop margin before irrigation costs, and the first-year cost of switching. No prices or yields are supplied by FieldShift.</p><form id="economics-form"><div class="economics-inputs"><label>Currency<select id="cost-currency"><option value="INR">INR · Indian rupee</option><option value="PKR" selected>PKR · Pakistani rupee</option><option value="USD">USD · US dollar</option></select></label><label>Variable pumping cost / m³<input id="pumping-cost" type="number" min="0" step="any" placeholder="Your local cost"></label><label>Crop-margin change / ha / year<input id="margin-change" type="number" step="any" placeholder="Positive or negative"></label><label>First-year switching cost / ha<input id="transition-cost" type="number" min="0" step="any" placeholder="Include zero if none"></label></div></form><p class="caption">Crop-margin change = alternative crop revenue minus its non-irrigation running costs, less the same margin for your current rotation. Include yield and buyer-price uncertainty in your own estimate. Pumping cost must be per m³ usable at the root zone; adjust for your irrigation losses.</p><div id="economic-result" role="status"></div><details class="economic-assumptions"><summary>How the cost screen works</summary><p>Assumed annual irrigation application = min(available irrigation, max(0, crop demand − effective rain)). Comparing those two capped amounts avoids treating unmet water demand as water already pumped. The resulting volume difference × your variable pumping cost gives a hypothetical cost change. Add your crop-margin change and subtract your switching costs to screen the first year.</p><p>This is a scenario calculation, not a profit forecast. It does not predict yields, crop prices, fixed electricity charges, subsidies, financing costs, daily irrigation timing or actual water use. If your irrigation bill is fixed, a lower modelled water volume may produce no cash saving.</p></details></article>
 <div class="planning-footer"><span>✧ Your field knowledge and local buyers determine what is practical.</span><button id="print" class="text-button">Print report ↗</button></div></div></div></section>
-<section id="voice" class="view" hidden aria-label="Live voice workspace">
+<section id="voice" class="view voice-view" hidden aria-label="Live voice workspace">
   <div id="voice-live-bar" class="voice-live-bar voice-stage" hidden role="region" aria-label="Live voice planning">
-    <div class="voice-stage-head">
-      <div class="voice-stage-brand">
-        <span id="voice-live-mode" class="voice-live-mode">IDLE</span>
-        <span id="voice-live-status" class="voice-live-status" role="status">Tap the mic and start talking</span>
+    <div class="voice-stage-body">
+      <div id="voice-live-card" class="voice-live-card" aria-label="Editable field card">
+        <div id="voice-card-art" class="voice-card-art" aria-hidden="true"></div>
+        <h2 id="voice-card-title" class="voice-card-title">Your field</h2>
+        <ul class="voice-card-slots">
+          <li><span class="voice-slot-icons" aria-hidden="true">⬡</span><div class="voice-slot"><label for="voice-farm">Field</label><input id="voice-farm" data-live-field="farm" maxlength="70" autocomplete="off"></div></li>
+          <li><span class="voice-slot-icons" aria-hidden="true">▦</span><div class="voice-slot"><label for="voice-area">Area</label><input id="voice-area" data-live-field="area" type="number" min="0.1" max="100000" step="0.1"></div></li>
+          <li><span class="voice-slot-icons" aria-hidden="true">◍</span><div class="voice-slot"><label for="voice-soil">Soil</label><select id="voice-soil" data-live-field="soil"><option value="loam">Loam</option><option value="sand">Sandy</option><option value="clay">Clay</option></select></div></li>
+          <li><span class="voice-slot-icons" aria-hidden="true">≋</span><div class="voice-slot"><label for="voice-irrigation">Irrigation</label><input id="voice-irrigation" data-live-field="irrigation" type="number" min="0" max="5000" step="10"></div></li>
+          <li class="voice-slot-crop"><span class="voice-slot-icons" id="voice-summer-icon" aria-hidden="true"></span><div class="voice-slot"><label for="voice-summer">Summer crop</label><select id="voice-summer" data-live-field="summer"><option value="rice">Rice</option><option value="maize">Maize</option><option value="millet">Pearl millet</option><option value="mung">Mung bean</option></select></div></li>
+          <li class="voice-slot-crop"><span class="voice-slot-icons" id="voice-winter-icon" aria-hidden="true"></span><div class="voice-slot"><label for="voice-winter">Winter crop</label><select id="voice-winter" data-live-field="winter"><option value="wheat">Wheat</option><option value="chickpea">Chickpea</option><option value="mustard">Mustard</option></select></div></li>
+          <li><span class="voice-slot-icons" aria-hidden="true">◎</span><div class="voice-slot"><label for="voice-priority">Goal</label><select id="voice-priority" data-live-field="priority"><option value="balanced">Balanced resilience</option><option value="water">Conserve water</option><option value="soil">Support soil</option></select></div></li>
+          <li><span class="voice-slot-icons voice-slot-stress" aria-hidden="true">☀</span><div class="voice-slot voice-slot-pair">
+            <label for="voice-dry">Dry <output id="voice-dry-out">0%</output></label>
+            <input id="voice-dry" data-live-field="dry" type="range" min="0" max="60" step="5">
+          </div></li>
+          <li><span class="voice-slot-icons voice-slot-stress" aria-hidden="true">↑</span><div class="voice-slot voice-slot-pair">
+            <label for="voice-heat">Heat <output id="voice-heat-out">+0°C</output></label>
+            <input id="voice-heat" data-live-field="heat" type="range" min="0" max="5" step="0.5">
+          </div></li>
+        </ul>
+        <p class="voice-card-edit-hint">Editable — type here or speak. Changes update the planner live.</p>
       </div>
+    </div>
+    <div class="voice-stage-canvas">
+      <div id="voice-live-metrics" class="voice-live-metrics"></div>
+      <div id="voice-live-budget" class="voice-live-budget"></div>
+      <div id="voice-live-strategies" class="voice-live-strategies"></div>
+      <p class="voice-stage-hints">Speak: “irrigation 400” · “plant millet in summer” · “drier by 30 percent” · “clay soil”</p>
+    </div>
+    <div class="voice-dock" aria-label="Transcript">
+      <span id="voice-live-mode" class="voice-live-mode">IDLE</span>
+      <div id="voice-live-text" class="voice-live-text" aria-live="polite"></div>
+      <span id="voice-live-status" class="voice-live-status" role="status">Mic off</span>
       <button type="button" id="voice-live-toggle" class="voice-live-toggle" aria-pressed="false" aria-label="Start live voice">
         <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.93V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z"/></svg>
       </button>
     </div>
-    <div class="voice-stage-transcript">
-      <div id="voice-live-text" class="voice-live-text" aria-live="polite"></div>
-    </div>
-    <div class="voice-stage-canvas">
-      <div id="voice-live-chips" class="voice-live-chips" aria-label="Live field inputs"></div>
-      <div id="voice-live-metrics" class="voice-live-metrics"></div>
-      <div id="voice-live-budget" class="voice-live-budget"></div>
-      <div id="voice-live-strategies" class="voice-live-strategies"></div>
-    </div>
-    <p class="voice-stage-hints">Try: “irrigation 400” · “plant millet in summer” · “drier by 30 percent” · “clay soil” · “priority water”</p>
   </div>
 </section>
 <section id="map" class="view" hidden aria-label="Field intelligence map">
@@ -61,14 +80,4 @@
 <dialog id="decision-dialog" aria-labelledby="decision-title"><form id="decision-form"><div class="dialog-heading"><div><p class="overline">SAVE A SNAPSHOT</p><h2 id="decision-title">Bring a reasoned option to your adviser</h2></div><button type="button" class="icon-button" data-close="decision-dialog" aria-label="Close">×</button></div><p id="decision-summary" class="dialog-description"></p><label>Decision name<input id="decision-name" maxlength="100" required></label><label>Planning notes<textarea id="decision-notes" maxlength="2000" rows="4" placeholder="Who will buy the new crop? Are seeds, irrigation timing and planting windows workable?"></textarea></label><div class="info-callout">Saved for local review. This does not validate agronomic suitability.</div><div class="dialog-actions"><button type="button" class="secondary" data-close="decision-dialog">Cancel</button><button type="submit" class="primary">Save decision</button></div></form></dialog>
 <dialog id="command-dialog" aria-label="Find an action"><div class="command-search"><span>⌕</span><input id="command-search" type="search" placeholder="Where would you like to go?" aria-label="Search actions"><button class="icon-button" data-close="command-dialog" aria-label="Close search">×</button></div><div id="command-results"></div><p class="caption command-hint">Find a workspace or action. Escape to close.</p></dialog>
 <div id="toast" role="status"><span id="toast-message"></span><button id="toast-undo" hidden>Undo</button><button id="toast-close" aria-label="Dismiss notification">×</button></div>
-<div id="voice-live-bar" class="voice-live-bar" hidden role="region" aria-label="Live voice planning">
-  <div class="voice-live-pill">
-    <span id="voice-live-mode" class="voice-live-mode">IDLE</span>
-    <div id="voice-live-text" class="voice-live-text" aria-live="polite"></div>
-    <span id="voice-live-status" class="voice-live-status" role="status"></span>
-    <button type="button" id="voice-live-toggle" class="voice-live-toggle" aria-pressed="false" aria-label="Start live voice">
-      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.93V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z"/></svg>
-    </button>
-  </div>
-</div>
 <script src="runtime-config.js"></script><script src="vendor/leaflet/leaflet.js"></script><script type="module" src="app.js"></script></body></html>
