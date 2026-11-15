@@ -37,7 +37,7 @@ const search = searchRotations(ctx, punjab, { ...OPTIONS, cache });
 test('the landing page is the root document and the app is not', () => {
   assert.ok(fs.existsSync(path.join(ROOT, 'dist', 'index.html')));
   assert.ok(fs.existsSync(path.join(ROOT, 'dist', 'app.html')));
-  assert.ok(landing.includes('Every crop rotation'), 'index.html is not the landing page');
+  assert.ok(landing.includes('worked for your father'), 'index.html is not the landing page');
   assert.ok(!landing.includes('id="view-lab"'), 'index.html still contains the app');
   assert.ok(app.includes('id="view-lab"'), 'app.html is not the app');
 });

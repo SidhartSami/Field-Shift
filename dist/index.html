@@ -2,10 +2,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Field Shift — every crop rotation fails sometimes</title>
-<meta name="description" content="Field Shift replays every crop rotation a region allows through 34 years of NASA Earth observation, and tells a farmer how often their rotation fails, in which years, and what to do when it does.">
+<title>Field Shift — rice–wheat works 13 years out of 33</title>
+<meta name="description" content="Field Shift replays every crop rotation a region allows through 34 years of NASA Earth observation, and tells a farmer how often theirs fails, in which years, and what to plant instead.">
 <meta name="theme-color" content="#101713">
-<meta property="og:title" content="Field Shift — every crop rotation fails sometimes">
+<meta property="og:title" content="Field Shift — rice–wheat works 13 years out of 33">
 <meta property="og:description" content="A decision-support tool for crop rotation, built on 34 years of NASA Earth observation. Five fields, five regions, one model.">
 <meta property="og:type" content="website">
 <link rel="icon" href="assets/fieldshift-mark.svg" type="image/svg+xml">
@@ -15,42 +15,41 @@
 <style>
   /* ── landing shell ─────────────────────────────────────────── */
   .lnav {
-    position: sticky; top: 0; z-index: 40;
-    display: flex; align-items: center; gap: 28px;
-    padding: 14px clamp(20px, 4vw, 56px);
-    background: rgba(245, 242, 234, .88);
-    backdrop-filter: blur(14px);
-    border-bottom: 1px solid var(--rule);
+    position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
+    z-index: 60;
+    width: min(1160px, calc(100% - 32px));
+    display: flex; align-items: center; gap: 20px;
+    padding: 9px 9px 9px 20px;
+    border-radius: 999px;
+    background: rgba(20, 26, 23, .86);
+    backdrop-filter: blur(22px) saturate(150%);
+    -webkit-backdrop-filter: blur(22px) saturate(150%);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .09), 0 20px 44px -22px rgba(20, 26, 23, .55);
+    color: #f2eee4;
   }
-  .lnav .brand { display: flex; align-items: center; gap: 11px; text-decoration: none; }
-  .lnav .brand-mark { width: 26px; height: 26px; color: var(--ink); flex: none; }
-  .lnav .brand-text {
-    font: 500 15px/1.1 var(--sans); letter-spacing: 0;
-    display: flex; flex-direction: column; gap: 3px;
-  }
-  .lnav .brand-text em {
-    font: 400 12px/1.35 var(--sans); letter-spacing: 0;
- color: var(--muted); font-style: normal;
-  }
-  .lnav nav { display: flex; gap: 22px; margin-left: auto; }
+  .lnav .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; flex: none; }
+  .lnav .brand-mark { width: 23px; height: 23px; color: #f2eee4; flex: none; }
+  .lnav .brand-text { font: 500 14px/1.1 var(--sans); letter-spacing: -.01em; }
+  .lnav .brand-text em { display: none; }
+  .lnav nav { display: flex; gap: 2px; margin: 0 auto; }
   .lnav nav a {
-    font: 500 12.5px/1.35 var(--sans); letter-spacing: 0;
-    color: var(--muted); text-decoration: none; padding: 6px 0;
-    border-bottom: 1px solid transparent; transition: color .2s, border-color .2s;
+    font: 500 13px/1.35 var(--sans); letter-spacing: 0;
+    color: rgba(242, 238, 228, .7); text-decoration: none;
+    padding: 8px 13px; border-radius: 999px;
+    transition: color .2s, background .2s;
   }
-  .lnav nav a:hover { color: var(--ink); border-bottom-color: var(--ink); }
+  .lnav nav a:hover { color: #f2eee4; background: rgba(255, 255, 255, .1); }
   .lnav .cta {
-    font: 500 12.5px/1.35 var(--sans); letter-spacing: 0;
-    text-decoration: none; padding: 11px 18px; border-radius: 3px;
-    background: var(--ink); color: var(--paper); white-space: nowrap;
+    font: 500 13px/1.35 var(--sans); letter-spacing: 0;
+    text-decoration: none; padding: 10px 18px; border-radius: 999px;
+    background: #f5f2ea; color: var(--ink); white-space: nowrap; flex: none;
     transition: background .2s;
   }
-  .lnav .cta:hover { background: var(--water); }
-  @media (max-width: 860px) { .lnav nav { display: none; } }
+  .lnav .cta:hover { background: #fff; }
+  @media (max-width: 900px) { .lnav nav { display: none; } .lnav .cta { margin-left: auto; } }
   @media (max-width: 560px) {
-    .lnav { gap: 12px; padding: 12px 16px; }
-    .lnav .brand-text em { display: none; }
-    .lnav .cta { padding: 10px 13px; font-size: 12px; letter-spacing: 0; }
+    .lnav { top: 10px; padding: 8px 8px 8px 15px; gap: 10px; }
+    .lnav .cta { padding: 9px 14px; font-size: 12.5px; }
   }
 
   .wrap { max-width: 1240px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px); }
@@ -61,66 +60,109 @@
   .band.dark strong { color: #f2eee4; }
   .band.dark .rule { border-color: #26302a; }
 
-  .sec-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 34px; }
+  .sec-head { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
   .sec-num {
-    font: 500 12px/1.35 var(--sans); letter-spacing: 0; color: var(--muted);
-    padding-top: 4px; flex: none;
+    font: 500 12px/1.35 var(--sans); letter-spacing: 0; color: var(--muted); flex: none;
   }
   .band.dark .sec-num { color: rgba(232, 227, 214, .35); }
 
+  /* the eyebrow is a capsule, not a line of small caps */
+  .eyebrow {
+    display: inline-flex; align-items: center; margin: 0;
+    font: 500 12.5px/1.35 var(--sans); letter-spacing: 0; color: var(--muted);
+    padding: 7px 15px; border: 1px solid var(--rule); border-radius: 999px;
+    background: rgba(255, 255, 255, .5);
+  }
+  .band.dark .eyebrow {
+    color: rgba(232, 227, 214, .62); border-color: #2b3630; background: rgba(255, 255, 255, .03);
+  }
+
+  /* headline left, supporting paragraph right, on one baseline */
+  .sec-row {
+    display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: clamp(24px, 5vw, 80px); align-items: end;
+    margin-bottom: clamp(36px, 5vw, 64px);
+  }
+  .sec-row .lede { margin: 0; max-width: 44ch; }
+  @media (max-width: 900px) { .sec-row { grid-template-columns: 1fr; align-items: start; } }
+
   h2.big {
     font: 500 clamp(30px, 4.2vw, 58px)/1.06 var(--sans);
-    letter-spacing: -.03em; max-width: 22ch; margin-bottom: 26px;
+    letter-spacing: -.03em; max-width: 26ch; margin-bottom: 26px;
+    text-wrap: balance;
   }
-  h2.big em { font-style: normal; color: var(--water); }
+  h2.big em {
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    letter-spacing: -.005em; font-size: 1.05em; color: var(--water);
+  }
   .band.dark h2.big em { color: #6fc2ae; }
   .lede { font-size: clamp(15px, 1.5vw, 18px); line-height: 1.65; color: var(--ink-2); max-width: 62ch; }
   .band.dark .lede { color: rgba(232, 227, 214, .8); }
 
   /* ── hero ──────────────────────────────────────────────────── */
-  .hero { padding: clamp(56px, 8vw, 104px) 0 clamp(40px, 5vw, 64px); }
-  .hero h1 {
-    font: 500 clamp(40px, 7.4vw, 104px)/0.98 var(--sans);
-    letter-spacing: -.03em; max-width: 17ch; margin: 20px 0 26px;
+  .hero {
+    padding: clamp(132px, 15vw, 190px) 0 clamp(44px, 6vw, 76px);
+    text-align: center;
   }
-  .hero h1 em { font-style: normal; color: var(--water); }
-  .hero .lede { font-size: clamp(16px, 1.7vw, 20px); max-width: 56ch; }
-  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 34px 0 0; }
+  .hero h1 {
+    font: 500 clamp(38px, 6.6vw, 96px)/1.02 var(--sans);
+    letter-spacing: -.038em; max-width: 24ch; margin: 0 auto 28px;
+    text-wrap: balance;
+  }
+  .hero h1 em {
+    display: block; margin-top: .04em;
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    letter-spacing: -.012em; font-size: 1.06em; line-height: 1.08; color: var(--water);
+  }
+  .hero .lede { font-size: clamp(16px, 1.7vw, 20px); max-width: 54ch; margin: 0 auto; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 34px 0 0; justify-content: center; }
   .btn-lg {
     display: inline-flex; align-items: center; gap: 10px;
-    font: 500 12px/1 var(--sans); letter-spacing: 0;
-    text-decoration: none; padding: 16px 26px; border-radius: 3px;
-    transition: background .2s, color .2s, border-color .2s;
+    font: 500 13px/1 var(--sans); letter-spacing: 0;
+    text-decoration: none; padding: 17px 28px; border-radius: 999px;
+    transition: background .2s, color .2s, border-color .2s, transform .2s var(--ease);
   }
+  .btn-lg:active { transform: scale(.98); }
   .btn-lg.solid { background: var(--ink); color: var(--paper); }
   .btn-lg.solid:hover { background: var(--water); }
   .btn-lg.ghost { border: 1px solid var(--rule); color: var(--ink); }
   .btn-lg.ghost:hover { border-color: var(--ink); }
+  .band.dark .btn-lg.ghost { border-color: #33403a; color: #e8e3d6; }
+  .band.dark .btn-lg.ghost:hover { border-color: #6fc2ae; }
+  .band.dark .btn-lg.solid { background: #f2eee4; color: var(--ink); }
+  .band.dark .btn-lg.solid:hover { background: #6fc2ae; }
 
   .stat-strip {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
-    gap: 1px; margin: clamp(44px, 6vw, 72px) 0 0;
-    background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden;
+    display: flex; flex-wrap: wrap; justify-content: center;
+    gap: 10px; margin: clamp(40px, 5vw, 60px) 0 0;
   }
-  .stat-strip div { background: var(--paper); padding: 20px 22px; display: flex; flex-direction: column; gap: 7px; }
-  .stat-strip b { font: 500 clamp(24px, 2.8vw, 34px)/1 var(--display); letter-spacing: -.02em; }
-  .stat-strip span { font: 500 12px/1.4 var(--sans); letter-spacing: 0; color: var(--muted); }
+  .stat-strip div {
+    display: flex; align-items: baseline; gap: 9px;
+    padding: 11px 18px; border-radius: 999px;
+    border: 1px solid var(--rule); background: rgba(255, 255, 255, .55);
+  }
+  .stat-strip b { font: 500 17px/1 var(--display); letter-spacing: -.02em; }
+  .stat-strip span { font: 500 12.5px/1.35 var(--sans); letter-spacing: 0; color: var(--muted); }
   @media (max-width: 560px) {
-    .stat-strip { grid-template-columns: repeat(2, 1fr); }
+    .stat-strip { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .stat-strip div {
+      flex-direction: column; align-items: flex-start; gap: 3px;
+      padding: 12px 15px; border-radius: 14px;
+    }
     .stat-strip div:last-child { grid-column: span 2; }
   }
 
   /* ── screenshot frame ──────────────────────────────────────── */
   .frame {
     margin: clamp(36px, 5vw, 60px) 0 0;
-    border: 1px solid var(--rule); border-radius: 6px; overflow: hidden;
+    border: 1px solid var(--rule); border-radius: 18px; overflow: hidden;
     background: var(--paper-2);
-    box-shadow: 0 1px 2px rgba(20, 26, 23, .04), 0 18px 48px -24px rgba(20, 26, 23, .28);
+    box-shadow: 0 1px 2px rgba(20, 26, 23, .04), 0 30px 70px -34px rgba(20, 26, 23, .4);
   }
   .band.dark .frame { border-color: #26302a; box-shadow: 0 18px 48px -24px rgba(0, 0, 0, .7); }
   .frame-bar {
     display: flex; align-items: center; gap: 7px;
-    padding: 10px 14px; border-bottom: 1px solid var(--rule); background: var(--paper-2);
+    padding: 11px 16px; border-bottom: 1px solid var(--rule); background: var(--paper-2);
   }
   .band.dark .frame-bar { border-color: #26302a; background: var(--deep-2); }
   .frame-bar i { width: 8px; height: 8px; border-radius: 50%; background: var(--rule); display: block; }
@@ -162,20 +204,65 @@
   }
   @media (max-width: 640px) { .compare { grid-template-columns: 1fr; } .compare > div:first-child { border-right: 0; border-bottom: 1px solid #26302a; } }
 
-  /* ── surfaces ──────────────────────────────────────────────── */
-  .surfaces { display: grid; gap: clamp(40px, 5vw, 64px); }
-  .surface { display: grid; grid-template-columns: 1fr; gap: 22px; }
-  .surface-head { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  .surface-head h3 {
-    font: 500 clamp(22px, 2.6vw, 32px)/1.1 var(--sans); letter-spacing: -.02em;
+  /* ── bento ─────────────────────────────────────────────────── */
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+  .bento .card {
+    grid-column: span 2;
+    display: flex; flex-direction: column;
+    padding: 26px 26px 0; border-radius: 22px;
+    border: 1px solid var(--rule); background: var(--paper-2);
+    overflow: hidden;
   }
-  .surface-head .tag {
-    font: 500 12px/1.35 var(--sans); letter-spacing: 0;
-    color: var(--water); border: 1px solid var(--water-soft); background: var(--water-soft);
-    padding: 5px 9px; border-radius: 2px;
+  .bento .card.w4 { grid-column: span 4; }
+  .bento .card.w3 { grid-column: span 3; }
+  .bento .card.w2 { grid-column: span 2; }
+  .bento .card-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .bento .card-head h3 {
+    font: 500 clamp(21px, 2.1vw, 27px)/1.15 var(--sans); letter-spacing: -.025em; margin: 0;
   }
-  .surface p { font-size: 15px; line-height: 1.7; color: var(--ink-2); max-width: 68ch; }
-  .surface .frame { margin-top: 4px; }
+  .bento .card-head h3 em {
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: 1.06em; letter-spacing: -.005em; color: var(--water);
+  }
+  .bento .card-head .tag {
+    font: 500 12px/1.35 var(--sans); letter-spacing: 0; color: var(--muted);
+    padding: 5px 11px; border-radius: 999px; border: 1px solid var(--rule);
+    background: rgba(255, 255, 255, .6); white-space: nowrap;
+  }
+  .bento .card p { font-size: 14.5px; line-height: 1.65; color: var(--ink-2); margin: 0 0 22px; max-width: 58ch; }
+  /* the screenshot grows to fill whatever height the row gives the card, so a
+     short paragraph and a long one still end on the same line */
+  .bento .card figure {
+    flex: 1 1 auto; min-height: 190px; max-height: 400px;
+    margin: 0; border-radius: 14px 14px 0 0; overflow: hidden;
+    border: 1px solid var(--rule); border-bottom: 0; background: var(--paper);
+  }
+  .bento .card img {
+    display: block; width: 100%; height: 100%;
+    object-fit: cover; object-position: top center;
+  }
+  .bento .card-stat {
+    margin: auto 0 0; padding: 20px 0 26px;
+    border-top: 1px solid var(--rule);
+    display: flex; align-items: baseline; gap: 14px;
+  }
+  .bento .card-stat b {
+    font: 500 clamp(38px, 4.4vw, 58px)/1 var(--display); letter-spacing: -.035em;
+  }
+  .bento .card-stat span {
+    font: 500 12.5px/1.45 var(--sans); letter-spacing: 0; color: var(--muted); max-width: 15ch;
+  }
+  @media (max-width: 1000px) {
+    .bento { grid-template-columns: repeat(2, 1fr); }
+    .bento .card, .bento .card.w3, .bento .card.w2 { grid-column: span 1; }
+    .bento .card.w4 { grid-column: span 2; }
+    .bento .card figure { min-height: 220px; }
+  }
+  @media (max-width: 640px) {
+    .bento { grid-template-columns: 1fr; }
+    .bento .card, .bento .card.w4 { grid-column: span 1; }
+    .bento .card { padding: 22px 22px 0; }
+  }
 
   /* ── data grid ─────────────────────────────────────────────── */
   .sources { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; }
@@ -271,11 +358,12 @@
       <circle cx="21" cy="7" r="2.1" fill="currentColor"/>
       <path d="M7 23h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>
     </svg>
-    <span class="brand-text">Field Shift<em>every rotation fails sometimes</em></span>
+    <span class="brand-text">Field Shift</span>
   </a>
   <nav aria-label="Sections">
     <a href="#problem">Problem</a>
     <a href="#built">What we built</a>
+    <a href="#record">The record</a>
     <a href="#data">The data</a>
     <a href="#honesty">The honesty</a>
     <a href="model.html">Model card</a>
@@ -288,12 +376,11 @@
   <!-- ── hero ─────────────────────────────────────────────────── -->
   <section class="hero">
     <div class="wrap">
-      <p class="eyebrow">NASA Space Apps Challenge · Challenge 6 · Agriculture &amp; Earth Observation</p>
-      <h1>Every crop rotation <em>fails sometimes.</em></h1>
+      <h1>Rice–wheat worked for your father. <em>It works 13 years out of 33.</em></h1>
       <p class="lede">
         Field Shift replays every rotation a region allows through 34 years of NASA Earth
         observation, and tells a farmer <strong>how often</strong> theirs fails,
-        <strong>in which years</strong>, and <strong>what to do when it does</strong>.
+        <strong>in which years</strong>, and <strong>what to plant instead</strong>.
       </p>
       <div class="hero-actions">
         <a class="btn-lg solid" href="app.html">Open the field →</a>
@@ -319,12 +406,14 @@
   <section class="band dark" id="problem">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">01</span><p class="eyebrow">The problem</p></div>
-      <h2 class="big">A farmer in Sheikhupura plants rice every June because his father did.</h2>
-      <p class="lede">
-        The water that made that decision correct is gone. The aquifer under the Pakistani Punjab
-        has been falling for two decades, measured from orbit by GRACE-FO. Rice–wheat still covers
-        four million hectares.
-      </p>
+      <div class="sec-row">
+        <h2 class="big">A farmer in Sheikhupura plants rice every June because <em>his father did.</em></h2>
+        <p class="lede">
+          The water that made that decision correct is gone. The aquifer under the Pakistani Punjab
+          has been falling for two decades, measured from orbit by GRACE-FO. Rice–wheat still covers
+          four million hectares.
+        </p>
+      </div>
 
       <div class="huge">39%</div>
       <p class="huge-label">of the last 33 years, rice–wheat fitted inside this field's water supply</p>
@@ -341,11 +430,13 @@
   <section class="band" id="insight">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">02</span><p class="eyebrow">The insight</p></div>
-      <h2 class="big">A score out of 100 cannot be wrong. That is why nobody should trust it.</h2>
-      <p class="lede">
-        Every agri-advisory tool returns a number that goes up when things are good. You can never
-        catch it being wrong — and neither can a judge, and neither can a farmer.
-      </p>
+      <div class="sec-row">
+        <h2 class="big">A score out of 100 cannot be wrong. <em>That is why nobody should trust it.</em></h2>
+        <p class="lede">
+          Every agri-advisory tool returns a number that goes up when things are good. You can never
+          catch it being wrong — and neither can a judge, and neither can a farmer.
+        </p>
+      </div>
       <p class="lede" style="margin-top:22px;font-family:var(--sans);font-size:clamp(20px,2.4vw,30px);line-height:1.3;letter-spacing:-.02em;color:var(--ink)">
         We replaced the score with a failure rate.
       </p>
@@ -363,19 +454,21 @@
   <section class="band" id="built">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">03</span><p class="eyebrow">What we built</p></div>
-      <h2 class="big">Four surfaces, one question: <em>does this fit?</em></h2>
-      <p class="lede" style="margin-bottom:clamp(40px,5vw,64px)">
-        A working static application with no build step and no API key. Every figure carries one of
-        three tags — <span class="chip chip-observed">observed</span>
-        <span class="chip chip-reanalysis">reanalysis</span>
-        <span class="chip chip-simulated">simulated</span> — so nothing modelled is ever presented
-        as measured.
-      </p>
+      <div class="sec-row">
+        <h2 class="big">Four surfaces, <em>one question:</em> does this fit?</h2>
+        <p class="lede">
+          A working static application with no build step and no API key. Every figure carries one of
+          three tags — <span class="chip chip-observed">observed</span>
+          <span class="chip chip-reanalysis">reanalysis</span>
+          <span class="chip chip-simulated">simulated</span> — so nothing modelled is ever presented
+          as measured.
+        </p>
+      </div>
 
-      <div class="surfaces">
+      <div class="bento">
 
-        <article class="surface">
-          <div class="surface-head">
+        <article class="card w4">
+          <div class="card-head">
             <h3>Field</h3>
             <span class="tag">zero input</span>
           </div>
@@ -384,15 +477,14 @@
             of NASA POWER, 301 MODIS NDVI composites, and a 34-year memory strip that shows which
             years the monsoon failed. No form to fill in before you see anything.
           </p>
-          <figure class="frame">
-            <div class="frame-bar"><i></i><i></i><i></i><span>Field · Sheikhupura, Punjab</span></div>
+          <figure>
             <img src="assets/shots/field.jpg" width="1440" height="1248" loading="lazy" alt="Field view showing soil texture, organic carbon, available water and the 34-year memory strip.">
           </figure>
         </article>
 
-        <article class="surface">
-          <div class="surface-head">
-            <h3>Rotation Lab</h3>
+        <article class="card w2">
+          <div class="card-head">
+            <h3>Rotation <em>Lab</em></h3>
             <span class="tag">2,304 sequences</span>
           </div>
           <p>
@@ -401,14 +493,14 @@
             four objectives at once, a shortlist with role labels, and a supply curve showing the
             water supply at which each rotation becomes reliable.
           </p>
-          <figure class="frame">
-            <div class="frame-bar"><i></i><i></i><i></i><span>Rotation Lab · Pareto frontier</span></div>
-            <img src="assets/shots/lab.jpg" width="1440" height="1694" loading="lazy" alt="Rotation Lab showing the Pareto plot, the recommended rotation card and the supply curve.">
-          </figure>
+          <div class="card-stat">
+            <b>45</b>
+            <span>milliseconds to replay 152,064 seasons</span>
+          </div>
         </article>
 
-        <article class="surface">
-          <div class="surface-head">
+        <article class="card w3">
+          <div class="card-head">
             <h3>Decision</h3>
             <span class="tag">the brief</span>
           </div>
@@ -418,14 +510,13 @@
             the trade-offs we would rather not admit. Soil loss rises by 0.22 t/ha/yr under the
             recommended rotation, and the page says so.
           </p>
-          <figure class="frame">
-            <div class="frame-bar"><i></i><i></i><i></i><span>Decision · Cotton · Chickpea</span></div>
+          <figure>
             <img src="assets/shots/decision.jpg" width="1440" height="2067" loading="lazy" alt="Decision brief showing 85% water reliability, 28 of 33 years within budget, and the requirement strip.">
           </figure>
         </article>
 
-        <article class="surface">
-          <div class="surface-head">
+        <article class="card w3">
+          <div class="card-head">
             <h3>Ledger</h3>
             <span class="tag">the model checks itself</span>
           </div>
@@ -434,8 +525,7 @@
             as failures, years the model passes are 0.06 m³/m³ wetter in the reanalysis root zone,
             and every prediction we have made is scored against what the satellites saw.
           </p>
-          <figure class="frame">
-            <div class="frame-bar"><i></i><i></i><i></i><span>Ledger · validation</span></div>
+          <figure>
             <img src="assets/shots/ledger.jpg" width="1440" height="1350" loading="lazy" alt="Ledger showing 5 of 5 driest years flagged, the wetness delta, and scored predictions.">
           </figure>
         </article>
@@ -448,7 +538,7 @@
   <section class="band dark" id="finding">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">04</span><p class="eyebrow">The finding</p></div>
-      <h2 class="big">One rotation beats rice–wheat on water, nitrogen and money at the same time.</h2>
+      <h2 class="big">One rotation beats rice–wheat on water, nitrogen and money <em>at the same time.</em></h2>
 
       <div class="compare">
         <div>
@@ -494,12 +584,14 @@
   <section class="band" id="record">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">05</span><p class="eyebrow">The record, in three dimensions</p></div>
-      <h2 class="big">Thirty-three years, one column each. The sheet is the water you have.</h2>
-      <p class="lede">
-        Every column is a year of the record, standing on the ground at its actual irrigation
-        requirement. The dashed sheet floats at the 900 mm a farmer can deliver. A column that
-        breaks the sheet is a year the rotation fails. Drag it.
-      </p>
+      <div class="sec-row">
+        <h2 class="big">Thirty-three years, one column each. <em>The sheet is the water you have.</em></h2>
+        <p class="lede">
+          Every column is a year of the record, standing on the ground at its actual irrigation
+          requirement. The dashed sheet floats at the 900 mm a farmer can deliver. A column that
+          breaks the sheet is a year the rotation fails. Drag it.
+        </p>
+      </div>
 
       <div class="landscape-controls" role="group" aria-label="Choose a rotation">
         <button type="button" class="landscape-tab is-on" data-rotation="baseline" aria-pressed="true">
@@ -533,12 +625,14 @@
   <section class="band" id="data">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">06</span><p class="eyebrow">The data</p></div>
-      <h2 class="big">Six NASA products, one <em>33-year</em> record.</h2>
-      <p class="lede" style="margin-bottom:clamp(32px,4vw,48px)">
-        The failure rate is only meaningful because the record is long. Thirty-three years is what
-        lets us say "twenty failing years" instead of "risky". No commercial agronomy product has
-        that record; NASA does.
-      </p>
+      <div class="sec-row">
+        <h2 class="big">Six NASA products, one <em>33-year</em> record.</h2>
+        <p class="lede">
+          The failure rate is only meaningful because the record is long. Thirty-three years is what
+          lets us say "twenty failing years" instead of "risky". No commercial agronomy product has
+          that record; NASA does.
+        </p>
+      </div>
 
       <div class="sources">
         <div>
@@ -579,7 +673,7 @@
   <section class="band" id="honesty">
     <div class="wrap">
       <div class="sec-head"><span class="sec-num">07</span><p class="eyebrow">The honesty</p></div>
-      <h2 class="big">We tested our own model, and we published the result.</h2>
+      <h2 class="big">We tested our own model, and <em>we published the result.</em></h2>
 
       <div class="proof">
         <div><b>5 of 5</b><span>driest years in the record are flagged as failures</span></div>

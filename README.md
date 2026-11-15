@@ -1,6 +1,6 @@
 # Field Shift
 
-**Every crop rotation fails sometimes. Field Shift tells you how often, in which years, and what to do when it does.**
+**Know which years your rotation fails. Field Shift replays every rotation a region allows through 34 years of NASA Earth observation, and names the years yours runs dry.**
 
 **[field-shift-seven.vercel.app](https://field-shift-seven.vercel.app)** — live, no install, no API key.
 
@@ -146,10 +146,12 @@ npm start          # http://localhost:8080
 
 ### Type
 
-Two self-hosted families, no external font request. **Instrument Sans** carries the interface and every
+Three self-hosted faces, no external font request. **Instrument Sans** carries the interface and every
 figure — its tabular numerals keep the year columns aligned without a second mono face. **Space Grotesk**
-is the display face, used only for the large headline numbers on the landing page. Both are variable
-woff2 files under `dist/assets/fonts/` and are preloaded on the landing page.
+is the display face, used only for the large headline numbers. **Instrument Serif italic** is the accent:
+it takes the second half of a headline, the way a sentence turns. It is the companion face to Instrument
+Sans, drawn by the same foundry, so the two share a skeleton and the switch reads as emphasis rather than
+as a second voice. All three are woff2 under `dist/assets/fonts/` and are preloaded on the landing page.
 
 ### Voice input
 

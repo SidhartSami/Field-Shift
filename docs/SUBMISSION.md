@@ -6,7 +6,7 @@ Copy-paste ready for the Space Apps submission form. Field limits noted where th
 
 ## Project name
 
-**Field Shift — Every crop rotation fails sometimes**
+**Field Shift — Know which years your rotation fails**
 
 ## Elevator pitch (one sentence)
 
