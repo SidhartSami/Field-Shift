@@ -42,8 +42,7 @@
           <p class="voice-plan-hint">Or speak — e.g. “plant millet”, “winter wheat”, “clay soil”.</p>
         </div>
       </div>
-
-      <div id="voice-live-card" class="voice-live-card" aria-label="Editable field card">
+<div id="voice-live-card" class="voice-live-card" aria-label="Editable field card">
         <div id="voice-card-art" class="voice-card-art" aria-hidden="true"></div>
         <h2 id="voice-card-title" class="voice-card-title">Your field</h2>
         <p id="voice-card-live" class="voice-card-live" aria-live="polite"></p>
@@ -69,7 +68,19 @@
       
     </div>
 
-    <article class="voice-map-card" aria-label="Field boundary map">
+    
+
+    
+    <div class="voice-dock" aria-label="Transcript">
+      <span id="voice-live-mode" class="voice-live-mode">IDLE</span>
+      <div id="voice-live-text" class="voice-live-text" aria-live="polite"></div>
+      <span id="voice-live-status" class="voice-live-status" role="status">Mic off</span>
+      <button type="button" id="voice-live-toggle" class="voice-live-toggle" aria-pressed="false" aria-label="Start live voice">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.93V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z"/></svg>
+      </button>
+    </div>
+  </div>
+  <article class="voice-map-card" aria-label="Field boundary map">
         <div class="voice-map-head">
           <div class="voice-map-copy">
             <h2 class="voice-map-title">Field boundary</h2>
@@ -90,17 +101,6 @@
         <div id="voice-field-map" class="voice-field-map" role="application" aria-label="Click to draw your field boundary"></div>
         <p id="voice-map-status" class="voice-map-status" role="status">Boundary map loads when you open Live voice.</p>
       </article>
-
-    
-    <div class="voice-dock" aria-label="Transcript">
-      <span id="voice-live-mode" class="voice-live-mode">IDLE</span>
-      <div id="voice-live-text" class="voice-live-text" aria-live="polite"></div>
-      <span id="voice-live-status" class="voice-live-status" role="status">Mic off</span>
-      <button type="button" id="voice-live-toggle" class="voice-live-toggle" aria-pressed="false" aria-label="Start live voice">
-        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3Z"/><path d="M19 11a1 1 0 1 0-2 0 5 5 0 0 1-10 0 1 1 0 1 0-2 0 7 7 0 0 0 6 6.93V20H8a1 1 0 1 0 0 2h8a1 1 0 1 0 0-2h-3v-2.07A7 7 0 0 0 19 11Z"/></svg>
-      </button>
-    </div>
-  </div>
 </section>
 <section id="map" class="view" hidden aria-label="Field intelligence map">
 <div class="geo-toolbar"><div class="geo-layer-tabs" role="group" aria-label="Map data layer"><button data-geo-layer="rain" class="active" aria-pressed="true">◈ Rainfall</button><button data-geo-layer="temp" aria-pressed="false">☼ Temperature</button><button data-geo-layer="wet" aria-pressed="false">◉ Soil wetness</button><button data-geo-layer="gap" aria-pressed="false">↗ Water gap <small>MODEL</small></button></div><div class="geo-toolbar-actions"><button id="geo-fit" class="secondary">Fit region</button><button id="geo-export" class="secondary" disabled>↓ GeoJSON</button></div></div>
