@@ -66,6 +66,26 @@ button,.primary,.secondary{transition:transform 130ms var(--ease-out),opacity 13
 
 /* CoffeeBrew-style horizontal option cards (above the form) */
 .voice-stage-body{flex-direction:column;align-items:stretch;justify-content:flex-start;gap:28px;padding-top:28px}
+
+.voice-plan-empty{
+  display:grid;gap:14px;justify-items:start;padding:28px 22px;
+  border:1px dashed #ffffff22;border-radius:16px;background:#0f1c1688;
+}
+.voice-plan-empty p{margin:0;color:#ffffff66;font-size:13px}
+.voice-plan-hint{font-size:11px!important;color:#ffffff44!important}
+.voice-plan-add{display:flex;flex-wrap:wrap;gap:8px}
+.voice-plan-chip{
+  border:1px solid #ffffff28;background:#ffffff0d;color:#d8e6db;
+  border-radius:999px;padding:8px 14px;font-size:12px;cursor:pointer;
+  transition:background 140ms ease,border-color 140ms ease,transform 140ms var(--ease-out);
+}
+.voice-plan-chip:hover{background:#7dd3a822;border-color:#7dd3a888;transform:translateY(-1px)}
+.voice-opt-card{position:relative}
+.voice-opt-remove{
+  position:absolute;top:8px;right:8px;width:26px;height:26px;border-radius:50%;
+  border:0;background:#ffffff12;color:#ffffff88;font-size:14px;cursor:pointer;line-height:1;
+}
+.voice-opt-remove:hover{background:#f0a09044;color:#ffd0c8}
 .voice-opt-wrap{width:100%;max-width:100%}
 .voice-opt-heading{margin:0 0 14px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#ffffff55;font-weight:650}
 .voice-opt-grid{

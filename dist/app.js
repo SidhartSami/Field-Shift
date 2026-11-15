@@ -61,63 +61,84 @@ for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>closeDial
 for(const d of document.querySelectorAll('dialog'))d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog(d.id)}});
 const viewInfo={voice:['Plan by voice','Speak to update field inputs and the comparison in real time.'],map:['Where could your water plan come under pressure?','Read regional rainfall and heat signals before choosing what to plant.'],planner:['Should you change your next crop rotation?','Start with your current crops. Check water limits, first-year costs and the local facts that could rule out a switch.'],observations:['Read the season before planning the next','Use past rainfall and heat to question the assumptions behind your crop choice.'],plans:['Plans for your next farm discussion','Keep the expected benefits, costs and unanswered questions together for local review.'],evidence:['Know what supports your decision','Separate NASA observations, model assumptions and the local checks still needed.']};
 
-function syncVoiceFields(next,{changed=[]}={}){
- for(const el of document.querySelectorAll('[data-live-field]')){
-  const key=el.dataset.liveField;
-  const row=el.closest('li')||el;row.classList.toggle('is-changed',changed.includes(key));
-  if(el===document.activeElement)continue;
-  const value=next[key];
-  if(el.type==='checkbox')el.checked=value;
-  else el.value=value??'';
+function planGlyph(kind,i){
+ if(kind==='summer'||kind==='winter'){
+  const c=kind==='summer'?i.summer:i.winter;
+  return `<span class="crop-icon ${crops[c]?.legume?'legume':''} crop-${c}">${cropIllustration(c)}</span>`;
  }
- const dryOut=$('voice-dry-out'),heatOut=$('voice-heat-out');
- if(dryOut)dryOut.textContent=`${next.dry??0}%`;
- if(heatOut)heatOut.textContent=`+${next.heat??0}°C`;
+ if(kind==='soil')return i.soil==='sand'?'▨':i.soil==='clay'?'▦':'⊞';
+ if(kind==='priority')return i.priority==='water'?'≋':i.priority==='soil'?'◍':'◎';
+ if(kind==='place')return '⌖';
+ if(kind==='field')return '⬡';
+ if(kind==='area')return '▦';
+ if(kind==='irrigation')return '≋';
+ if(kind==='stress')return '☀';
+ return '•';
 }
-function renderVoiceOptionCards(i,changed=[]){
- const box=$('voice-option-cards');
+function planCardData(kind,i){
+ const crop=(season,c)=>({label:crops[c]?.name||c,rows:[
+  [season,season==='summer'?'Summer season':'Winter season'],
+  ['water',`~${n(crops[c]?.water||0)} mm demand`],
+  ['family',crops[c]?.legume?'Legume · family break':crops[c]?.family==='brassica'?'Oilseed · brassica':'Cereal · grass family']
+ ]});
+ if(kind==='summer')return {title:crops[i.summer]?.name||'Summer crop',...crop('Summer',i.summer)};
+ if(kind==='winter')return {title:crops[i.winter]?.name||'Winter crop',...crop('Winter',i.winter)};
+ if(kind==='soil')return {title:i.soil==='sand'?'Sandy soil':i.soil==='clay'?'Clay soil':'Loam soil',rows:[
+  ['type',i.soil==='sand'?'Sandy':i.soil==='clay'?'Clay':'Loam'],
+  ['rain',`Effective rain ${i.soil==='sand'?45:i.soil==='clay'?55:65}%`]
+ ]};
+ if(kind==='priority')return {title:i.priority==='water'?'Conserve water':i.priority==='soil'?'Soil health':'Balanced',rows:[
+  ['goal',i.priority==='water'?'Water-first weights':i.priority==='soil'?'Soil-first weights':'Balanced weights'],
+  ['focus',i.priority==='water'?'60% water':i.priority==='soil'?'45% soil':'35% water / 30% soil']
+ ]};
+ if(kind==='place'){
+  const place=Object.values(LOCATION_PRESETS).find(p=>p.lat===i.lat&&p.lon===i.lon);
+  return {title:place?.name.split(',')[0]||`${i.lat.toFixed(2)}°, ${i.lon.toFixed(2)}°`,rows:[
+   ['coords',`${i.lat.toFixed(4)}°, ${i.lon.toFixed(4)}°`],
+   ['nasa',matches()?'Observations matched':'Refresh NASA observations']
+  ]};
+ }
+ if(kind==='field')return {title:i.farm||'Your field',rows:[
+  ['name',i.farm||'Unnamed field'],
+  ['area',`${i.area} ha · ${(i.area*2.47105381).toFixed(1)} acres`]
+ ]};
+ if(kind==='area')return {title:`${i.area} ha`,rows:[
+  ['area',`${i.area} hectares`],
+  ['acres',`${(i.area*2.47105381).toFixed(2)} acres`]
+ ]};
+ if(kind==='irrigation')return {title:`${n(i.irrigation)} mm irrigation`,rows:[
+  ['irrigation',`${n(i.irrigation)} mm / year`],
+  ['source','Your assumed availability']
+ ]};
+ if(kind==='stress')return {title:i.dry||i.heat?'Stressed scenario':'Observed baseline',rows:[
+  ['dry',`Rain ${i.dry}% below observed`],
+  ['heat',`+${i.heat}°C`]
+ ]};
+ return {title:kind,rows:[]};
+}
+function renderVoicePlanCards(i,changed=[]){
+ const box=$('voice-option-cards'),empty=$('voice-plan-empty');
  if(!box)return;
- const cropArt=c=>`<span class="crop-icon ${crops[c]?.legume?'legume':''} crop-${c}">${cropIllustration(c)}</span>`;
- const cards=[
-  {key:'summer',title:'Summer crop',art:cropArt(i.summer),value:String(i.summer),
-   options:[['rice','Rice'],['maize','Maize'],['millet','Pearl millet'],['mung','Mung bean']]},
-  {key:'winter',title:'Winter crop',art:cropArt(i.winter),value:String(i.winter),
-   options:[['wheat','Wheat'],['chickpea','Chickpea'],['mustard','Mustard'],['maize','Maize']]},
-  {key:'soil',title:'Soil texture',art:`<span class="voice-opt-glyph-big">${i.soil==='sand'?'▨':i.soil==='clay'?'▦':'⊞'}</span>`,value:String(i.soil),
-   options:[['loam','Loam'],['sand','Sandy'],['clay','Clay']]},
-  {key:'priority',title:'Goal',art:`<span class="voice-opt-glyph-big">◎</span>`,value:String(i.priority),
-   options:[['balanced','Balanced'],['water','Conserve water'],['soil','Soil health']]}
- ];
- box.innerHTML=cards.map(c=>{
-  const rows=c.options.map(([val,label])=>{
-   const on=val===c.value;
-   const glyph=c.key==='summer'||c.key==='winter'?cropArt(val)
-    :c.key==='soil'?(val==='sand'?'▨':val==='clay'?'▦':'⊞')
-    :val==='water'?'≋':val==='soil'?'◍':'◎';
-   return `<li><button type="button" class="voice-opt-pick ${on?'is-on':''}" data-opt-key="${c.key}" data-opt-val="${esc(val)}" aria-pressed="${on}"><span class="voice-opt-glyph" aria-hidden="true">${glyph}</span><span class="voice-opt-label">${esc(label)}</span></button></li>`;
-  }).join('');
-  return `<article class="voice-opt-card ${changed.includes(c.key)?'is-changed':''}" role="listitem">
-   <div class="voice-opt-art">${c.art}</div>
-   <h3>${esc(c.title)}</h3>
+ const kinds=['field','area','place','summer','winter','soil','irrigation','priority','stress']
+  .filter(k=>voicePlanAdded.has(k));
+ box.innerHTML=kinds.map(kind=>{
+  const d=planCardData(kind,i);
+  const rows=d.rows.map(([g,text])=>`<li><span class="voice-opt-glyph" aria-hidden="true">${g==='water'||g==='rain'||g==='irrigation'?'≋':g==='family'||g==='type'?'◍':g==='name'||g==='area'||g==='acres'?'▦':g==='coords'||g==='nasa'?'⌖':g==='goal'||g==='focus'?'◎':g==='dry'||g==='heat'?'☀':'·'}</span><span class="voice-opt-label">${esc(text)}</span></li>`).join('');
+  return `<article class="voice-opt-card ${changed.some(c=>planKeyFor(c)===kind)?'is-changed':''}" role="listitem" data-plan-kind="${kind}">
+   <button type="button" class="voice-opt-remove" data-plan-remove="${kind}" aria-label="Remove ${esc(d.title)}">×</button>
+   <div class="voice-opt-art">${planGlyph(kind,i)}</div>
+   <h3>${esc(d.title)}</h3>
    <ul class="voice-opt-rows">${rows}</ul>
   </article>`;
  }).join('');
+ if(empty)empty.hidden=kinds.length>0;
 }
 function renderVoiceStage(changedIds){
  const section=$('voice');
  if(!section||section.hidden||!ready)return;
  const i=input();
  const baseline=results.find(r=>r.id==='baseline'),chosen=results.find(r=>r.id===selected);
- // Card header art + title
- const art=$('voice-card-art');
- if(art)art.innerHTML=`<span class="crop-icon ${crops[i.summer]?.legume?'legume':''} crop-${i.summer}">${cropIllustration(i.summer)}</span>`;
- const title=$('voice-card-title');
- if(title)title.textContent=i.farm||'Your field';
- const sIcon=$('voice-summer-icon'),wIcon=$('voice-winter-icon');
- if(sIcon)sIcon.innerHTML=cropIllustration(i.summer);
- if(wIcon)wIcon.innerHTML=cropIllustration(i.winter);
- syncVoiceFields(i,{changed:changedIds||[]});
- renderVoiceOptionCards(i,changedIds||[]);
+ renderVoicePlanCards(i,changedIds||[]);
  const metrics=$('voice-live-metrics');
  if(metrics&&baseline&&chosen){
   metrics.innerHTML=[
@@ -137,10 +158,16 @@ function renderVoiceStage(changedIds){
 
 function route(){const target=location.hash.slice(1)||'planner',view=viewInfo[target]?target:'planner';for(const s of document.querySelectorAll('.view'))s.hidden=s.id!==view;for(const a of document.querySelectorAll('nav [data-view]')){const active=a.dataset.view===view;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')}$('page-title').textContent=viewInfo[view][0];$('page-description').textContent=viewInfo[view][1];$('breadcrumb-name').textContent=viewInfo[view][0];if(view==='plans')renderPlans();if(view==='voice')renderVoiceStage();if(view==='map'&&ready){ensureGeo().show()}else geoView?.hide()}
 document.addEventListener('click',e=>{
- const pick=e.target.closest('[data-opt-key][data-opt-val]');
- if(pick&&ready){
-  const next={...input(),[pick.dataset.optKey]:pick.dataset.optVal};
-  applyLiveInputs(next,{live:false,ids:[pick.dataset.optKey]});
+ const add=e.target.closest('[data-add-plan]');
+ if(add&&ready){
+  voicePlanAdded.add(add.dataset.addPlan);
+  renderVoiceStage();
+  return;
+ }
+ const rm=e.target.closest('[data-plan-remove]');
+ if(rm&&ready){
+  voicePlanAdded.delete(rm.dataset.planRemove);
+  renderVoiceStage();
   return;
  }
  const b=e.target.closest('#voice-live-strategies [data-select]');if(!b)return;selected=b.dataset.select;renderComparison();renderTimeline();renderVoiceStage();stash()});
