@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Model card — Field Shift</title>
+<meta name="description" content="Every equation, every data source, every assumption and every known error behind Field Shift's rotation reliability model.">
+<meta name="theme-color" content="#101713">
+<link rel="icon" href="assets/fieldshift-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="app.css">
+<style>
+  .doc { max-width: 860px; margin: 0 auto; padding: 56px 32px 100px; }
+  .doc h1 { font-family: var(--display); font-weight: 500; font-size: clamp(34px, 5vw, 54px); letter-spacing: -.03em; line-height: 1.05; margin-bottom: 18px; }
+  .doc h2 { font-family: var(--display); font-weight: 500; font-size: 27px; letter-spacing: -.02em; margin: 52px 0 14px; padding-top: 22px; border-top: 1px solid var(--rule); }
+  .doc h3 { font: 500 10px/1 var(--mono); letter-spacing: .13em; text-transform: uppercase; color: var(--muted); margin: 30px 0 10px; }
+  .doc p { font-size: 15px; line-height: 1.7; color: var(--ink-2); margin-bottom: 14px; max-width: 74ch; }
+  .doc p strong { color: var(--ink); font-weight: 600; }
+  .doc ul, .doc ol { margin: 0 0 16px; padding-left: 20px; }
+  .doc li { font-size: 14.5px; line-height: 1.7; color: var(--ink-2); margin-bottom: 7px; }
+  .doc code { font: 400 13px var(--mono); background: var(--paper-2); padding: 1px 5px; border-radius: 3px; }
+  .eq {
+    font: 400 14px/1.9 var(--mono);
+    background: #faf8f2;
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--water);
+    border-radius: 4px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    overflow-x: auto;
+    white-space: pre;
+    color: var(--ink);
+  }
+  .eq em { color: var(--muted); font-style: normal; }
+  .doc table { width: 100%; border-collapse: collapse; margin: 16px 0 22px; font-size: 13.5px; }
+  .doc th { text-align: left; font: 500 9.5px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); padding: 0 12px 8px 0; border-bottom: 1px solid var(--rule); }
+  .doc td { padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule-soft); vertical-align: top; color: var(--ink-2); }
+  .doc td:first-child { color: var(--ink); font-weight: 500; white-space: nowrap; }
+  .doc .mono { font-family: var(--mono); font-size: 12.5px; }
+  .callout {
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--amber);
+    border-radius: 4px;
+    background: #faf8f2;
+    padding: 18px 22px;
+    margin: 20px 0;
+  }
+  .callout p:last-child { margin-bottom: 0; }
+  .doc-back { display: inline-flex; align-items: center; gap: 8px; font: 500 11px var(--mono); letter-spacing: .08em; text-transform: uppercase; text-decoration: none; color: var(--muted); margin-bottom: 34px; }
+  .doc-back:hover { color: var(--ink); }
+  .refs { font-size: 13px; line-height: 1.7; color: var(--muted); }
+  .refs li { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="index.html">
+    <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M7 23c4-1 6-4 7-8s3-7 7-8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="21" cy="7" r="2.1" fill="currentColor"/>
+      <path d="M7 23h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" opacity=".45"/>
+    </svg>
+    <span class="brand-text">Field Shift<em>every rotation fails sometimes</em></span>
+  </a>
+  <nav class="tabs" aria-label="Sections">
+    <a href="index.html#field">Field</a>
+    <a href="index.html#lab">Rotation lab</a>
+    <a href="index.html#decision">Decision</a>
+    <a href="index.html#ledger">Ledger</a>
+  </nav>
+  <div class="provenance">
+    <span class="chip chip-observed">observed</span>
+    <span class="chip chip-reanalysis">reanalysis</span>
+    <span class="chip chip-simulated">simulated</span>
+  </div>
+</header>
+
+<main class="doc">
+  <a class="doc-back" href="index.html">← Back to the field</a>
+
+  <p class="eyebrow">Model card</p>
+  <h1>Everything we did, and everything we know is wrong with it</h1>
+  <p class="lede" style="max-width:70ch">
+    A model card is the document that lets someone else decide whether to believe you.
+    This one lists every equation, every input, every assumption and every known error.
+    If a number in the app is not derivable from this page, that is a bug.
+  </p>
+
+  <h2>1. What the model claims, and what it does not</h2>
+  <p>
+    Field Shift answers one question: <strong>in how many of the last 33 years would this
+    rotation's irrigation requirement have fitted inside the water this farmer can supply?</strong>
+    That is the reliability number. It is a count, not a score.
+  </p>
+  <p>
+    It does <strong>not</strong> claim to predict yield, income or adoption. Gross margins are
+    editable regional defaults expressed as a P10/P50/P90 band, and they are used only to rank
+    rotations against each other — never to promise a farmer money.
+  </p>
+  <div class="callout">
+    <p>
+      <strong>The design rule.</strong> A number that cannot be wrong is not worth showing.
+      Reliability can be wrong: it names specific years, and those years can be checked against
+      the rainfall and soil-moisture record. That is why it is the headline instead of a
+      weighted score out of 100.
+    </p>
+  </div>
+
+  <h2>2. Data sources</h2>
+  <table>
+    <thead><tr><th>Source</th><th>Variable</th><th>Resolution</th><th>Tag</th></tr></thead>
+    <tbody>
+      <tr><td>NASA POWER</td><td>T2M, T2M_MAX, T2M_MIN, PRECTOTCORR, RH2M, WS2M, ALLSKY_SFC_SW_DWN, GWETROOT</td><td>0.5° × 0.64°, daily, 1991–2024</td><td><span class="chip chip-reanalysis">reanalysis</span></td></tr>
+      <tr><td>NASA MODIS MOD13Q1</td><td>NDVI, 16-day composite</td><td>250 m</td><td><span class="chip chip-observed">observed</span></td></tr>
+      <tr><td>NASA GIBS</td><td>MODIS NDVI, MODIS LST, SMAP L4 root-zone moisture, GPM IMERG, GRACE-FO TWS, MODIS true colour</td><td>tiled WMTS</td><td><span class="chip chip-observed">observed</span></td></tr>
+      <tr><td>ISRIC SoilGrids</td><td>clay, sand, silt, SOC, pH, bulk density at 0–5 cm</td><td>250 m</td><td><span class="chip chip-observed">observed</span></td></tr>
+      <tr><td>IPCC AR6 Atlas</td><td>SSP2-4.5 South Asia delta: +1.9 °C, −6% precipitation</td><td>regional mean</td><td><span class="chip chip-simulated">simulated</span></td></tr>
+    </tbody>
+  </table>
+  <p>
+    POWER is a reanalysis product (MERRA-2), not a satellite retrieval. We tag it
+    <span class="chip chip-reanalysis">reanalysis</span> everywhere it appears, including in the
+    app, because calling it "NASA satellite data" would be false.
+  </p>
+  <p>
+    <strong>What NDVI is and is not used for.</strong> MOD13Q1 is read through the Planetary
+    Computer COG mirror of the NASA LP DAAC product, 3×3 pixel mean around the field coordinate.
+    It feeds the Field Memory strip and the NDVI prediction in the ledger. It does
+    <em>not</em> enter the water balance, the nitrogen balance or the search — those run on POWER
+    and SoilGrids alone. If a bundle has no composite yet, the app says so and withholds the NDVI
+    prediction rather than substituting a plausible number. The map layer is a live NASA GIBS
+    tile service and is independent of the bundle.
+  </p>
+  <p>
+    <strong>Soil is sampled, not assumed.</strong> The point-query API returns null when the exact
+    250 m pixel is masked — water, built-up land, or a gap in the grid — and the Sheikhupura
+    coordinate is one of those. So the pipeline reads the same grid through the SoilGrids WCS
+    endpoint, which serves a small GeoTIFF per property, and takes the median of the valid pixels
+    within 2.2 km of the field point. That is a better statistic than a single pixel: it is a
+    neighbourhood, and the bundle records how many pixels went into each value. Every field in the
+    app carries a real SoilGrids texture — Sheikhupura comes back a silt loam at 22% clay, 22%
+    sand, 56% silt, which is what the Punjab canal-command literature describes. None of the five
+    fields falls back to a hand-written regional default.
+  </p>
+  <p>
+    <strong>Known bias.</strong> MERRA-2 underestimates monsoon rainfall over the Punjab.
+    The Sheikhupura record averages 477 mm/yr against a station climatology nearer 600 mm.
+    We use it anyway because it is consistent across the whole 34-year record, and we note that
+    the bias makes the irrigation requirement an <em>upper</em> bound — the model asks for more
+    water than the field probably needs. That direction is the safe one for a farmer deciding
+    whether to switch.
+  </p>
+
+  <h2>3. Reference evapotranspiration</h2>
+  <p>FAO-56 Penman-Monteith, computed daily from the POWER record.</p>
+  <div class="eq">ET₀ = [0.408 Δ (Rₙ − G) + γ (900/(T+273)) u₂ (eₛ − eₐ)] / [Δ + γ (1 + 0.34 u₂)]
+<em>Δ  slope of the saturation vapour curve      γ  psychrometric constant
+Rₙ net radiation from ALLSKY_SFC_SW_DWN      u₂ wind at 2 m
+eₛ − eₐ  vapour pressure deficit from RH2M and T2M</em></div>
+  <p>
+    <code>ALLSKY_SFC_SW_DWN</code> arrives in MJ/m²/day and is used as-is. It is not multiplied
+    by 3.6 — that conversion applies to kW·h/m²/day, and getting it wrong inflates ET₀ by a
+    factor of 3.6. We checked the response header rather than assuming.
+  </p>
+  <p>
+    For the Sheikhupura field this gives a mean ET₀ of <span class="mono">1,769 mm/yr</span>
+    (4.84 mm/day), which is consistent with published Punjab values.
+  </p>
+
+  <h2>4. Crop water requirement</h2>
+  <p>Single crop coefficient approach, FAO-56 Chapter 8, with a daily soil-water balance.</p>
+  <div class="eq">ETc = Kc × ET₀
+Kc  = Kcb + Ke                    <em>basal + soil evaporation</em>
+Kcb = Kcb,ini → Kcb,mid → Kcb,end <em>over four growth stages</em>
+TAW = 1000 (θFC − θWP) Zr         <em>total available water, mm</em>
+RAW = p × TAW                     <em>readily available water</em>
+Ks  = (TAW − Dr) / (TAW − RAW)    <em>water stress coefficient, 0 to 1</em>
+Dr,t = Dr,t−1 − (Pe + I) + ETc,t  <em>daily depletion</em>
+IRreq = Σ max(0, ETc,t − Pe,t − ΔDr)  <em>irrigation requirement</em></div>
+  <p>
+    <code>p</code> is the FAO-56 depletion fraction per crop, adjusted for ETc. Rooting depth
+    <code>Zr</code> grows through the season. Twenty crops are parameterised in
+    <code>engine/crops.js</code>, each with its Kcb curve, stage lengths, rooting depth,
+    depletion fraction, heat threshold and nitrogen fixation rate.
+  </p>
+
+  <h3>Effective rainfall</h3>
+  <p>USDA-SCS monthly relationship, applied to monthly totals and distributed back to days in proportion to daily rainfall so that timing is preserved.</p>
+  <div class="eq">Pe = P (125 − 0.2 P) / 125   for P &lt; 250 mm
+Pe = 125 + 0.1 P              for P ≥ 250 mm</div>
+
+  <h3>Soil hydraulics</h3>
+  <p>Saxton &amp; Rawls (2006) pedotransfer functions, from SoilGrids texture and organic carbon.</p>
+  <div class="eq">θ1500 = −0.024 A + 0.487 C + 0.006 M + 0.005 (S·A) − 0.013 (C·M) + 0.068 (A·M) + 0.031
+θ33   = −0.251 S + 0.195 C + 0.011 M + 0.006 (S·A) − 0.027 (C·M) + 0.452 (A·M) + 0.299
+AWC   = θ33 − θ1500   <em>available water capacity, m/m</em>
+<em>S sand %, C clay %, M organic matter %, A = 100 − S − C</em></div>
+  <p>
+    When SoilGrids is unreachable the pipeline falls back to a documented regional default and
+    says so in the app, on the field profile, in the source list. It does not silently substitute.
+  </p>
+
+  <h2>5. Reliability, defined exactly</h2>
+  <div class="eq">requirement(y) = IRreq(kharif, y) + IRreq(rabi, y)
+unmet(y)       = max(0, requirement(y) − supply)
+reliable(y)    = 1 if unmet(y) ≤ tolerance, else 0
+reliability    = Σ reliable(y) / N</div>
+  <p>
+    <code>supply</code> is the water the farmer says they can deliver in a year, in mm over the
+    field. <code>tolerance</code> defaults to 0 mm. <code>N</code> is the number of years with a
+    complete pair of seasons for every crop in the region pack — 33 for Punjab, 1991–2023.
+  </p>
+  <p>
+    <strong>Heat is reported separately, never folded in.</strong> A rotation can be water-reliable
+    and heat-exposed at the same time, and collapsing those into one index would hide the thing
+    the farmer most needs to know. Heat days count days above the crop's critical maximum during
+    its heat-sensitive window.
+  </p>
+  <p>
+    Worked example, Punjab field, 900 mm supply. Rice–wheat requires 938 mm on average and fits
+    inside the budget in 13 of 33 years — <strong>39% reliable</strong>, 20 failing years.
+    Cotton–chickpea requires 703 mm and fits in 28 of 33 — <strong>85% reliable</strong>. Both
+    numbers are reproducible from the shipped data with <code>npm test</code>.
+  </p>
+
+  <h2>6. Soil loss</h2>
+  <p>RUSLE, with a cover factor driven by the simulated canopy and residue cover.</p>
+  <div class="eq">A = R · K · LS · C · P
+R  modified Fournier index, monthly (Renard &amp; Freimund 1994)
+K  Williams (1995) erodibility from texture and organic carbon
+LS Wischmeier &amp; Smith slope-length factor from slope %
+C  cover factor from mean canopy cover and residue retention
+P  support practice: none 1.0, contour 0.5, terrace 0.25</div>
+
+  <h2>7. Nitrogen and soil carbon</h2>
+  <p>
+    A four-season nitrogen balance: fixation by legumes, removal by grain and residue, leaching
+    and volatilisation losses as fixed fractions. Soil organic carbon follows a 20-year
+    first-order trajectory toward a residue-dependent equilibrium.
+  </p>
+  <div class="eq">N_net = Σ (fixation − removal − losses) / 4 seasons
+dSOC/dt = k (SOC_eq − SOC)   <em>k = 0.02 /yr, SOC_eq from residue input</em></div>
+  <p>
+    These are the weakest numbers in the model. They are directionally right and they rank
+    rotations sensibly, but they are not calibrated against measured trials. We show them because
+    a rotation that mines nitrogen is a real risk, and hiding that would be worse than
+    approximating it.
+  </p>
+
+  <h2>8. The search</h2>
+  <p>
+    Every legal four-season sequence in a region pack is enumerated and evaluated against the
+    whole record. For Punjab that is 8 kharif × 6 rabi × 8 kharif × 6 rabi =
+    <span class="mono">2,304</span> sequences. Many are the same two-year cycle started at a
+    different point, so results are de-duplicated by canonical rotation, leaving
+    <span class="mono">1,176</span> distinct cycles and <span class="mono">152,064</span>
+    simulated seasons.
+  </p>
+  <p>
+    The efficient frontier is the Pareto set over four objectives: maximise reliability, maximise
+    nitrogen balance, minimise soil loss, maximise downside margin. Nothing on the frontier is
+    beaten by anything else on all four at once.
+  </p>
+  <p>
+    <strong>The recommendation rule is stated, not hidden.</strong> We prefer a rotation that beats
+    current practice on margin, nitrogen and reliability simultaneously. If none does, we fall back
+    to the most reliable option and say that we did. On the Punjab field, no rotation is both
+    100% reliable and as profitable as rice–wheat, so the recommendation is 85% reliable and more
+    profitable — and the app says exactly that.
+  </p>
+
+  <h2>9. The 2050 stress test</h2>
+  <p>
+    A uniform delta of <strong>+1.9 °C and −6% precipitation</strong> is applied to every day of the
+    observed record, and the whole search is re-run. The deltas come from the IPCC AR6 Atlas for
+    SSP2-4.5 in South Asia.
+  </p>
+  <p>
+    This is a sensitivity test, not a forecast. It does not model CO₂ fertilisation, changed
+    rainfall intensity, or adaptation. It answers one narrow question: if the mean climate moved
+    this far, which rotations would still fit inside the same water supply? Tagged
+    <span class="chip chip-simulated">simulated</span>.
+  </p>
+
+  <h2>10. What we know is wrong</h2>
+  <ul>
+    <li><strong>Rainfall is biased low.</strong> MERRA-2 under-reports monsoon totals in the Punjab. The irrigation requirement is therefore an upper bound.</li>
+    <li><strong>Gross margins are regional defaults, not this farm's books.</strong> They are a P10/P50/P90 band precisely because a point estimate would be a lie. Every margin number in the app is editable.</li>
+    <li><strong>Nitrogen and SOC are uncalibrated.</strong> Directionally correct, quantitatively approximate.</li>
+    <li><strong>The field is a demonstration polygon.</strong> 2.4 ha drawn around a coordinate, not a surveyed boundary. The soil, climate and NDVI are real for that coordinate; the boundary is not.</li>
+    <li><strong>No pest or disease dynamics.</strong> We count family breaks as a proxy for rotation benefit. We do not model pathogen populations.</li>
+    <li><strong>No irrigation efficiency.</strong> Supply is treated as water delivered to the root zone. Canal conveyance losses, which are large in Punjab, are not modelled.</li>
+    <li><strong>One climate delta, one scenario.</strong> No ensemble, no uncertainty band on the 2050 result.</li>
+    <li><strong>Validation is directional.</strong> The failure flags line up with the driest years and with lower reanalysis root-zone wetness. That is a consistency check on a reanalysis product, not an independent satellite validation.</li>
+  </ul>
+
+  <h2>11. What would make us abandon this</h2>
+  <p>
+    If the failure flags did not line up with observed dry years, the model would be noise and we
+    would say so. On the Punjab field, all five of the driest years in the record are flagged as
+    failures for rice–wheat, and years the model passes are 0.06 m³/m³ wetter in the reanalysis
+    root-zone record than years it fails. That is a weak signal in absolute terms and we present
+    it as such — but it points the right way, and it is checkable by anyone with the same data.
+  </p>
+
+  <h2>12. The ten questions the brief asks you to understand</h2>
+  <p>
+    The challenge guide ends with ten questions a team is expected to be able to answer. We
+    answer them here rather than in a slide, because a judge should be able to check each one
+    against the model rather than take our word for it.
+  </p>
+
+  <h3>1 · What is crop rotation, and why does it matter for soil health?</h3>
+  <p>
+    Growing different crops in a planned sequence on the same ground. It matters because a
+    monoculture mines the same nutrients from the same depth, hosts the same pathogens, and
+    leaves the soil bare in the same months every year. Rotation breaks all three cycles at
+    once. In this model the three effects are separate and separately visible: nitrogen
+    balance (§7), soil loss (§6), and family-break intervals for disease (§4).
+  </p>
+
+  <h3>2 · How do changing temperature and rainfall affect production?</h3>
+  <p>
+    Temperature sets demand, rainfall sets supply, and the gap is irrigation. A warmer year
+    raises ET₀, which raises the crop water requirement for the same yield. A drier year
+    lowers effective rainfall. Either one widens the gap. Field Shift does not model yield
+    directly — it models whether the gap can be closed with the water the farmer actually has,
+    year by year, which is why the headline is a failure rate rather than a tonnage.
+  </p>
+
+  <h3>3 · How can satellite data help monitor soil moisture and vegetation health?</h3>
+  <p>
+    Soil moisture is measured directly by SMAP's L-band radiometer (root-zone product on the
+    map) and inferred from the MERRA-2 land surface model in the POWER record we run the
+    balance on. Vegetation health comes from MODIS NDVI, which is a 16-day composite of the
+    normalised difference between near-infrared and red reflectance — green, photosynthesising
+    canopy reads high, bare or stressed ground reads low. We use NDVI as corroboration, not as
+    an input: it tells you the crop grew, not how much water it needed.
+  </p>
+
+  <h3>4 · What is the difference between Landsat, SMAP, GPM and ECOSTRESS?</h3>
+  <p>
+    They answer different questions at different scales, and the honest answer to "why not use
+    all of them" is that a 33-year daily water balance needs a consistent daily series, which
+    none of them provides on its own.
+  </p>
+  <table>
+    <thead><tr><th>Mission</th><th>Resolution</th><th>Revisit</th><th>Measures</th><th>Role here</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Landsat 8/9</td><td>30 m optical, 100 m thermal</td><td>16 days</td>
+        <td>Surface reflectance, land surface temperature</td>
+        <td>Not in the bundle. 30 m is finer than a 2.4 ha field needs, and a 16-day repeat can miss the monsoon break that decides the season. MODIS gives daily coverage at 250 m, which is the right trade for a field-scale balance.</td>
+      </tr>
+      <tr>
+        <td>SMAP</td><td>9–36 km</td><td>2–3 days</td>
+        <td>Surface and root-zone soil moisture</td>
+        <td>Live map layer (L4 root zone). Not in the balance: 9 km is coarser than the field, and the record starts in 2015 — too short for a 33-year failure rate.</td>
+      </tr>
+      <tr>
+        <td>GPM IMERG</td><td>0.1°</td><td>30 minutes</td>
+        <td>Precipitation rate</td>
+        <td>Live map layer. Not in the balance: IMERG starts in 2000, which would cut the sample from 33 years to 24 and change what the failure rate means.</td>
+      </tr>
+      <tr>
+        <td>ECOSTRESS</td><td>38 × 69 m</td><td>Irregular, target-requested</td>
+        <td>Evapotranspiration, land surface temperature</td>
+        <td>Not used. The revisit is not systematic, so a monthly composite would mosaic different days. A daily water balance cannot be built on it.</td>
+      </tr>
+      <tr>
+        <td>GRACE-FO</td><td>~300 km mascons</td><td>Monthly</td>
+        <td>Total water storage anomaly</td>
+        <td>Live map layer, used qualitatively. It is the evidence that the aquifer trend makes the current rotation untenable — not a term in the equation.</td>
+      </tr>
+      <tr>
+        <td>MODIS</td><td>250 m – 1 km</td><td>Daily</td>
+        <td>NDVI, land surface temperature</td>
+        <td>NDVI in the bundle (MOD13Q1); LST as a live layer.</td>
+      </tr>
+      <tr>
+        <td>MERRA-2 via POWER</td><td>0.5° × 0.625°</td><td>Daily</td>
+        <td>Temperature, rain, humidity, wind, radiation, root-zone wetness</td>
+        <td>The backbone. Reanalysis, not a satellite retrieval, and tagged as such everywhere.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>5 · How can a farmer identify crops suited to their soil and climate?</h3>
+  <p>
+    By testing candidates against the actual record rather than a suitability chart. Every crop
+    in the library carries stage lengths, basal crop coefficients, rooting depth and depletion
+    fraction from FAO-56; the soil supplies field capacity and wilting point from texture; the
+    climate supplies 33 years of demand and rainfall. A crop that cannot close its water gap in
+    most years is not suited, whatever a zone map says.
+  </p>
+
+  <h3>6 · How do nitrogen-fixing crops improve fertility?</h3>
+  <p>
+    Legumes symbiotically fix atmospheric N₂ into plant-available forms, so a legume in the
+    rotation adds nitrogen instead of removing it. In the model each crop carries an
+    <code>nfix</code> term; chickpea and lentil are net positive, cereals are strongly negative.
+    This is why the recommended Punjab rotation gains nitrogen where rice–wheat loses it — and
+    why the app shows both numbers side by side rather than a single score.
+  </p>
+
+  <h3>7 · How do cover crops reduce erosion and retain moisture?</h3>
+  <p>
+    Ground cover intercepts raindrop energy and slows surface flow, which is the C factor in
+    RUSLE; roots and residue improve infiltration, which is the moisture half. Field Shift
+    models the cover term explicitly and lets the farmer toggle residue retention, because
+    burning is the single largest lever on soil loss in the Punjab and it is a decision the
+    farmer actually makes. The app shows the soil-loss difference between retaining and burning
+    rather than asserting that residue is good.
+  </p>
+
+  <h3>8 · How does rotation interrupt pest and disease cycles?</h3>
+  <p>
+    Pathogens and pests are usually host-specific: they overwinter in residue or soil and need
+    the same host family back within a season or two to persist. A break of two or more seasons
+    to an unrelated family starves them out. We model this as a family-break count per rotation
+    and report it as a count, not a probability — we do not simulate pathogen populations, and
+    §10 says so.
+  </p>
+
+  <h3>9 · How are satellite observations combined with local soil measurements?</h3>
+  <p>
+    The satellite record supplies the daily forcing — temperature, humidity, wind, radiation and
+    rainfall from POWER, NDVI from MODIS. The local half supplies the soil: clay, sand, silt,
+    organic carbon, pH and bulk density from SoilGrids at 250 m, which convert through Saxton &
+    Rawls into field capacity, wilting point and available water capacity. The two meet in the
+    daily soil-water balance: climate sets demand, soil sets how much of the supply the root
+    zone can actually hold. Neither half is sufficient alone, which is the point of the brief.
+  </p>
+
+  <h3>10 · How does a decision-support tool compare at least three strategies?</h3>
+  <p>
+    By scoring all of them on the same years with the same soil and the same water supply, and
+    then refusing to collapse the result into one number. Field Shift compares seven rotations
+    side by side — the farmer's current practice plus six alternatives — on reliability, mean
+    irrigation requirement, nitrogen balance, soil loss and the P10 margin. Where two options
+    trade off against each other, the app says so instead of hiding it behind a weighted score.
+    The recommendation rule is stated in §5 and in the app itself.
+  </p>
+
+  <h2>13. References</h2>
+  <ol class="refs">
+    <li>Allen, R.G., Pereira, L.S., Raes, D., Smith, M. (1998). <em>Crop evapotranspiration: guidelines for computing crop water requirements.</em> FAO Irrigation and Drainage Paper 56. <a href="https://www.fao.org/3/x0490e/x0490e00.htm">fao.org/3/x0490e</a></li>
+    <li>Saxton, K.E., Rawls, W.J. (2006). Soil water characteristic estimates by texture and organic matter for hydrologic solutions. <em>Soil Science Society of America Journal</em> 70(5), 1569–1578. <a href="https://doi.org/10.2136/sssaj2005.0117">doi:10.2136/sssaj2005.0117</a></li>
+    <li>Renard, K.G., Freimund, J.R. (1994). Using monthly precipitation data to estimate the R-factor in the revised USLE. <em>Journal of Hydrology</em> 157, 287–306. <a href="https://doi.org/10.1016/0022-1694(94)90110-4">doi:10.1016/0022-1694(94)90110-4</a></li>
+    <li>Williams, J.R. (1995). The EPIC model. In <em>Computer Models of Watershed Hydrology</em>, Water Resources Publications.</li>
+    <li>Wischmeier, W.H., Smith, D.D. (1978). <em>Predicting rainfall erosion losses.</em> USDA Agriculture Handbook 537.</li>
+    <li>NASA POWER Project. <em>Prediction Of Worldwide Energy Resources.</em> NASA Langley Research Center. <a href="https://power.larc.nasa.gov/">power.larc.nasa.gov</a></li>
+    <li>Didan, K. (2021). <em>MODIS/Terra Vegetation Indices 16-Day L3 Global 250m SIN Grid V061.</em> NASA EOSDIS LP DAAC. <a href="https://doi.org/10.5067/MODIS/MOD13Q1.061">doi:10.5067/MODIS/MOD13Q1.061</a></li>
+    <li>IPCC (2021). <em>Climate Change 2021: The Physical Science Basis.</em> Chapter 8 and the Interactive Atlas, AR6 WGI. <a href="https://interactive-atlas.ipcc.ch/">interactive-atlas.ipcc.ch</a></li>
+    <li>Hengl, T. et al. (2017). SoilGrids250m: global gridded soil information based on machine learning. <em>PLOS ONE</em> 12(2). <a href="https://doi.org/10.1371/journal.pone.0169748">doi:10.1371/journal.pone.0169748</a></li>
+    <li>NASA SMAP Science Team. <em>Soil Moisture Active Passive L4 root-zone soil moisture.</em> <a href="https://smap.jpl.nasa.gov/">smap.jpl.nasa.gov</a></li>
+    <li>Huffman, G.J. et al. <em>GPM IMERG: Integrated Multi-satellitE Retrievals for GPM.</em> NASA GES DISC. <a href="https://gpm.nasa.gov/data/imerg">gpm.nasa.gov/data/imerg</a></li>
+    <li>Landerer, F.W. et al. <em>GRACE-FO: Gravity Recovery and Climate Experiment Follow-On.</em> NASA JPL. <a href="https://gracefo.jpl.nasa.gov/">gracefo.jpl.nasa.gov</a></li>
+  </ol>
+
+  <p style="margin-top:40px;font:400 11px/1.7 var(--mono);color:var(--muted)">
+    NASA and Space Apps names describe challenge context. No affiliation or endorsement is claimed.
+  </p>
+</main>
+
+<footer class="foot">
+  <p>
+    NASA POWER (MERRA-2 reanalysis) · NASA MODIS MOD13Q1 (LP DAAC, read via the Planetary Computer COG mirror) ·
+    NASA GIBS (MODIS, SMAP, IMERG, GRACE-FO) · ISRIC SoilGrids.
+  </p>
+  <p class="foot-links">
+    <a href="index.html">App</a>
+    <a href="pitch.html">Pitch</a>
+    <a href="https://github.com/SidhartSami/Field-Shift">Source</a>
+  </p>
+</footer>
+
+</body>
+</html>

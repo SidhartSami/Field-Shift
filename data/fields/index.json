@@ -1,0 +1,52 @@
+[
+ {
+  "id": "punjab-sheikhupura",
+  "name": "Sheikhupura, Punjab",
+  "country": "Pakistan",
+  "region": "indo-gangetic",
+  "system": "rice-wheat",
+  "lat": 31.7127,
+  "lon": 73.985,
+  "note": "Rice-wheat heartland of the Pakistani Punjab, canal plus tubewell irrigation."
+ },
+ {
+  "id": "iowa-boone",
+  "name": "Boone County, Iowa",
+  "country": "United States",
+  "region": "us-corn-belt",
+  "system": "corn-soybean",
+  "lat": 42.0369,
+  "lon": -93.9319,
+  "note": "Rainfed maize-soybean rotation, the reference high-input system."
+ },
+ {
+  "id": "kenya-nakuru",
+  "name": "Nakuru County",
+  "country": "Kenya",
+  "region": "east-african-highlands",
+  "system": "maize-bean",
+  "lat": -0.3031,
+  "lon": 36.08,
+  "note": "Smallholder maize-bean system, bimodal rainfall, low external input."
+ },
+ {
+  "id": "india-nagpur",
+  "name": "Nagpur, Maharashtra",
+  "country": "India",
+  "region": "deccan",
+  "system": "cotton-soybean",
+  "lat": 21.1458,
+  "lon": 79.0882,
+  "note": "Rainfed cotton-soybean on vertisols, high inter-annual rainfall variance."
+ },
+ {
+  "id": "vietnam-can-tho",
+  "name": "Can Tho, Mekong Delta",
+  "country": "Vietnam",
+  "region": "mekong",
+  "system": "rice-rice",
+  "lat": 10.0341,
+  "lon": 105.788,
+  "note": "Double or triple rice, delta hydrology, salinity intrusion risk."
+ }
+]

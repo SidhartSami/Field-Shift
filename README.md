@@ -1,79 +1,136 @@
-# FasalPath
-**A clearer case for your next crop rotation.** FasalPath helps a Pakistani farmer compare a proposed crop switch against current practice, identify water or cost blockers, and keep an evidence-backed option for local review. It is a decision-support prototype, not a validated planting prescription.
+# Field Shift
 
-The interface is English-only. Urdu speech-to-text remains available as optional input. Save a field location once through **+ Add field**; later changes use **Edit location**. Daily planning reuses the saved location automatically.
+**Every crop rotation fails sometimes. Field Shift tells you how often, in which years, and what to do when it does.**
 
-[What we do](docs/PRODUCT.md) · [Urdu STT](docs/STT.md) · [Positioning](docs/POSITIONING.md) · [Claims](docs/CLAIMS.md) · [Submission copy](docs/SUBMISSION.md) · [Proposed pilot](docs/PILOT.md).
+A decision-support tool for crop rotation, built on 34 years of NASA Earth observation. It does not score rotations out of 100. It replays every rotation a region allows through every year on record and reports the share of years the rotation's irrigation requirement fits inside the water the farmer can actually supply.
 
-Brand: **FasalPath — A clearer next season.** See [brand colours and visual assets](docs/BRAND.md). Source repository: [SidhartSami/Field-Shift](https://github.com/SidhartSami/Field-Shift) (private).
+That number can be wrong, and it names the years it was wrong in. That is the point.
+
+---
+
+## The claim, in one table
+
+Punjab field, 900 mm annual water supply, 33 usable years (1991–2023):
+
+| Rotation | Water reliability | Irrigation need | Nitrogen balance | Downside margin | Family breaks |
+|---|---|---|---|---|---|
+| Rice · Wheat · Rice · Wheat *(current practice)* | **39%** | 938 mm | −74 kg/ha/yr | 156k PKR | 0 |
+| Cotton · Chickpea · Cotton · Chickpea *(recommended)* | **85%** | 703 mm | +9 kg/ha/yr | 160k PKR | 4 |
+| Maize · Wheat · Maize · Wheat *(most reliable)* | **100%** | 524 mm | −121 kg/ha/yr | 146k PKR | 0 |
+
+Rice–wheat fits the budget in 13 of 33 years. The other 20 it runs short.
+
+Maize–wheat is fully reliable and we **do not recommend it**: it mines 121 kg of nitrogen a hectare a year, worse than the rice–wheat it would replace. The recommendation rule is stated in the app and in the model card — prefer a rotation that beats current practice on margin, nitrogen *and* reliability at the same time; when nothing does, fall back to the most reliable option and say so.
+
+## Why a failure rate and not a score
+
+A score out of 100 cannot be falsified. It goes up when things are good, and no one can catch it being wrong — not the farmer, not a judge, not us. A failure rate names years: 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002, 2003, 2005, 2007, 2009, 2012, 2013, 2015, 2017. Those years can be checked against the rainfall record, the soil-moisture record, the satellite archive.
+
+We ran that check. All five of the driest years in the Punjab record are flagged as failures for rice–wheat, and years the model passes are 0.06 m³/m³ wetter in the reanalysis root-zone record than years it fails. That is a directional consistency check on a reanalysis product, not an independent satellite validation, and the app says so in those words.
+
+## What is in the box
+
+```
+dist/
+  index.html          four views: Field, Rotation Lab, Decision, Ledger
+  app.js              state, routing, rendering
+  app.css             stylesheet
+  model.html          the model card — equations, data, eight known errors
+  pitch.html          seven-slide scroll deck
+  engine/             the model. No dependencies, no build step.
+    crops.js          20 crops: FAO-56 Kcb, stages, rooting depth, p, heat, N fixation
+    regions.js        5 region packs: seasons, crop sets, margins, currency
+    eto.js            Penman-Monteith reference ET
+    soil.js           Saxton & Rawls water retention from texture
+    context.js        per-field precomputation: ET0, effective rainfall, erosivity
+    season.js         one season, one crop, one year: daily water balance
+    erosion.js        RUSLE
+    nitrogen.js       four-season N balance and 20-year SOC trajectory
+    evaluate.js       rotation evaluation, two tiers
+    pareto.js         non-dominated sorting over four objectives
+    search.js         enumeration, canonicalisation, the search
+  ui/
+    charts.js         memory strip, Pareto plot, supply curve, requirement strip
+    format.js         every user-facing number goes through here
+  data/fields/        5 field bundles, 1991–2024 daily NASA POWER + SoilGrids
+  vendor/leaflet/     Leaflet 1.9.4
+pipeline/
+  fetch_fields.py     rebuilds data/fields from NASA POWER, MODIS, SoilGrids
+tests/                98 tests
+```
 
 ## Run
-Requires Node 20+ for tests, Python 3 for the static server.
+
+Requires Node 20+ and Python 3. No build step, no bundler, no API key.
 
 ```sh
-npm ci --ignore-scripts
+npm install
 npm test
-npm start
+npm start          # http://localhost:8080
 ```
-Open http://localhost:8080. The application, vendored Leaflet map library and lazy-loaded eSpeak NG read-aloud engine are served locally and require no API key. Serve `dist/` on any static host. NASA retrieval needs internet access and API CORS availability; a real bundled NASA snapshot supports the default demonstration without that request. The Google Fonts enhancement is optional; system fonts work when unavailable.
 
-## Workspace workflow
-1. Open the crop-switch planner. Use + Add field to save a field and location together, then switch between independent drafts. Location inputs appear only in field setup/edit; daily planning does not ask again.
-2. Enter soil, irrigation, current crops, area and priorities. A new or edited location is saved only after matching NASA observations load successfully.
-3. Select among the baseline and three alternatives in the comparison table. Customize a selected four-season sequence to add a fifth strategy with season-appropriate crop choices.
-4. Apply dry or hot/dry presets, move scenario sliders, change ranking order and inspect the timeline and model trade-offs.
-5. Save a named decision with notes. Search saved decisions, reopen a snapshot, export its evidence or remove it with undo.
-6. Inspect 2023 or 2024 observations, choose a month and read actual rainfall, temperature and wetness values.
-7. Open **Field intelligence** to inspect regional rainfall, temperature, wetness and modelled water-gap overlays. Select a cell, change the period, or use a map location in the planner. Export the overlay as GeoJSON.
-8. Use the action search (Ctrl/Cmd+K), switch light/dark appearance, export the current draft or print the report.
+`dist/` is a static site. Serve it from anything.
 
-9. Open the optional dictation section to **dictate Urdu into editable text** using local open-source Whisper, an audio file, or an explicitly selected Urdu browser service. Review before using it as a question or planning note. Urdu stays the recognition language under English UI. Optional read-aloud is separate.
-10. Enter local costs to screen a first-year switch. Fields are blank until supplied; the output is an assumption-based calculation, not a profit forecast.
+## The four views
 
-Field drafts and named decisions persist separately in `fieldshift-workspace-v2`. Existing v1 plans migrate to a field draft. This is a browser-local system, not a shared multi-user database. Exported JSON includes the raw NASA evidence; this version does not import external files.
+**Field** — pick one of five fields on five continents. Zero input required: the profile, the thesis sentence and the Field Memory strip are computed on load. The map shows NASA GIBS layers (MODIS true colour, SMAP soil moisture, IMERG rainfall, GRACE-FO water storage) with a caption explaining what each one is and is not.
 
-## Architecture
-`dist/index.html` and `style.css`: responsive application shell and planning views; no build step.
-`dist/app.js`: field/decision lifecycle, routing, theme, action search, NASA fetch, state, visualizations and reports.
-`dist/assets/`: original logo/favicon and schematic field illustration.
-`dist/icons.js`: curated Lucide navigation icons and original crop SVG illustrations.
-`dist/visuals.js`: shared-scale water-budget graphic.
-`dist/model.js` and `outcomes.js`: agronomic comparison proxies, outcome differences and the optional first-year cost screen.
-`dist/decision-brief.js`: concrete next-step gates and crop-sequence-specific, self-reported local checks. The removed interface language selector is no longer loaded.
-`dist/stt.js`, `stt-worker.js` and `stt-audio.js`: Urdu capture, local Whisper transcription, audio preprocessing and confirmation.
-`dist/voice.js`, `voice-summary.js` and `speech-worker.js`: deterministic explanations, optional recognition and local speech generation.
-`dist/pitch.html`: standalone English outcome-first presentation; build with `node scripts/example-outcomes.mjs --write` then `node scripts/build-pitch.mjs`.
-`dist/geo.js` and `geo-data.js`: map interface, NASA regional data joins and derived overlays.
-`dist/data/power-pakistan-region.json`: original NASA responses for 90 regional cells and exact request lineage.
-`dist/vendor/leaflet/`: Leaflet 1.9.4, its stylesheet/assets and BSD-2-Clause license.
-`dist/data/power-lahore.json`: unmodified successful NASA API response retrieved 2026-11-14 for 2023–2024 at 31.5204°N, 74.3587°E.
-`tests/`: model invariants and DOM integration checks.
-`.openai/hosting.json`: static hosting configuration.
+**Rotation Lab** — 2,304 candidate sequences, 1,176 distinct two-year cycles, 152,064 simulated seasons, searched in about 45 ms. A Pareto plot over four objectives, a six-card shortlist with role labels, a supply curve showing where each rotation becomes reliable, and a 2050 stress test under the IPCC AR6 SSP2-4.5 South Asia delta (+1.9 °C, −6% rainfall).
 
-NASA query: https://power.larc.nasa.gov/api/temporal/monthly/point?parameters=T2M,PRECTOTCORR,GWETROOT&community=AG&longitude=74.3587&latitude=31.5204&start=2023&end=2024&format=JSON
+**Decision** — the brief. Requirement strip showing which years cross the supply line, the fallback trigger, the prediction, and a sensitivity table.
 
-## Scientific scope
-The crop portfolio is an unvalidated example for summer–winter systems in the irrigated plains of Punjab, Pakistan. NASA POWER meteorological fields are coarse MERRA-2 reanalysis, not field-resolution satellite retrievals. Wetness and optional NDVI are contextual only. Water, soil, protection and family diversity scores use explicit illustrative coefficients, documented in the app. They are neither calibrated predictions nor agronomic prescriptions. No yield, profit, disease incidence or measured soil improvement is claimed. Annual effective rainfall does not model timing; heat uses monthly means and misses extremes. The app deliberately labels these limitations.
+**Ledger** — the model validating itself. Backtests, the driest-year check, the wetness delta, and the scale panel.
 
-See [brief mapping](docs/BRIEF.md), [methodology](docs/METHODOLOGY.md), [demo and submission draft](docs/DEMO.md), and [map documentation](docs/MAP.md).
+## Data
 
-## Verification
-`npm test` checks unit conversions, invalid-data rejection, rotation construction, monotonic scenario effects, and application DOM workflows. Managed browser tooling was unavailable during implementation: visual, real browser print and browser-specific CORS behavior remain unverified. Live upstream NASA access and one image tile from each basemap provider were verified from the execution environment. Map tests execute the actual vendored Leaflet library in JSDOM; this does not constitute visual browser QA.
+| Product | What it gives us | Tag |
+|---|---|---|
+| NASA POWER (MERRA-2) | daily Tmax, Tmin, Tmean, precipitation, RH, wind, solar, root-zone wetness, 1991–2024 | `REANALYSIS` |
+| MODIS MOD13Q1 | 250 m 16-day NDVI | `OBSERVED` |
+| SMAP L4 | root-zone soil moisture | `OBSERVED` |
+| GPM IMERG | satellite precipitation | `OBSERVED` |
+| GRACE-FO | terrestrial water storage anomaly | `OBSERVED` |
+| SoilGrids 250 m | clay, sand, silt, SOC, pH, bulk density | `OBSERVED` |
 
-## Privacy
-Plans remain in the current browser unless exported. NASA requests send latitude/longitude to NASA; map tile providers receive the viewed map area and visitor IP; read-aloud text stays in a local worker, while optional browser speech recognition may send microphone audio to its provider; the app has no analytics or backend account database. Local storage is not a backup or multi-device sync. Hosting can apply its own sign-in/access controls.
+Every figure in the app carries one of three tags: `OBSERVED`, `REANALYSIS` or `SIMULATED`. Nothing is presented as measured when it is modelled.
 
-## Design references
-The redesign uses [Watermelon UI](https://ui.watermelon.sh/) Gridline workspace patterns as a reference and applies [Emil Kowalski’s design-engineering skill](https://github.com/emilkowalski/skills/blob/main/skills/emil-design-eng/SKILL.md). See [design decisions](docs/DESIGN.md). UI source is original; no React source was copied.
+## Known limitations
 
-## Attribution
-Original project code: MIT license. NASA POWER data credited to the NASA Langley Research Center POWER Project, supported by NASA Earth Science. NASA and Space Apps names describe challenge context; no affiliation or endorsement is claimed. FAO/USDA references motivate principles; they do not validate this model. Leaflet 1.9.4 is bundled under its BSD-2-Clause license, retained in `dist/vendor/leaflet/LICENSE`. Satellite basemap tiles are provided by Esri (Esri, Maxar, Earthstar Geographics and GIS User Community); street tiles by OpenStreetMap contributors, with attribution displayed on the map. Imagery is contextual and is not used to calculate recommendations.
+The full list of eight is in the model card. The three that matter most:
 
-The bundled eSpeak NG engine is GPL-3.0, with its COPYING notice, package provenance and upstream source snapshot included. See [speech documentation](docs/SPEECH.md). Original application code retains the repository MIT notice; preserve all third-party notices and source materials when redistributing.
+- **MERRA-2 under-reports Punjab monsoon rainfall.** Station climatology is around 600 mm; the reanalysis gives 477 mm. The irrigation requirement is therefore an upper bound, which makes reliability a conservative estimate.
+- **Gross margins are regional defaults, not this farm's books.** They are a P10/P50/P90 band precisely because a point estimate would be a lie, and every margin number is editable.
+- **No pest or disease dynamics.** We count family breaks as a proxy for rotation benefit. We do not model pathogen populations.
 
-Transformers.js 3.8.1 is vendored with its Apache-2.0 license. Public Whisper model files and ONNX runtime load on demand; local base-model first use is about 100 MB. The browser application needs no native GPU install; `npm ci --ignore-scripts` skips optional native dependency installers. To verify actual STT model inference on the bundled Node CPU runtime, run `node --use-env-proxy scripts/verify-urdu-stt.mjs`; see [verification limits](docs/STT.md).
+## Tests
 
-Saved review briefs include local-check status scoped to the field and crop sequence. These checks are self-reported and do not confer planting approval. See [product workflow](docs/PRODUCT.md).
+```sh
+npm test
+```
 
-Branding preserves `fieldshift-workspace-v2` and existing browser storage keys for continuity. The application is now FasalPath; the repository name remains Field-Shift.
-testing
+98 tests, about 640 ms. They are property tests, not golden numbers — a golden number breaks every time a coefficient is corrected, a property survives refactoring and still catches the failures that matter.
+
+- `tests/data.test.js` — bundle integrity, provenance, no fill values, the 1999 drought is really in the record
+- `tests/engine.test.js` — crop parameters, soil hydraulics inside physical bounds, ET0 never negative, effective rainfall never exceeds gross rainfall, legumes improve nitrogen
+- `tests/search.test.js` — 2,304 candidates, 1,176 distinct, frontier verified against brute force in both directions
+- `tests/evaluate.test.js` — reliability is exactly the share of years that fit, monotonic in supply, the validation claim holds, the detail tier never applies more water than the farmer has
+- `tests/format.test.js` — missing data renders as an em dash, never as zero
+- `tests/claims.test.js` — recomputes every number in the pitch deck and the model card from the engine, then checks the same number appears in the shipped HTML
+
+That last file is the one that keeps the deck honest. If a coefficient changes, it fails and names the sentence that needs rewriting.
+
+## Rebuilding the data
+
+```sh
+python pipeline/fetch_fields.py
+```
+
+Pulls NASA POWER daily 1991–2024, MODIS NDVI and SoilGrids for each field in `pipeline/fetch_fields.py`, writes `data/fields/*.json`, and copies to `dist/data/fields/`. Takes a while — the NDVI step reads 301 COG composites per field.
+
+## Provenance
+
+NASA and Space Apps names describe challenge context. No affiliation or endorsement is claimed.
+
+Model card: [`dist/model.html`](dist/model.html). Pitch deck: [`dist/pitch.html`](dist/pitch.html). Strategy notes: [`docs/REVAMP.md`](docs/REVAMP.md). Submission copy: [`docs/SUBMISSION.md`](docs/SUBMISSION.md).
+
+Source: [SidhartSami/Field-Shift](https://github.com/SidhartSami/Field-Shift).

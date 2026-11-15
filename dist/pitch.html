@@ -1,1 +1,342 @@
-<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FasalPath · Farmer-outcome pitch</title><style>*{box-sizing:border-box}body{margin:0;background:#f5f3eb;color:#153e35;font-family:Tahoma,Arial,sans-serif}header{padding:22px 5vw;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #d9e1d4}.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:23px;direction:ltr}header a,button{font:inherit;color:inherit}header>div{display:flex;gap:15px;align-items:center}header a{font-size:12px;text-decoration:none}button{padding:9px 14px;border:1px solid #cbd6c5;border-radius:6px;background:#ffffff80;cursor:pointer}main{max-width:1250px;margin:auto;padding:5vh 6vw}.slide{min-height:68vh;display:flex;flex-direction:column;justify-content:center}small{letter-spacing:.8px;font-size:11px;color:#637958}.slide h1{font-size:clamp(30px,4.6vw,65px);line-height:1.5;letter-spacing:-1px;max-width:1000px;margin:25px 0}.slide p{font-size:clamp(16px,1.8vw,23px);line-height:1.9;color:#56705f;max-width:950px;margin:0 0 28px}.slide ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:16px}.slide li{font-size:14px;line-height:2;padding:20px;background:#ffffffa6;border:1px solid #dbe3d4;border-radius:9px}.slide[hidden]{display:none}footer{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:20px 5vw;border-top:1px solid #d9e1d4}footer>div{display:flex;align-items:center;gap:12px}#count{font-size:12px;color:#60765d}#evidence{font-size:10px;color:#637958;max-width:550px;line-height:1.8}button:focus-visible,a:focus-visible{outline:2px solid #147d58;outline-offset:4px}html[dir=ltr] .slide h1{line-height:1.12;letter-spacing:-2px}html[dir=ltr] body{font-family:system-ui,Arial,sans-serif}@media(max-width:700px){header{padding:16px}.brand{font-size:20px}header a{font-size:10px}header>div{gap:8px}button{padding:8px 10px;font-size:11px}main{padding:30px 20px}.slide{min-height:0}.slide h1{margin-top:20px;font-size:34px}.slide p{font-size:16px}.slide ul{grid-template-columns:1fr;gap:10px}.slide li{font-size:12px;padding:15px}footer{padding:20px;flex-direction:column;align-items:stretch}footer>div{justify-content:space-between}#evidence{font-size:9px}}@media print{@page{size:landscape;margin:16mm}header,footer{display:none}main{padding:0;max-width:none}.slide,.slide[hidden]{display:flex;min-height:0;height:160mm;break-after:page;justify-content:center}.slide:last-child{break-after:auto}.slide h1{font-size:37px}.slide p{font-size:16px}.slide li{font-size:12px}.slide ul{grid-template-columns:repeat(3,1fr)}}</style></head><body><header><span class="brand"><img src="assets/fasalpath-mark.svg" alt="" width="33" height="33">FasalPath.</span><div><a href="./#planner" id="open" target="_blank" rel="noopener">منصوبہ کھولیں ↗</a><button id="print">پرنٹ</button></div></header><main id="slides"></main><footer><p id="evidence"></p><div><button id="previous">پچھلا</button><span id="count" role="status"></span><button id="next">اگلا</button></div></footer><script>const slides=[{"en":{"tag":"THE FARMER’S DECISION","title":"Before the seed, weigh the decision.","body":"See what a crop change could mean for your water budget, soil management and first-year costs before committing a field.","items":["Initial focus: irrigated plains of Punjab, Pakistan.","Built for a farmer–adviser conversation, with Urdu-first explanations.","A working prototype; farm outcomes remain to be validated."]},"ur":{"tag":"کسان کا فیصلہ","title":"بیج سے پہلے، فیصلہ تولیں۔","body":"فصل بدلنے سے پہلے پانی کی ضرورت، زمین کے انتظام اور پہلے سال کے خرچ کا فرق سمجھیں۔","items":["ابتدائی توجہ: پنجاب، پاکستان کے آبپاش میدانی کھیت۔","کسان اور زرعی مشیر کی گفتگو، اردو میں سمجھ کے ساتھ۔","کام کرتا نمونہ؛ حقیقی کھیت کے نتائج کی تصدیق ابھی باقی ہے۔"]}},{"en":{"tag":"WHAT NEEDS ANSWERING","title":"Three questions before committing land.","body":"A crop can ask for less water and still be a difficult switch.","items":["Can I cover its water needs at the right time?","Will the buyer price and crop margin justify the switching cost?","Are the seed, labour, drainage and local sowing windows workable?"]},"ur":{"tag":"فیصلے سے پہلے کے سوال","title":"زمین لگانے سے پہلے تین باتیں۔","body":"کم پانی مانگنے والی فصل بھی ایک مشکل تبدیلی ہو سکتی ہے۔","items":["کیا صحیح وقت پر پانی کی ضرورت پوری کر سکوں گا؟","کیا خریدار کی قیمت اور مارجن تبدیلی کا خرچ پورا کریں گے؟","کیا بیج، مزدور، نکاسی اور مقامی بوائی کا وقت مناسب ہیں؟"]}},{"en":{"tag":"CONSTRUCTED LAHORE EXAMPLE","title":"61% lower indicative demand.","body":"On a 10 ha field, the stated crop coefficients put repeated rice/wheat at 1,650 mm/year and the lower-demand mix at 650.","items":["Annual model gap: 583 → 0 mm with the entered rain/irrigation assumptions.","The 100,000 m³ difference is a demand equivalent, not measured water saved.","With 30% less rain and 200 mm irrigation, the alternative still lacks 53 mm/year. Annual zero does not guarantee in-season supply."]},"ur":{"tag":"لاہور کی بنائی گئی مثال","title":"تقریباً 61٪ کم تخمینی ضرورت۔","body":"دس ہیکٹر پر دھان اور گندم کی تخمینی سالانہ ضرورت 1,650 ملی میٹر، اور متبادل ترتیب کی 650 ہے۔","items":["دیے گئے بارش اور آبپاشی کے اندازوں پر سالانہ کمی 583 سے 0 ملی میٹر۔","100,000 مکعب میٹر ضرورت کا فرق ہے، ناپی گئی بچت نہیں۔","بارش 30٪ کم اور آبپاشی 200 ملی میٹر ہو تو متبادل میں بھی 53 ملی میٹر کمی رہتی ہے۔ سالانہ صفر ہر موسم کی ضمانت نہیں۔"]}},{"en":{"tag":"THE CONDITION THAT CAN REJECT THE SWITCH","title":"A first-year screen can be negative PKR 6,600.","body":"Illustrative assumptions: PKR 2 per usable m³, PKR 4,000/ha crop-margin loss before irrigation, and PKR 5,000/ha switching cost.","items":["Hypothetical variable pumping-cost reduction: PKR 83,400 across 10 ha, capped by available irrigation.","Subtract PKR 40,000 lost margin and PKR 50,000 switching cost.","The farmer can question buyer prices, reduce transition costs or keep current practice. These are invented inputs, not a profit forecast."]},"ur":{"tag":"تبدیلی روکنے کی ایک وجہ","title":"پہلے سال کا حساب 6,600 روپے منفی بھی ہو سکتا ہے۔","body":"صرف مثال کے لیے: پانی کے دو روپے فی قابلِ استعمال مکعب میٹر، فی ہیکٹر چار ہزار کم مارجن اور پانچ ہزار تبدیلی کا خرچ۔","items":["دستیاب آبپاشی کی حد پر پانی نکالنے کے متغیر خرچ میں فرضی کمی 83,400 روپے۔","اس میں سے 40,000 روپے مارجن کی کمی اور 50,000 روپے تبدیلی کا خرچ نکالیں۔","کسان بہتر قیمت، کم تبدیلی کے خرچ یا موجودہ کاشت کو برقرار رکھنے پر غور کر سکتا ہے۔ یہ بنائے ہوئے اندازے ہیں، منافع کی پیش گوئی نہیں۔"]}},{"en":{"tag":"WHY THE SPACE DATA MATTERS","title":"Question the rainfall assumption.","body":"NASA POWER records 871.84 mm of rainfall at the example point in 2024. The farmer still supplies local soil and irrigation context.","items":["90 regional grid cells make historical variation inspectable.","Exact observations and requests can be checked with an adviser.","MERRA-2 reanalysis is coarse regional context. Historical data is not a forecast or an individual field measurement."]},"ur":{"tag":"خلائی اعداد کیوں اہم ہیں؟","title":"بارش کا اندازہ بھی جانچیں۔","body":"ناسا پاور کے مطابق مثال کے مقام پر 2024 کی بارش 871.84 ملی میٹر ہے۔ کھیت کی مٹی اور آبپاشی کی معلومات پھر بھی مقامی ہوتی ہیں۔","items":["نوّے علاقائی خانے گزشتہ حالات کا فرق دیکھنے دیتے ہیں۔","اصل مشاہدات اور ان کا ماخذ مشیر کے ساتھ جانچا جا سکتا ہے۔","یہ بڑے علاقے کی MERRA-2 تحلیل ہے، اگلے موسم کی پیش گوئی یا ایک کھیت کی پیمائش نہیں۔"]}},{"en":{"tag":"SOMETHING THE FARMER CAN TAKE AWAY","title":"Speak Urdu. Review. Discuss locally.","body":"Dictate a question or note in Urdu, review the transcript, then keep an option with its costs and unresolved checks.","items":["Open-source Whisper transcribes Urdu on the device after model download; no paid inference API.","Urdu recognition stays Urdu under English UI. Browser-service recognition is an explicit fallback; optional read-aloud is separate.","A saved or printed option supports the next adviser conversation. Time saved and comprehension gains are not yet measured."]},"ur":{"tag":"کسان کے ساتھ رہنے والی بات","title":"اردو بولیں۔ تحریر جانچیں۔ مشورہ لیں۔","body":"اپنا سوال یا نوٹ اردو میں بولیں، لکھی ہوئی تحریر درست کریں، پھر خرچ اور باقی سوالوں کے ساتھ انتخاب محفوظ کریں۔","items":["اوپن سورس Whisper ماڈل لوڈ ہونے کے بعد اردو آواز کو آلے پر تحریر میں بدلتا ہے؛ کوئی ادا شدہ انفرنس API نہیں۔","پانی، خرچ اور مقامی جانچ کے محدود سوال اور تحریری خلاصہ موجود ہیں۔ مائیکروفون کی سہولت براؤزر پر ہے۔","محفوظ یا پرنٹ شدہ انتخاب اگلے مقامی مشورے کی بنیاد ہے۔ وقت کی بچت یا بہتر سمجھ ابھی ناپی نہیں گئی۔"]}},{"en":{"tag":"THE NEXT PROOF COMES FROM FIELDS","title":"Measure the outcome we want.","body":"Seek a local agronomist-reviewed pilot before claiming farm savings or recommending planting changes.","items":["Check whether farmers understand the observation, scenario and cost assumptions.","Measure actual irrigation volume, realised crop margins and switching costs; assess soil changes over appropriate seasons.","No pilot, customer interview or measured farmer benefit is claimed. The invitation is to validate a decision approach with a suitable local partner."]},"ur":{"tag":"اگلا ثبوت کھیت سے آئے گا","title":"جس فائدے کی خواہش ہے، اسے ناپیں۔","body":"حقیقی بچت یا بوائی کی سفارش سے پہلے مقامی زرعی ماہر کی نگرانی میں آزمائش ضروری ہے۔","items":["جانچیں کہ کسان مشاہدے، فرضی حالات اور خرچ کے اندازوں کا فرق سمجھتا ہے۔","اصل آبپاشی، فصل کا حاصل شدہ مارجن اور تبدیلی کا خرچ ناپیں؛ مٹی کو مناسب عرصے میں جانچیں۔","ابھی کوئی کسان آزمائش، انٹرویو یا ناپا ہوا فائدہ نہیں۔ مناسب مقامی ساتھی کے ساتھ اس طریقے کو جانچنا اگلا قدم ہے۔"]}}];let language='en',index=0;const el=id=>document.getElementById(id);function render(){document.documentElement.lang=language==='ur'?'ur-PK':'en';document.documentElement.dir=language==='ur'?'rtl':'ltr';el('slides').replaceChildren();slides.forEach((slide,i)=>{const content=slide[language],section=document.createElement('section');section.className='slide';section.hidden=i!==index;const small=document.createElement('small'),heading=document.createElement('h1'),p=document.createElement('p'),ul=document.createElement('ul');small.textContent=content.tag;heading.textContent=content.title;p.textContent=content.body;for(const item of content.items){const li=document.createElement('li');li.textContent=item;ul.append(li)}section.append(small,heading,p,ul);el('slides').append(section)});el('open').textContent=language==='ur'?'منصوبہ کھولیں ↗':'Open live planner ↗';el('print').textContent=language==='ur'?'پرنٹ':'Print deck';el('previous').textContent=language==='ur'?'پچھلا':'Previous';el('next').textContent=language==='ur'?'اگلا':'Next';el('previous').disabled=index===0;el('next').disabled=index===slides.length-1;el('count').textContent=(index+1)+' / '+slides.length;el('evidence').textContent=language==='ur'?'بنائی گئی مثال؛ کھیت کے نتائج نہیں۔ ناسا پاور 2023–2024۔ حسابی بنیاد اور مقامی جانچ الگ ہیں۔':'Constructed example; not field results. NASA POWER 2023–2024. Model assumptions and local validation remain distinct.'}el('previous').onclick=()=>{index=Math.max(0,index-1);render()};el('next').onclick=()=>{index=Math.min(slides.length-1,index+1);render()};el('print').onclick=()=>window.print();window.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();index=Math.max(0,Math.min(slides.length-1,index+(e.key===(language==='ur'?'ArrowLeft':'ArrowRight')?1:-1)));render()}});render();</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pitch — Field Shift</title>
+<meta name="description" content="Field Shift: every crop rotation fails sometimes. We tell you how often, in which years, and what to do when it does.">
+<meta name="theme-color" content="#101713">
+<link rel="icon" href="assets/fieldshift-mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="app.css">
+<style>
+  html { scroll-snap-type: y proximity; }
+  body { background: var(--paper); }
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 90px clamp(24px, 7vw, 120px);
+    scroll-snap-align: start;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .slide.dark { background: var(--deep); color: #e8e3d6; border-bottom-color: #000; }
+  .slide.dark .eyebrow { color: rgba(232, 227, 214, .5); }
+  .slide.dark p { color: rgba(232, 227, 214, .82); }
+  .slide.dark strong { color: #f2eee4; }
+  .slide-num {
+    position: absolute;
+    top: 34px;
+    right: clamp(24px, 7vw, 120px);
+    font: 500 11px var(--mono);
+    letter-spacing: .12em;
+    color: var(--muted);
+  }
+  .slide.dark .slide-num { color: rgba(232, 227, 214, .35); }
+  .slide h1 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(38px, 6.4vw, 92px);
+    line-height: 1.02;
+    letter-spacing: -.035em;
+    max-width: 20ch;
+    margin-bottom: 26px;
+  }
+  .slide h2 {
+    font-family: var(--display);
+    font-weight: 500;
+    font-size: clamp(30px, 4.4vw, 62px);
+    line-height: 1.06;
+    letter-spacing: -.03em;
+    max-width: 24ch;
+    margin-bottom: 24px;
+  }
+  .slide p {
+    font-size: clamp(15px, 1.5vw, 19px);
+    line-height: 1.65;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin-bottom: 16px;
+  }
+  .slide p strong { color: var(--ink); font-weight: 600; }
+  .slide .kicker {
+    font: 500 11px/1 var(--mono);
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 22px;
+  }
+  .big {
+    font: 500 clamp(64px, 13vw, 190px)/0.9 var(--mono);
+    letter-spacing: -.05em;
+    color: var(--danger);
+    margin: 10px 0 6px;
+  }
+  .slide.dark .big { color: #e8a06a; }
+  .big-label {
+    font: 500 11px/1.5 var(--mono);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 30px;
+  }
+  .slide.dark .big-label { color: rgba(232, 227, 214, .5); }
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 30px;
+    margin: 34px 0 10px;
+    max-width: 1000px;
+  }
+  .stat-row div { display: flex; flex-direction: column; gap: 6px; }
+  .stat-row b { font: 500 clamp(26px, 3.4vw, 44px)/1 var(--mono); letter-spacing: -.03em; }
+  .stat-row span { font: 500 10px/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .slide.dark .stat-row span { color: rgba(232, 227, 214, .5); }
+  .compare {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    max-width: 900px;
+    margin: 30px 0;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .compare > div { padding: 24px 26px; background: #faf8f2; }
+  .compare > div:first-child { border-right: 1px solid var(--rule); }
+  .compare h3 { font: 500 10px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .compare .val { font: 500 40px/1 var(--mono); letter-spacing: -.03em; margin-bottom: 4px; }
+  .compare .val.bad { color: var(--danger); }
+  .compare .val.good { color: var(--water); }
+  .compare .sub { font-size: 13px; color: var(--muted); }
+  .compare ul { margin-top: 14px; padding-left: 0; }
+  .compare li { list-style: none; font: 400 12.5px/1.9 var(--mono); color: var(--ink-2); }
+  .slide.dark .compare { border-color: #2a352e; }
+  .slide.dark .compare > div { background: #18211c; }
+  .slide.dark .compare > div:first-child { border-color: #2a352e; }
+  .slide.dark .compare li { color: rgba(232, 227, 214, .8); }
+  .slide.dark .compare .sub { color: rgba(232, 227, 214, .5); }
+  .slide.dark .compare h3 { color: rgba(232, 227, 214, .5); }
+  .slide.dark .compare .val.bad { color: #e08a76; }
+  .slide.dark .compare .val.good { color: #6fc2ae; }
+  .quote {
+    font-family: var(--display);
+    font-size: clamp(24px, 3.2vw, 42px);
+    line-height: 1.25;
+    letter-spacing: -.02em;
+    max-width: 26ch;
+    border-left: 3px solid var(--amber);
+    padding-left: 26px;
+    margin: 30px 0;
+  }
+  .slide-nav {
+    position: fixed;
+    bottom: 22px;
+    right: 26px;
+    display: flex;
+    gap: 6px;
+    z-index: 20;
+  }
+  .slide-nav a {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: 1px solid var(--rule);
+    background: rgba(245, 242, 234, .9);
+    display: grid;
+    place-items: center;
+    font: 500 10px var(--mono);
+    text-decoration: none;
+    color: var(--muted);
+    backdrop-filter: blur(6px);
+  }
+  .slide-nav a:hover { border-color: var(--ink); color: var(--ink); }
+  .foot-note { font: 400 11px/1.7 var(--mono); color: var(--muted); margin-top: 30px; max-width: 70ch; }
+  .slide.dark .foot-note { color: rgba(232, 227, 214, .4); }
+  @media (max-width: 720px) {
+    .compare { grid-template-columns: 1fr; }
+    .compare > div:first-child { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .slide { padding: 70px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="slide-nav" aria-label="Slides">
+  <a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a><a href="#s4">4</a>
+  <a href="#s5">5</a><a href="#s6">6</a><a href="#s7">7</a>
+</nav>
+
+<!-- 1 -->
+<section class="slide" id="s1">
+  <span class="slide-num">01 / 07</span>
+  <p class="kicker">NASA Space Apps Challenge · Challenge 6</p>
+  <h1>Every crop rotation fails sometimes.</h1>
+  <p style="font-size:clamp(17px,2vw,24px);max-width:44ch">
+    Field Shift tells you <strong>how often</strong>, <strong>in which years</strong>, and
+    <strong>what to do when it does</strong>.
+  </p>
+  <p class="foot-note">
+    A decision-support tool for crop rotation, built on 34 years of NASA Earth observation.
+    Five fields, five continents, one model.
+  </p>
+</section>
+
+<!-- 2 -->
+<section class="slide dark" id="s2">
+  <span class="slide-num">02 / 07</span>
+  <p class="kicker">The problem</p>
+  <h2>A farmer in Sheikhupura plants rice every June because his father did.</h2>
+  <p>
+    The water that made that decision correct is gone. The aquifer under the Pakistani Punjab has
+    been falling for two decades, measured from orbit by GRACE-FO. Rice–wheat still covers
+    four million hectares.
+  </p>
+  <div class="big">39%</div>
+  <p class="big-label">of the last 33 years, rice–wheat fitted inside this field's water supply</p>
+  <p>
+    Not 39% of yield. Not a score out of 100. <strong>Thirteen years out of thirty-three</strong>
+    where the crop's irrigation requirement was smaller than the water the farmer could deliver.
+    The other twenty, the field ran short.
+  </p>
+</section>
+
+<!-- 3 -->
+<section class="slide" id="s3">
+  <span class="slide-num">03 / 07</span>
+  <p class="kicker">The insight</p>
+  <h2>A score out of 100 cannot be wrong. That is why nobody should trust it.</h2>
+  <p>
+    Every agri-advisory tool returns a number that goes up when things are good. You can never
+    catch it being wrong — and neither can a judge, and neither can a farmer.
+  </p>
+  <p class="quote">We replaced the score with a failure rate.</p>
+  <p>
+    A failure rate names years. <strong>Twenty of the last thirty-three</strong>, and every one
+    of them is in the record: 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001,
+    2002, 2003, 2005, 2007, 2009, 2012, 2013, 2015, 2017. Those years can be checked against the
+    rainfall record, the soil-moisture record, the satellite archive. If we are wrong, you will
+    know exactly where.
+  </p>
+  <p class="foot-note">
+    This is the whole design. Everything else in the product follows from it.
+  </p>
+</section>
+
+<!-- 4 -->
+<section class="slide dark" id="s4">
+  <span class="slide-num">04 / 07</span>
+  <p class="kicker">What we built</p>
+  <h2>We replayed every rotation a region allows through every year NASA has data for.</h2>
+  <div class="stat-row">
+    <div><b>2,304</b><span>rotation sequences</span></div>
+    <div><b>1,176</b><span>distinct cycles</span></div>
+    <div><b>33</b><span>years of record</span></div>
+    <div><b>152,064</b><span>simulated seasons</span></div>
+  </div>
+  <p style="margin-top:26px">
+    A daily FAO-56 water balance, RUSLE soil loss, a nitrogen and soil-carbon balance, and a
+    P10/P50/P90 gross margin — for every sequence, in about 45 milliseconds. Then a Pareto search
+    over four objectives at once: reliability, nitrogen, soil loss, downside margin.
+  </p>
+  <p class="foot-note">
+    NASA POWER daily reanalysis · MODIS MOD13Q1 NDVI at 250 m · SMAP root-zone moisture ·
+    GPM IMERG rainfall · GRACE-FO water storage · SoilGrids texture. Every figure in the app is
+    tagged observed, reanalysis or simulated.
+  </p>
+</section>
+
+<!-- 5 -->
+<section class="slide" id="s5">
+  <span class="slide-num">05 / 07</span>
+  <p class="kicker">The finding</p>
+  <h2>One rotation beats rice–wheat on water, nitrogen and money at the same time.</h2>
+  <div class="compare">
+    <div>
+      <h3>Current practice</h3>
+      <div class="val bad">39%</div>
+      <div class="sub">water reliability</div>
+      <ul>
+        <li>938 mm irrigation need</li>
+        <li>−74 kg N / ha / yr</li>
+        <li>156k PKR downside</li>
+        <li>0 family breaks</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Cotton · Chickpea · Cotton · Chickpea</h3>
+      <div class="val good">85%</div>
+      <div class="sub">water reliability</div>
+      <ul>
+        <li>703 mm irrigation need</li>
+        <li>+9 kg N / ha / yr</li>
+        <li>160k PKR downside</li>
+        <li>4 family breaks</li>
+      </ul>
+    </div>
+  </div>
+  <p>
+    It is not the most reliable rotation we found. Maize–wheat is 100% reliable and we
+    <strong>do not recommend it</strong>: it mines 121 kg of nitrogen a hectare a year, worse than the
+    rice–wheat it would replace. The tool states its rule out loud — prefer a rotation that wins on
+    money, nitrogen and water together — and when nothing does, it says that instead.
+  </p>
+</section>
+
+<!-- 6 -->
+<section class="slide dark" id="s6">
+  <span class="slide-num">06 / 07</span>
+  <p class="kicker">The honesty</p>
+  <h2>We tested our own model, and we published the result.</h2>
+  <div class="stat-row">
+    <div><b>5 of 5</b><span>driest years in the record are flagged as failures</span></div>
+    <div><b>0.06</b><span>m³/m³ wetter root zone in years we pass than in years we fail</span></div>
+    <div><b>20</b><span>years rice–wheat misses the budget at 900 mm</span></div>
+  </div>
+  <p style="margin-top:26px">
+    That is a directional check on a reanalysis product, not an independent satellite validation,
+    and the app says so in those words. The model card lists eight things we know are wrong —
+    including that MERRA-2 under-reports Punjab monsoon rainfall, which makes our irrigation
+    requirement an upper bound.
+  </p>
+  <p class="quote" style="border-color:#6fc2ae">
+    A tool that will not tell you where it is weak is not a tool. It is marketing.
+  </p>
+</section>
+
+<!-- 7 -->
+<section class="slide" id="s7">
+  <span class="slide-num">07 / 07</span>
+  <p class="kicker">The scale</p>
+  <h2>Ten percent of one cropping system is a cubic kilometre of water a year.</h2>
+  <div class="big" style="color:var(--water)">0.99</div>
+  <p class="big-label">km³ per year, modelled, from 10% of 4.2 million hectares</p>
+  <p>
+    That is arithmetic on our own model output, not a measured saving, and the app labels it that
+    way. But the direction is not in doubt: the rotation that survives the century is not the one
+    that maximises this year's margin.
+  </p>
+  <p>
+    Under <strong>+1.9 °C and −6% rainfall</strong> — the IPCC AR6 SSP2-4.5 South Asia delta —
+    rice–wheat falls from 39% to <strong>27%</strong> reliable. The recommended rotation falls from
+    85% to 79%. The gap widens.
+  </p>
+  <p class="foot-note">
+    Next: a verification ledger that scores every prediction we make against the next satellite
+    pass, in public. Five regions live today. The model card is open. The failure years are named.
+  </p>
+  <p style="margin-top:34px">
+    <a class="btn btn-primary" href="index.html" style="text-decoration:none;display:inline-block;padding:12px 22px">
+      Open the field →
+    </a>
+  </p>
+  <p class="foot-note" style="margin-top:26px">
+    NASA and Space Apps names describe challenge context. No affiliation or endorsement is claimed.
+    Every figure in this deck is reproducible from the shipped data — see the
+    <a href="model.html" style="color:inherit">model card</a>.
+  </p>
+</section>
+
+</body>
+</html>

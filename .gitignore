@@ -1,3 +1,11 @@
 node_modules/
 *.tar.gz
 .DS_Store
+
+# Pipeline scratch: raw API responses, safe to rebuild with pipeline/fetch_fields.py
+data/cache/
+__pycache__/
+*.pyc
+
+# Local probe screenshots
+_shots/

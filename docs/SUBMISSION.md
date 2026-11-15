@@ -1,40 +1,105 @@
-# Submission copy — adapt to official field limits
+# Submission copy
+
+Copy-paste ready for the Space Apps submission form. Field limits noted where they apply.
+
+---
 
 ## Project name
-FasalPath — Make your next crop choice count
 
-## One-sentence value proposition
-Help a farmer compare what a crop change could mean for their water budget, soil management and first-year costs before committing a field.
+**Field Shift — Every crop rotation fails sometimes**
 
-## Short description
-A farmer considering a new rotation faces more than a crop choice: the water may be insufficient, the buyer uncertain and the switching cost unaffordable. FasalPath helps farmers and local advisers compare the current rotation with alternatives using historical NASA climate context and local farm assumptions. The result is a specific option they can question—annual water demand and remaining gap, management trade-offs, and an optional cost screen using their own estimates. Benefits are illustrative until field validation; no yield or profit prediction is claimed.
+## Elevator pitch (one sentence)
 
-## The problem and who faces it
-Our initial scope is summer/winter cropping in the irrigated plains of Punjab, Pakistan. A farmer deciding what to plant must balance water access, soil management, established markets and the cost of change. Regional climate information alone does not answer whether an alternative fits a particular field or pays for the switch. Familiar practice must remain a credible reference, especially when seed, labour, buyers or advice are constrained.
+Field Shift replays every crop rotation a region allows through 34 years of NASA Earth observation and tells a farmer how often their rotation fails, in which years, and what to do when it does.
 
-This is a problem hypothesis and constructed demonstration, not a report of customer interviews or verified regional demand.
+## Short description (under 100 words)
 
-## The outcome sought
-Help the farmer identify a lower-resource option when one is plausible, see what it still leaves unresolved and recognise when switching costs or lost crop margin outweigh the apparent water advantage. Better preparation for the farmer–adviser conversation is the immediate intended benefit. Reduced pumping, improved net margins, soil benefits and greater resilience are prospective outcomes to test.
+A farmer in Punjab plants rice every June because his father did. The water that made that decision correct is gone. Field Shift does not score rotations out of 100 — a score cannot be wrong, so nobody can trust it. Instead it replays 2,304 rotation sequences through 33 years of NASA data and reports a failure rate that names its years. For rice–wheat at a 900 mm water supply: 39% reliable, 20 failing years. For cotton–chickpea: 85%. The tool states its recommendation rule out loud, and says so when no rotation wins.
 
-## A concrete example
-For the constructed 10 ha rice/wheat case, illustrative crop coefficients change indicative demand from 1,650 to 650 mm/year with a millet–chickpea–mung–mustard sequence: 60.6% lower modelled demand. With NASA's historical rainfall and the entered loam/irrigation assumptions, the annual gap changes from 583 to 0 mm. Annual adequacy does not guarantee seasonal adequacy. A dry/warm scenario with only 200 mm irrigation retains a 53 mm alternative gap.
+## Full description
 
-The economic screen can reverse the apparent attraction of switching. With explicitly invented PKR 2/m³ pumping cost, −PKR 4,000/ha crop-margin change and PKR 5,000/ha switching cost, the first-year scenario is −PKR 6,600 for the field. This is a useful rejection condition, not an actual financial outcome or profit forecast.
+### The problem
 
-## Why NASA data matters
-NASA POWER T2M, PRECTOTCORR and GWETROOT give dated historical air temperature, precipitation and modelled root-zone wetness. Local soil, irrigation and crop history add the context space-scale data cannot supply. Regional data is retained for 90 native-grid centers in 2023–2024; exact queries, units and raw responses are included. POWER meteorology is MERRA-2 reanalysis. Imagery is a separate basemap with variable capture dates, and no field-resolution vegetation retrieval is claimed.
+Crop rotation decisions are made on inheritance and habit, not on evidence. In the Pakistani Punjab, rice–wheat covers four million hectares and the aquifer beneath it has been falling for two decades — measured from orbit by GRACE-FO. A farmer deciding what to plant next season has regional climate projections and no way to connect them to his own field, his own water supply, his own soil.
 
-## Why this approach is useful
-The current rotation remains visible, the farmer sets the goal, the model exposes its assumptions, and the farmer's local costs can reveal an unattractive switch. The retained decision includes local checks and evidence that an adviser can challenge. No market superiority, competitor absence, adoption, financial result or validation is asserted.
+The tools that exist return a score. A score out of 100 goes up when things are good. It cannot be falsified, so it cannot be trusted — not by the farmer, not by an adviser, not by a judge.
 
-## Current status and next evidence
-The functional prototype supports the complete comparison-to-saved-decision workflow, regional map inspection, exports, English-only interface access, optional open-source Urdu speech-to-text and optional read-aloud. Automated verification covers model arithmetic, application workflows, map data and the vendored Leaflet renderer in JSDOM. Real browser, touch and print checks remain unverified. Agronomic coefficients are uncalibrated; crop calendars, yields, prices, daily water balance, pests, measured soil change and economics require local validation. NDVI is currently manual.
+### What we built
 
-The next step is an agronomist-reviewed, prospective pilot with consented farmers, metered water records and full crop-cost/revenue records. No pilot participants or partners have been recruited. Desired judge support: feedback on the comparison approach and introductions to a suitable validation partner; this is an invitation, not an existing partnership.
+Field Shift replaces the score with a failure rate.
 
-## Attribution and submission boundaries
-NASA POWER is credited; NASA endorsement is not claimed. Leaflet and basemap attribution is retained. Human/team-specific event registration, demo recording, official-rule review, AI disclosure and portal submission remain to be completed. New hosting is owner-private; judge access must be arranged.
+For a given field and a given annual water supply, the model replays every rotation the region's two seasons allow through every year NASA has data for. Each season is a daily FAO-56 water balance: reference evapotranspiration from Penman-Monteith, crop coefficients by growth stage, soil water holding capacity from Saxton & Rawls, effective rainfall by the USDA-SCS method. A year fails when the rotation's total irrigation requirement exceeds the water the farmer can deliver.
 
-## Local access and field continuity
-The interface is English-only. Urdu speech-to-text remains an optional entry method with an editable transcript and explicit confirmation. Lahore is the example; costs default to PKR and area includes an acre equivalent. A field's location is saved once and edited only deliberately. A new map selection starts a new field setup, leaving the active field unchanged until a new field is saved. User-reported buyer, input and calendar checks form part of a specific rotation's review brief; they do not validate planting suitability. Real-device voice and farmer comprehension testing remain outstanding.
+Punjab field, 900 mm supply, 33 usable years:
+
+| Rotation | Reliability | Irrigation need | Nitrogen | Downside margin |
+|---|---|---|---|---|
+| Rice · Wheat · Rice · Wheat *(current)* | 39% | 938 mm | −74 kg/ha/yr | 156k PKR |
+| Cotton · Chickpea · Cotton · Chickpea *(recommended)* | 85% | 703 mm | +9 kg/ha/yr | 160k PKR |
+| Maize · Wheat · Maize · Wheat *(most reliable)* | 100% | 524 mm | −121 kg/ha/yr | 146k PKR |
+
+Rice–wheat fits the budget in 13 of 33 years. The other 20 it runs short.
+
+Maize–wheat is fully reliable and we do not recommend it: it mines 121 kg of nitrogen a hectare a year, worse than the rice–wheat it would replace. The recommendation rule is stated in the app and in the model card — prefer a rotation that beats current practice on margin, nitrogen and reliability at the same time; when nothing does, fall back to the most reliable option and say so.
+
+### Why NASA data is load-bearing, not decorative
+
+The failure rate is only meaningful because the record is long. Thirty-three years is what lets us say "20 failing years" instead of "risky." No commercial agronomy product has that record; NASA does.
+
+- **NASA POWER (MERRA-2 reanalysis)** — daily Tmax, Tmin, precipitation, humidity, wind, solar radiation and root-zone wetness, 1991–2024, 12,419 days per field. This drives the water balance.
+- **MODIS MOD13Q1** — 250 m 16-day NDVI, for observed canopy response.
+- **SMAP L4** — root-zone soil moisture, rendered as a live map layer so the reanalysis the model runs on can be compared against a satellite retrieval.
+- **GPM IMERG** — satellite precipitation, rendered as a live map layer alongside the reanalysis.
+- **GRACE-FO** — terrestrial water storage anomaly, rendered as a live map layer. It is the evidence that the aquifer trend makes the current rotation untenable.
+- **SoilGrids 250 m** — clay, sand, silt, organic carbon, pH, bulk density.
+
+Every figure in the app carries one of three tags: `OBSERVED`, `REANALYSIS` or `SIMULATED`. Nothing modelled is presented as measured.
+
+### We tested our own model and published the result
+
+All five of the driest years in the Punjab record — 1999 (184 mm), 1998 (186), 1991 (219), 1997 (233), 2000 (237) — are flagged as failures for rice–wheat. Years the model passes are 0.06 m³/m³ wetter in the reanalysis root-zone record than years it fails.
+
+That is a directional consistency check on a reanalysis product, not an independent satellite validation, and the app says so in those words. The model card lists eight things we know are wrong, including that MERRA-2 under-reports Punjab monsoon rainfall (477 mm modelled against ~600 mm station climatology), which makes our irrigation requirement an upper bound and our reliability a conservative estimate.
+
+### The 2050 stress test
+
+Under the IPCC AR6 SSP2-4.5 South Asia delta (+1.9 °C, −6% rainfall), rice–wheat falls from 39% to 27% reliable. The recommended rotation falls from 85% to 79%. The gap widens. This is a sensitivity test, not a forecast, and it is labelled `SIMULATED`.
+
+### Scale
+
+If 10% of the 4.2 million hectares in this cropping system shifted to the recommended rotation, modelled irrigation demand falls by 0.99 km³ per year. That is arithmetic on our own model output, not a measured saving, and the app labels it that way.
+
+### What is in the submission
+
+A working static web application with no build step and no API key. Four views: Field (zero-input profile and a 34-year memory strip), Rotation Lab (2,304 sequences, Pareto frontier, supply curve, 2050 banner), Decision (the brief, the requirement strip, the fallback trigger), Ledger (the model validating itself). A thirteen-section model card with equations, citations, known errors and a direct answer to each of the ten questions the challenge guide asks a team to understand. A seven-slide pitch deck. Ninety-eight tests, including one that recomputes every number in the pitch deck from the engine and fails if the deck drifts from the model.
+
+### What we would do next
+
+A verification ledger that scores every prediction we make against the next satellite pass, in public. Five regions are live today — Punjab, Iowa, Nakuru, Nagpur, Can Tho — and the model is region-agnostic. The next step is an agronomist-reviewed pilot with metered water records, because a failure rate is only as good as the years it is checked against.
+
+## Tags
+
+`agriculture` `crop-rotation` `water` `food-security` `climate-adaptation` `decision-support` `NASA-POWER` `MODIS` `SMAP` `GPM` `GRACE-FO` `SoilGrids` `open-data` `open-source`
+
+## Links
+
+- **Live demo:** serve `dist/` — `npm start`, then http://localhost:8080
+- **Source:** https://github.com/SidhartSami/Field-Shift
+- **Model card:** `dist/model.html`
+- **Pitch deck:** `dist/pitch.html`
+
+## Attribution
+
+NASA POWER, MODIS MOD13Q1 (LP DAAC), SMAP, GPM IMERG, GRACE-FO and ISRIC SoilGrids are credited in the app, the model card and the README. NASA and Space Apps names describe challenge context; no affiliation or endorsement is claimed. Leaflet is BSD-2-Clause and its attribution is retained.
+
+---
+
+## Judge-facing notes
+
+Three things worth saying out loud in a demo, in this order:
+
+1. **"39% of 33 years."** Not a score. A count of years, with the years named. Ask them to check 1999.
+2. **"We do not recommend the most reliable rotation."** Maize–wheat is 100% reliable and mines nitrogen. The rule is stated, and it can fail to find a winner.
+3. **"Here is what we know is wrong."** Open the model card, section 10. Eight items. A tool that will not tell you where it is weak is not a tool.
+
+The question we expect and the answer: *"Isn't this just a water balance?"* No — a water balance gives you a number for one rotation. The product is the search over 2,304 rotations and the Pareto frontier that comes out of it, plus the failure years that make the number checkable. The water balance is the engine; the frontier is the product.
