@@ -69,6 +69,19 @@ for(const b of document.querySelectorAll('[data-close]'))b.onclick=()=>closeDial
 for(const d of document.querySelectorAll('dialog'))d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialog(d.id)}});
 const viewInfo={voice:['Plan by voice','Speak to update field inputs and the comparison in real time.'],map:['Where could your water plan come under pressure?','Read regional rainfall and heat signals before choosing what to plant.'],planner:['Should you change your next crop rotation?','Start with your current crops. Check water limits, first-year costs and the local facts that could rule out a switch.'],observations:['Read the season before planning the next','Use past rainfall and heat to question the assumptions behind your crop choice.'],plans:['Plans for your next farm discussion','Keep the expected benefits, costs and unanswered questions together for local review.'],evidence:['Know what supports your decision','Separate NASA observations, model assumptions and the local checks still needed.']};
 
+function syncVoiceFields(next,{changed=[]}={}){
+ for(const el of document.querySelectorAll('[data-live-field]')){
+  const key=el.dataset.liveField;
+  const row=el.closest('li')||el;row.classList.toggle('is-changed',changed.includes(key));
+  if(el===document.activeElement)continue;
+  const value=next[key];
+  if(el.type==='checkbox')el.checked=value;
+  else el.value=value??'';
+ }
+ const dryOut=$('voice-dry-out'),heatOut=$('voice-heat-out');
+ if(dryOut)dryOut.textContent=`${next.dry??0}%`;
+ if(heatOut)heatOut.textContent=`+${next.heat??0}°C`;
+}
 function planGlyph(kind,i){
  if(kind==='summer'||kind==='winter'){
   const c=kind==='summer'?i.summer:i.winter;
@@ -147,6 +160,14 @@ function renderVoiceStage(changedIds){
  const i=input();
  const baseline=results.find(r=>r.id==='baseline'),chosen=results.find(r=>r.id===selected);
  renderVoicePlanCards(i,changedIds||[]);
+ const art=$('voice-card-art');
+ if(art)art.innerHTML=`<span class="crop-icon ${crops[i.summer]?.legume?'legume':''} crop-${i.summer}">${cropIllustration(i.summer)}</span>`;
+ const title=$('voice-card-title');
+ if(title)title.textContent=i.farm||'Your field';
+ const sIcon=$('voice-summer-icon'),wIcon=$('voice-winter-icon');
+ if(sIcon)sIcon.innerHTML=cropIllustration(i.summer);
+ if(wIcon)wIcon.innerHTML=cropIllustration(i.winter);
+ syncVoiceFields(i,{changed:changedIds||[]});
  const metrics=$('voice-live-metrics');
  if(metrics&&baseline&&chosen){
   metrics.innerHTML=[
