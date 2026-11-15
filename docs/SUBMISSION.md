@@ -71,7 +71,7 @@ If 10% of the 4.2 million hectares in this cropping system shifted to the recomm
 
 ### What is in the submission
 
-A landing page that makes the argument before it shows a form, and a working static web application with no build step and no API key. Four views: Field (zero-input profile and a 34-year memory strip), Rotation Lab (2,304 sequences, Pareto frontier, supply curve, 2050 banner), Decision (the brief, the requirement strip, the fallback trigger), Ledger (the model validating itself). A thirteen-section model card with equations, citations, known errors and a direct answer to each of the ten questions the challenge guide asks a team to understand. A seven-slide pitch deck. One hundred and twelve tests, including one that recomputes every number in the pitch deck from the engine and one that does the same for the landing page, so neither can drift from the model.
+A landing page that makes the argument before it shows a form, and a working static web application with no build step and no API key. Four views: Field (zero-input profile and a 34-year memory strip), Rotation Lab (2,304 sequences, Pareto frontier, supply curve, 2050 banner), Decision (the brief, the requirement strip, the fallback trigger), Ledger (the model validating itself). A thirteen-section model card with equations, citations, known errors and a direct answer to each of the ten questions the challenge guide asks a team to understand. A seven-slide pitch deck. One hundred and twenty-nine tests, including one that recomputes every number in the pitch deck from the engine and one that does the same for the landing page, so neither can drift from the model.
 
 ### What we would do next
 
@@ -83,7 +83,8 @@ A verification ledger that scores every prediction we make against the next sate
 
 ## Links
 
-- **Live demo:** serve `dist/` — `npm start`, then http://localhost:8080 (the landing page is the root; the tool is at `/app.html`)
+- **Live demo:** https://field-shift-seven.vercel.app (landing page is the root; the tool is at `/app.html`)
+- **Run locally:** `npm start`, then http://localhost:8080
 - **Source:** https://github.com/SidhartSami/Field-Shift
 - **Model card:** `dist/model.html`
 - **Pitch deck:** `dist/pitch.html`

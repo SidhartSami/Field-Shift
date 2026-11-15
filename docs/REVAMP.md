@@ -400,7 +400,7 @@ system, all inferred. Every inferred value is editable and tagged with its sourc
 ### F4 — Rotation Lab + Pareto frontier
 **What:** enumerate, simulate, non-dominated sort, plot. Current practice pinned
 in red. Hover a point for its failure profile. Click to open the Decision surface.
-**Acceptance:** 2,304 sequences, 1,176 distinct cycles, frontier of ~126 points
+**Acceptance:** 2,304 sequences, 1,176 distinct cycles, frontier of 132 points
 (6 shown as role-labelled cards), recompute under 3 s.
 
 ### F5 — 2050 stress test
