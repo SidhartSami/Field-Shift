@@ -2,9 +2,9 @@
 
 **Know which years your rotation fails. Field Shift replays every rotation a region allows through 34 years of NASA Earth observation, and names the years yours runs dry.**
 
-**[field-shift-seven.vercel.app](https://field-shift-seven.vercel.app)** — live, no install, no API key.
+**[field-shift-seven.vercel.app](https://field-shift-seven.vercel.app)**: live, no install, no API key.
 
-A farmer in Sheikhupura plants rice every June because his father did. The water that made that decision correct is gone — the aquifer under the Pakistani Punjab has been falling for two decades, measured from orbit by GRACE-FO. Rice–wheat still covers four million hectares.
+A farmer in Sheikhupura plants rice every June because his father did. The water that made that decision correct is gone: the aquifer under the Pakistani Punjab has been falling for two decades, measured from orbit by GRACE-FO. Rice–wheat still covers four million hectares.
 
 Field Shift replays every crop rotation a region allows through **34 years of NASA Earth observation**, and returns a number a farmer can act on:
 
@@ -25,15 +25,15 @@ Punjab field, 900 mm annual water supply, 33 usable years (1991–2023), residue
 | **Cotton · Chickpea** *(recommended)* | **85%** | 703 mm | +9 kg/ha/yr | 160k PKR | 4 | 0.61 t/ha/yr |
 | **Maize · Wheat** *(most reliable)* | **100%** | 524 mm | −121 kg/ha/yr | 146k PKR | 0 | 0.51 t/ha/yr |
 
-One rotation beats current practice on **water, nitrogen and money at the same time** — 235 mm less irrigation a year, 83 kg more nitrogen a hectare, 4,000 PKR more downside margin.
+One rotation beats current practice on **water, nitrogen and money at the same time**: 235 mm less irrigation a year, 83 kg more nitrogen a hectare, 4,000 PKR more downside margin.
 
-**Maize–wheat is 100% reliable and we do not recommend it.** It mines 121 kg of nitrogen a hectare a year, worse than the rice–wheat it would replace. A tool that recommends the highest number is not a decision-support tool; it is a leaderboard. The recommendation rule is stated in the app and in the model card: prefer a rotation that wins on margin, nitrogen *and* reliability together — and when nothing does, say so instead of picking one.
+**Maize–wheat is 100% reliable and we do not recommend it.** It mines 121 kg of nitrogen a hectare a year, worse than the rice–wheat it would replace. A tool that recommends the highest number is not a decision-support tool; it is a leaderboard. The recommendation rule is stated in the app and in the model card: prefer a rotation that wins on margin, nitrogen *and* reliability together, and when nothing does, say so instead of picking one.
 
 Under **+1.9 °C and −6% rainfall** (IPCC AR6 SSP2-4.5, South Asia), rice–wheat falls from 39% to **27%** reliable. The recommended rotation falls from 85% to **79%**. The gap widens with the climate.
 
 ## Why a failure rate and not a score
 
-A score out of 100 cannot be falsified. It goes up when things are good, and nobody can catch it being wrong — not the farmer, not a judge, not us.
+A score out of 100 cannot be falsified. It goes up when things are good, and nobody can catch it being wrong, not the farmer, not a judge, not us.
 
 A failure rate names years. Those years can be checked against the rainfall record, the soil-moisture record, the satellite archive. **If we are wrong, you will know exactly where.**
 
@@ -41,7 +41,7 @@ We ran that check on ourselves and published it:
 
 - **5 of 5** of the driest years in the Punjab record are flagged as failures for rice–wheat.
 - Years the model passes are **0.06 m³/m³ wetter** in the reanalysis root zone than years it fails.
-- That is a directional consistency check on a reanalysis product, **not** an independent satellite validation — and the app says so in those words.
+- That is a directional consistency check on a reanalysis product, **not** an independent satellite validation, and the app says so in those words.
 
 ## How it works
 
@@ -49,9 +49,9 @@ Four steps, all of them inspectable.
 
 **1. Reconstruct the field's history.** For each field, 12,419 days of NASA POWER (MERRA-2) drive a daily water balance: Penman-Monteith reference ET, FAO-56 crop coefficients, Saxton & Rawls water retention from real SoilGrids texture, effective rainfall, RUSLE erosion, a four-season nitrogen balance and a 20-year soil-carbon trajectory. 301 MODIS NDVI composites per field corroborate the canopy response.
 
-**2. Enumerate every rotation the region allows.** 2,304 legal four-season sequences, collapsing to 1,176 distinct two-year cycles. Each is replayed through every usable year — **152,064 simulated seasons in about 45 ms**.
+**2. Enumerate every rotation the region allows.** 2,304 legal four-season sequences, collapsing to 1,176 distinct two-year cycles. Each is replayed through every usable year: **152,064 simulated seasons in about 45 ms**.
 
-**3. Keep only what nothing else beats.** Non-dominated sorting over four objectives at once — reliability, nitrogen balance, downside margin, soil loss — leaves a 132-point Pareto frontier out of 1,176 distinct cycles. The shortlist is drawn from it.
+**3. Keep only what nothing else beats.** Non-dominated sorting over four objectives at once (reliability, nitrogen balance, downside margin, soil loss) leaves a 132-point Pareto frontier out of 1,176 distinct cycles. The shortlist is drawn from it.
 
 **4. Answer the question the farmer asked.** The Decision brief gives the requirement strip year by year, the years it fails, the fallback trigger, and the trade-offs we would rather not admit.
 
@@ -59,13 +59,13 @@ The whole model is plain ES modules in `dist/engine/`. No dependencies, no build
 
 ## What the farmer sees
 
-**Field** — zero input. Pick a field and the profile is already there: soil texture, 34 years of record, a memory strip showing which years the monsoon failed, and a one-sentence thesis. NASA GIBS layers (MODIS true colour, SMAP soil moisture, IMERG rainfall, GRACE-FO water storage) with a caption explaining what each one is and is not.
+**Field**: zero input. Pick a field and the profile is already there: soil texture, 34 years of record, a memory strip showing which years the monsoon failed, and a one-sentence thesis. NASA GIBS layers (MODIS true colour, SMAP soil moisture, IMERG rainfall, GRACE-FO water storage) with a caption explaining what each one is and is not.
 
-**Rotation Lab** — the search. A Pareto plot over four objectives, a six-card shortlist with role labels ("most reliable", "best downside margin", "least water"), a supply curve showing the water supply at which each rotation becomes safe, and the 2050 stress test. It also takes a sentence — typed, or spoken into the mic beside the box: `irrigation 400, keep residue, drier by 30`.
+**Rotation Lab**: the search. A Pareto plot over four objectives, a six-card shortlist with role labels ("most reliable", "best downside margin", "least water"), a supply curve showing the water supply at which each rotation becomes safe, and the 2050 stress test. It also takes a sentence, typed or spoken into the mic beside the box: `irrigation 400, keep residue, drier by 30`.
 
-**Decision** — the brief. 85% reliability, 28 of 33 years within budget, the requirement strip with the failing years in red, what to do in a failure year, the fallback trigger, and what would change our mind.
+**Decision**: the brief. 85% reliability, 28 of 33 years within budget, the requirement strip with the failing years in red, what to do in a failure year, the fallback trigger, and what would change our mind.
 
-**Ledger** — the page most tools do not ship. The model validating itself: driest-year check, wetness delta, every prediction scored against what the satellites saw, and the scale panel.
+**Ledger**: the page most tools do not ship. The model validating itself: driest-year check, wetness delta, every prediction scored against what the satellites saw, and the scale panel.
 
 ## How this maps to Challenge #06
 
@@ -73,11 +73,11 @@ The challenge asks for a decision-support tool that uses NASA Earth observations
 
 | Challenge objective | What we did |
 |---|---|
-| **1. Analyse environmental conditions** — rainfall, temperature, soil moisture, vegetation | Daily water balance from 12,419 days of MERRA-2; SMAP and IMERG as live map layers; 301 MODIS NDVI composites per field |
-| **2. Combine agricultural data** — local soil, crop characteristics, farmer priorities | SoilGrids texture drives Saxton & Rawls retention; 20 crops with FAO-56 coefficients; the Lab exposes supply, residue, erosion practice and a 2050 scenario as farmer-set priorities |
+| **1. Analyse environmental conditions**: rainfall, temperature, soil moisture, vegetation | Daily water balance from 12,419 days of MERRA-2; SMAP and IMERG as live map layers; 301 MODIS NDVI composites per field |
+| **2. Combine agricultural data**: local soil, crop characteristics, farmer priorities | SoilGrids texture drives Saxton & Rawls retention; 20 crops with FAO-56 coefficients; the Lab exposes supply, residue, erosion practice and a 2050 scenario as farmer-set priorities |
 | **3. Compare at least three rotations, including the farmer's existing one** | 2,304 sequences, not three. Current practice is always evaluated first and always shown as the baseline |
-| **4. Identify suitable solutions** — soil health, water, erosion, pests | Four objectives scored per rotation: reliability, nitrogen balance, downside margin, RUSLE soil loss. Family breaks count the rotation's pest-cycle interruption |
-| **5. Build the tool** — recommendations, benefits, risks, limitations | Four views plus a thirteen-section model card with eight published known errors |
+| **4. Identify suitable solutions**: soil health, water, erosion, pests | Four objectives scored per rotation: reliability, nitrogen balance, downside margin, RUSLE soil loss. Family breaks count the rotation's pest-cycle interruption |
+| **5. Build the tool**: recommendations, benefits, risks, limitations | Four views plus a thirteen-section model card with eight published known errors |
 
 The challenge's five "possible solutions to explore" are all present: a **smart crop rotation planner** (the Lab), **soil health monitoring** (SOC trajectory, RUSLE, NDVI), a **water management system** (the supply curve and requirement strip), an **interactive agricultural map** (five fields, five regions, NASA GIBS layers), and a **rotation comparison tool** (the Pareto frontier and the Decision brief).
 
@@ -85,12 +85,12 @@ The challenge's five "possible solutions to explore" are all present: a **smart 
 
 1. **What is crop rotation, and why does it matter for soil health?** Different crops draw different nutrients and root to different depths. Repeating one cereal depletes nitrogen, builds pathogen populations and leaves the surface bare between seasons. We score all three: nitrogen balance, family breaks, soil loss.
 2. **How do changing temperatures and rainfall affect production?** Heat days raise crop water demand; irregular rainfall changes how much of it is effective. Both are in the daily balance, and the 2050 stress test shifts both at once.
-3. **How can NASA data monitor soil moisture and vegetation?** SMAP L4 gives root-zone moisture directly; MODIS NDVI gives canopy response at 250 m every 16 days. We use SMAP and IMERG as map layers and NDVI as corroboration, not as model inputs — and we label which is which.
+3. **How can NASA data monitor soil moisture and vegetation?** SMAP L4 gives root-zone moisture directly; MODIS NDVI gives canopy response at 250 m every 16 days. We use SMAP and IMERG as map layers and NDVI as corroboration, not as model inputs, and we label which is which.
 4. **Landsat vs SMAP vs GPM vs ECOSTRESS?** Landsat: 30 m optical, land cover and surface water. SMAP: 9–36 km passive microwave, soil moisture. GPM: precipitation, 0.1°, 30-minute. ECOSTRESS: 70 m thermal, evapotranspiration at field scale. We use SMAP, GPM and MODIS; ECOSTRESS's 70 m ET would be the right next input for field-level ET.
 5. **How do farmers identify crops suited to their soil and climate?** By testing the crop against the actual record rather than a suitability class. Our answer is a failure rate per rotation, computed from this field's own 33 years.
-6. **How do nitrogen-fixing crops improve fertility?** Legumes symbiotically fix atmospheric nitrogen. Chickpea in the recommended rotation moves the balance from −74 to +9 kg/ha/yr — the single largest swing in the table.
+6. **How do nitrogen-fixing crops improve fertility?** Legumes symbiotically fix atmospheric nitrogen. Chickpea in the recommended rotation moves the balance from −74 to +9 kg/ha/yr: the single largest swing in the table.
 7. **How do cover crops reduce erosion and retain moisture?** Canopy and residue intercept raindrop energy and slow runoff. RUSLE's C factor captures it: retaining residue instead of burning it takes soil loss from 0.61 to 0.39 t/ha/yr in this calculation.
-8. **How does rotation interrupt pest and disease cycles?** By breaking host continuity. We count **family breaks** across the four seasons — rice–wheat scores 0, cotton–chickpea scores 4. It is a proxy, and the model card says so.
+8. **How does rotation interrupt pest and disease cycles?** By breaking host continuity. We count **family breaks** across the four seasons: rice–wheat scores 0, cotton–chickpea scores 4. It is a proxy, and the model card says so.
 9. **How do you combine satellite observations with local soil measurements?** SoilGrids 250 m gives texture, which Saxton & Rawls turns into available water capacity; the satellite record gives the weather that fills or drains it. Every field carries real texture (`fallback: false`), not a regional default.
 10. **How does a tool compare at least three strategies?** By evaluating all of them against the same record and the same objectives, then showing the frontier rather than a winner. 2,304 candidates, 132 on the frontier, 7 on the shortlist.
 
@@ -99,13 +99,13 @@ The challenge's five "possible solutions to explore" are all present: a **smart 
 | Product | What it gives us | Tag |
 |---|---|---|
 | **NASA POWER** (MERRA-2) | daily Tmax, Tmin, Tmean, precipitation, RH, wind, solar, root-zone wetness, 1991–2024 | `REANALYSIS` |
-| **MODIS MOD13Q1** | 250 m, 16-day NDVI — 301 composites per field | `OBSERVED` |
+| **MODIS MOD13Q1** | 250 m, 16-day NDVI: 301 composites per field | `OBSERVED` |
 | **SMAP L4** | root-zone soil moisture | `OBSERVED` |
 | **GPM IMERG** | satellite precipitation | `OBSERVED` |
 | **GRACE-FO** | terrestrial water storage anomaly | `OBSERVED` |
 | **ISRIC SoilGrids 250 m** | clay, sand, silt, SOC, pH, bulk density | `OBSERVED` |
 
-Every figure in the app carries one of three tags — `OBSERVED`, `REANALYSIS`, `SIMULATED`. Nothing modelled is ever presented as measured.
+Every figure in the app carries one of three tags: `OBSERVED`, `REANALYSIS`, `SIMULATED`. Nothing modelled is ever presented as measured.
 
 Five fields, five regions: Punjab (Pakistan), Iowa (USA), Nakuru (Kenya), Nagpur (India), Can Tho (Vietnam). The model is region-agnostic; the region pack supplies seasons, crop set, margins and currency.
 
@@ -139,15 +139,15 @@ npm start          # http://localhost:8080
 
 | Path | What it is |
 |---|---|
-| `/` | the landing page — why a failure rate, what we built, what it found |
-| `/app.html` | the tool — Field, Rotation Lab, Decision, Ledger |
-| `/model.html` | the model card — equations, data, eight known errors |
+| `/` | the landing page: why a failure rate, what we built, what it found |
+| `/app.html` | the tool: Field, Rotation Lab, Decision, Ledger |
+| `/model.html` | the model card: equations, data, eight known errors |
 | `/pitch.html` | the seven-slide scroll deck |
 
 ### Type
 
 Three self-hosted faces, no external font request. **Instrument Sans** carries the interface and every
-figure — its tabular numerals keep the year columns aligned without a second mono face. **Space Grotesk**
+figure: its tabular numerals keep the year columns aligned without a second mono face. **Space Grotesk**
 is the display face, used only for the large headline numbers. **Instrument Serif italic** is the accent:
 it takes the second half of a headline, the way a sentence turns. It is the companion face to Instrument
 Sans, drawn by the same foundry, so the two share a skeleton and the switch reads as emphasis rather than
@@ -156,25 +156,25 @@ as a second voice. All three are woff2 under `dist/assets/fonts/` and are preloa
 ### Voice input
 
 The Describe panel accepts typed or spoken English and Urdu. Press **Speak** beside the box and the
-sentence appears in it as you talk, then runs through the same parser and the same controls as typing —
+sentence appears in it as you talk, then runs through the same parser and the same controls as typing:
 one code path, so a spoken constraint and a typed one cannot disagree.
 
 Streaming speech-to-text is Deepgram nova-3 over WebSocket, captured through an AudioWorklet at 16 kHz.
 The key never ships in the bundle: `api/config.js` is a Vercel function that hands it to the page at
 runtime, `Cache-Control: no-store`, on first press of the mic. Without a key the button falls back to the
 browser's own `SpeechRecognition`, so the feature degrades rather than breaks. The key is scoped to
-`listen` only — it cannot mint tokens, which is why it is delivered to the client rather than exchanged
+`listen` only: it cannot mint tokens, which is why it is delivered to the client rather than exchanged
 for a short-lived one.
 
 ## Architecture
 
 ```
 dist/
-  index.html          the landing page — the argument, eight sections
+  index.html          the landing page: the argument, eight sections
   app.html            the tool: Field, Rotation Lab, Decision, Ledger
   app.js              state, routing, rendering
   app.css             stylesheet
-  model.html          the model card — equations, data, eight known errors
+  model.html          the model card: equations, data, eight known errors
   pitch.html          seven-slide scroll deck
   engine/             the model. No dependencies, no build step.
     crops.js          20 crops: FAO-56 Kcb, stages, rooting depth, p, heat, N fixation
@@ -215,15 +215,15 @@ The Rotation Lab takes a sentence as well as a slider:
 irrigation 400, keep residue, drier by 30
 ```
 
-`dist/voice-live.js` parses it — English or Urdu, Eastern digits, phrasing like "irrigation would be 800" or "not Lahore but Islamabad" — and `dist/ui/describe.js` maps the facts that apply onto the Lab controls. Facts the Lab cannot act on are named in the readout rather than dropped: *"Not used here: soil texture, field area, location."* The same parser receives the transcript from the mic, so speech and typing are one path, not two.
+`dist/voice-live.js` parses it (English or Urdu, Eastern digits, phrasing like "irrigation would be 800" or "not Lahore but Islamabad"), and `dist/ui/describe.js` maps the facts that apply onto the Lab controls. Facts the Lab cannot act on are named in the readout rather than dropped: *"Not used here: soil texture, field area, location."* The same parser receives the transcript from the mic, so speech and typing are one path, not two.
 
 ## The record, in three dimensions
 
 The landing page's fifth section is the whole argument in one object: **33 columns, one per year, standing on the ground at that year's irrigation requirement, under a dashed sheet at the 900 mm a farmer can deliver.** A column that breaks the sheet is a year the rotation fails. Drag to orbit.
 
-Switch to cotton–chickpea and the same 33 years, the same sheet, the same weather drop below it — 6 failures instead of 20. Nothing about the climate changed between the two pictures; only what was planted.
+Switch to cotton–chickpea and the same 33 years, the same sheet, the same weather drop below it: 6 failures instead of 20. Nothing about the climate changed between the two pictures; only what was planted.
 
-It is hand-rolled canvas 2D — a perspective projection, painter's algorithm, back-face culling by projected winding, flat shading per face — in `dist/ui/landscape.js`. No WebGL, no three.js, no library. It is the year strip given depth, which is why it earns its place: the number the product is built on becomes something you can walk around.
+It is hand-rolled canvas 2D (a perspective projection, painter's algorithm, back-face culling by projected winding, flat shading per face) in `dist/ui/landscape.js`. No WebGL, no three.js, no library. It is the year strip given depth, which is why it earns its place: the number the product is built on becomes something you can walk around.
 
 ## Tests
 
@@ -231,17 +231,17 @@ It is hand-rolled canvas 2D — a perspective projection, painter's algorithm, b
 npm test
 ```
 
-**129 tests, about 700 ms.** They are property tests, not golden numbers — a golden number breaks every time a coefficient is corrected, a property survives refactoring and still catches the failures that matter.
+**129 tests, about 700 ms.** They are property tests, not golden numbers: a golden number breaks every time a coefficient is corrected, a property survives refactoring and still catches the failures that matter.
 
-- `tests/data.test.js` — bundle integrity, provenance, no fill values, the 1999 drought is really in the record
-- `tests/engine.test.js` — crop parameters, soil hydraulics inside physical bounds, ET0 never negative, effective rainfall never exceeds gross rainfall, legumes improve nitrogen
-- `tests/search.test.js` — 2,304 candidates, 1,176 distinct, frontier verified against brute force in both directions
-- `tests/evaluate.test.js` — reliability is exactly the share of years that fit, monotonic in supply, the validation claim holds, the detail tier never applies more water than the farmer has
-- `tests/format.test.js` — missing data renders as an em dash, never as zero
-- `tests/claims.test.js` — recomputes every number in the pitch deck and the model card from the engine, then checks the same number appears in the shipped HTML
-- `tests/landing.test.js` — the same for the landing page, plus the `index`/`app` split
-- `tests/describe.test.js` — the natural-language mapping: clamping, both directions of residue, stress-test triggering, ignored facts named
-- `tests/voice-live.test.js` — the parser, English and Urdu
+- `tests/data.test.js`: bundle integrity, provenance, no fill values, the 1999 drought is really in the record
+- `tests/engine.test.js`: crop parameters, soil hydraulics inside physical bounds, ET0 never negative, effective rainfall never exceeds gross rainfall, legumes improve nitrogen
+- `tests/search.test.js`: 2,304 candidates, 1,176 distinct, frontier verified against brute force in both directions
+- `tests/evaluate.test.js`: reliability is exactly the share of years that fit, monotonic in supply, the validation claim holds, the detail tier never applies more water than the farmer has
+- `tests/format.test.js`: missing data renders as an en dash, never as zero
+- `tests/claims.test.js`: recomputes every number in the pitch deck and the model card from the engine, then checks the same number appears in the shipped HTML
+- `tests/landing.test.js`: the same for the landing page, plus the `index`/`app` split
+- `tests/describe.test.js`: the natural-language mapping, covering clamping, both directions of residue, stress-test triggering, ignored facts named
+- `tests/voice-live.test.js`: the parser, English and Urdu
 
 The claims tests are the ones that keep us honest. If a coefficient changes, they fail and name the sentence that needs rewriting.
 
@@ -251,7 +251,7 @@ The claims tests are the ones that keep us honest. If a coefficient changes, the
 python pipeline/fetch_fields.py
 ```
 
-Pulls NASA POWER daily 1991–2024, MODIS NDVI and SoilGrids for each field in `pipeline/fetch_fields.py`, writes `data/fields/*.json`, and copies to `dist/data/fields/`. Takes a while — the NDVI step reads 301 COG composites per field.
+Pulls NASA POWER daily 1991–2024, MODIS NDVI and SoilGrids for each field in `pipeline/fetch_fields.py`, writes `data/fields/*.json`, and copies to `dist/data/fields/`. Takes a while: the NDVI step reads 301 COG composites per field.
 
 ## Provenance
 

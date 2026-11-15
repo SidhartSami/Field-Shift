@@ -3,7 +3,7 @@
 import { CROPS } from '../engine/crops.js';
 
 export function num(v, digits = 0) {
-  if (!Number.isFinite(v)) return '—';
+  if (!Number.isFinite(v)) return '–';
   return v.toLocaleString('en-US', {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
@@ -11,7 +11,7 @@ export function num(v, digits = 0) {
 }
 
 export function pct(v, digits = 0) {
-  if (!Number.isFinite(v)) return '—';
+  if (!Number.isFinite(v)) return '–';
   return `${(v * 100).toFixed(digits)}%`;
 }
 
@@ -20,7 +20,7 @@ export function mm(v) {
 }
 
 export function money(v, currency) {
-  if (!Number.isFinite(v)) return '—';
+  if (!Number.isFinite(v)) return '–';
   const abs = Math.abs(v);
   if (abs >= 1e9) return `${(v / 1e9).toFixed(1)}bn ${currency}`;
   if (abs >= 1e6) return `${(v / 1e6).toFixed(1)}m ${currency}`;
@@ -29,7 +29,7 @@ export function money(v, currency) {
 }
 
 export function signed(v, digits = 1) {
-  if (!Number.isFinite(v)) return '—';
+  if (!Number.isFinite(v)) return '–';
   const s = v > 0 ? '+' : '';
   return `${s}${num(v, digits)}`;
 }
@@ -40,7 +40,7 @@ export function cropName(id) {
 }
 
 export function cropLocal(id) {
-  if (id === 'fallow') return '—';
+  if (id === 'fallow') return '–';
   return CROPS[id]?.local ?? '';
 }
 

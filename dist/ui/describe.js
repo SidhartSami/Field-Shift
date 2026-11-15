@@ -79,7 +79,7 @@ export function describeSummary(result) {
   const parts = [];
   if (result.applied.length) parts.push(`Applied: ${result.applied.join(', ')}.`);
   if (result.ignored.length) {
-    parts.push(`Not used here: ${result.ignored.join(', ')} — the Lab works on the field you picked.`);
+    parts.push(`Not used here: ${result.ignored.join(', ')}, the Lab works on the field you picked.`);
   }
   return parts.join(' ');
 }

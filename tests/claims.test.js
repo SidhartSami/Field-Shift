@@ -4,7 +4,7 @@
  * The pitch deck and the model card make specific numeric claims. This file
  * recomputes each one from the engine and then checks that the same number
  * appears in the shipped HTML. If a coefficient changes, this test fails and
- * names the sentence that needs rewriting — which is the only way a hackathon
+ * names the sentence that needs rewriting, which is the only way a hackathon
  * deck stays honest after the model moves.
  */
 

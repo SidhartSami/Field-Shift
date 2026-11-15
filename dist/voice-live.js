@@ -177,7 +177,7 @@ export function parseUtterance(raw){
  let m=original.match(nameRe);
  if(!m)m=original.match(/\b(?:call|name)\s+(?:it|this|the field)\s+([A-Za-z][A-Za-z0-9\s'-]{1,60}?)(?=\s+[,.]|$)/i);
  if(m)facts.farm=m[1].trim().replace(/\s+/g,' ');
- // "area is 20" / "area would be 30" — last mention wins when corrected mid-sentence
+ // "area is 20" / "area would be 30": last mention wins when corrected mid-sentence
  const areaRe=/\b(?:its?\s+|the\s+|my\s+|this\s+)?(?:field\s+|plot\s+)?(?:area|size|land(?:\s+area)?)\s*(?:would\s+be|should\s+be|will\s+be|is|of|=|:)?\s*(\d+(?:\.\d+)?)\s*(ha|hectares?|acres?|acreage|meters?|metres?|m)?\b/gi;
  let areaM=null,am;
  while((am=areaRe.exec(text))!==null)areaM=am;
@@ -397,7 +397,7 @@ export function createVoiceLive({document:doc,onLiveInputs,onCommit,onError,Reco
    ws=socket;
    const timer=setTimeout(()=>reject(new Error('Deepgram connection timeout')),10000);
    socket.onopen=()=>{clearTimeout(timer);resolve(socket)};
-   socket.onerror=()=>{clearTimeout(timer);socket.close();reject(new Error('Deepgram WebSocket error — check API key / network'))};
+   socket.onerror=()=>{clearTimeout(timer);socket.close();reject(new Error('Deepgram WebSocket error: check API key / network'))};
   });
   const want=deepgramListenUrl(liveLang);
   try{

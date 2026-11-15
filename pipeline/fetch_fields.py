@@ -217,7 +217,7 @@ def _sign(href: str) -> str:
 
     base, _, _ = href.partition("?")
     # The SAS is scoped to the storage container, not the directory. Keying on the
-    # directory meant one sign request per composite — 301 of them — which trips the
+    # directory meant one sign request per composite (301 of them), which trips the
     # rate limiter and turns a two-minute read into an hour.
     parts = base.split("/")
     container = "/".join(parts[:4]) if len(parts) >= 4 else base
@@ -338,7 +338,7 @@ SOIL_DEFAULTS = {
 SOIL_PROPS = ["clay", "sand", "silt", "soc", "phh2o", "bdod"]
 
 # SoilGrids reports in g/kg, dg/kg, pH*10 and cg/cm3. We divide by d_factor, so the
-# stored number is in the target unit and the label has to say so — otherwise the
+# stored number is in the target unit and the label has to say so: otherwise the
 # bundle claims "22.3 g/kg clay" when it means 22.3 percent.
 SOIL_UNITS = {
     "clay": "%",
@@ -350,7 +350,7 @@ SOIL_UNITS = {
 }
 
 # Half-width of the WCS window, in degrees. 0.06 deg is about 6.6 km, so the box is
-# roughly 13 km across — a neighbourhood, not a single pixel.
+# roughly 13 km across: a neighbourhood, not a single pixel.
 SOIL_HALF_DEG = 0.06
 # Half-width of the central window we actually take the median over, about 2.2 km.
 SOIL_CORE_DEG = 0.02
@@ -362,7 +362,7 @@ def _soil_wcs(prop: str, lat: float, lon: float) -> tuple[float | None, int]:
     The point-query API is unusable at scale: it returns HTTP 500 for multi-property
     requests, 429s under any concurrency, and hangs often enough that a nine-point
     walk takes tens of minutes. The WCS endpoint serves the same 250 m grid as a
-    small GeoTIFF in one request, which is both faster and a better statistic — a
+    small GeoTIFF in one request, which is both faster and a better statistic: a
     median over a neighbourhood instead of one pixel that may be masked.
     """
     import numpy as np
@@ -417,7 +417,7 @@ def fetch_soil(field: dict) -> dict:
     """SoilGrids 250 m surface properties, median over a neighbourhood.
 
     Every field in the app carries a real SoilGrids texture. Where the exact pixel
-    is masked — water, built-up land, a gap in the grid — the median over the
+    is masked (water, built-up land, a gap in the grid) the median over the
     surrounding 2.2 km still returns a value, and the bundle records how many
     pixels went into it so the number is auditable.
     """

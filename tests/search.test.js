@@ -1,7 +1,7 @@
 /**
  * The search: enumeration, deduplication, and the Pareto frontier.
  *
- * The frontier is the product's core claim — "these are the only rotations a
+ * The frontier is the product's core claim: "these are the only rotations a
  * rational decision maker needs to consider". If the dominance test is wrong,
  * the shortlist is wrong, and the recommendation is wrong. So it gets tested
  * against brute force rather than against itself.

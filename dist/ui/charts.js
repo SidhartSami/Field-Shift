@@ -93,13 +93,13 @@ export function paretoPlot(host, args) {
   // grid
   for (const g of niceTicks(xMin, xMax, 4)) {
     el('line', { x1: x(g), x2: x(g), y1: pad.t, y2: pad.t + ih, stroke: '#e8e3d6', 'stroke-width': 1 }, svg);
-    const t = el('text', { x: x(g), y: H - 24, 'text-anchor': 'middle', fill: '#6d746a', 'font-size': 10, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+    const t = el('text', { x: x(g), y: H - 24, 'text-anchor': 'middle', fill: '#6d746a', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
     t.textContent = `${Math.round(g)}%`;
   }
   const yTicks = niceTicks(yMin, yMax, 5);
   for (const v of yTicks) {
     el('line', { x1: pad.l, x2: pad.l + iw, y1: y(v), y2: y(v), stroke: '#e8e3d6', 'stroke-width': 1 }, svg);
-    const t = el('text', { x: pad.l - 10, y: y(v) + 3.5, 'text-anchor': 'end', fill: '#6d746a', 'font-size': 10, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+    const t = el('text', { x: pad.l - 10, y: y(v) + 3.5, 'text-anchor': 'end', fill: '#6d746a', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
     t.textContent = String(Math.round(v));
   }
   // zero line
@@ -143,9 +143,9 @@ export function paretoPlot(host, args) {
   }
 
   // axis labels
-  const xl = el('text', { x: pad.l + iw / 2, y: H - 6, 'text-anchor': 'middle', fill: '#3a423c', 'font-size': 11, 'font-family': 'Instrument Sans, sans-serif' }, svg);
-  xl.textContent = 'Water reliability — share of years the water budget is met';
-  const yl = el('text', { x: 14, y: pad.t + ih / 2, 'text-anchor': 'middle', fill: '#3a423c', 'font-size': 11, 'font-family': 'Instrument Sans, sans-serif', transform: `rotate(-90 14 ${pad.t + ih / 2})` }, svg);
+  const xl = el('text', { x: pad.l + iw / 2, y: H - 6, 'text-anchor': 'middle', fill: '#3a423c', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+  xl.textContent = 'Water reliability: share of years the water budget is met';
+  const yl = el('text', { x: 14, y: pad.t + ih / 2, 'text-anchor': 'middle', fill: '#3a423c', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif', transform: `rotate(-90 14 ${pad.t + ih / 2})` }, svg);
   yl.textContent = 'Nitrogen balance, kg/ha per year';
 
   // legend
@@ -157,7 +157,7 @@ export function paretoPlot(host, args) {
   ];
   items.forEach(([color, label], i) => {
     el('circle', { cx: 5, cy: i * 17 + 4, r: 4.5, fill: color }, lg);
-    const t = el('text', { x: 16, y: i * 17 + 8, fill: '#3a423c', 'font-size': 10.5, 'font-family': 'Instrument Sans, sans-serif' }, lg);
+    const t = el('text', { x: 16, y: i * 17 + 8, fill: '#3a423c', 'font-size': 12.5, 'font-family': 'Instrument Sans, sans-serif' }, lg);
     t.textContent = label;
   });
 }
@@ -194,7 +194,7 @@ export function supplyCurve(host, series, marker) {
   const svg = el('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': 'Reliability against water supply' }, host);
   for (let g = 0; g <= 100; g += 25) {
     el('line', { x1: pad.l, x2: pad.l + iw, y1: y(g / 100), y2: y(g / 100), stroke: '#e8e3d6' }, svg);
-    const t = el('text', { x: pad.l - 8, y: y(g / 100) + 3.5, 'text-anchor': 'end', fill: '#6d746a', 'font-size': 10, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+    const t = el('text', { x: pad.l - 8, y: y(g / 100) + 3.5, 'text-anchor': 'end', fill: '#6d746a', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
     t.textContent = `${g}%`;
   }
   for (const s of series) {
@@ -203,15 +203,15 @@ export function supplyCurve(host, series, marker) {
   }
   for (const g of niceTicks(0, maxSupply, 4)) {
     el('line', { x1: x(g), x2: x(g), y1: pad.t + ih, y2: pad.t + ih + 4, stroke: '#c9c2b0' }, svg);
-    const t = el('text', { x: x(g), y: H - 22, 'text-anchor': 'middle', fill: '#6d746a', 'font-size': 10, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+    const t = el('text', { x: x(g), y: H - 22, 'text-anchor': 'middle', fill: '#6d746a', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
     t.textContent = String(Math.round(g));
   }
   if (Number.isFinite(marker)) {
     el('line', { x1: x(marker), x2: x(marker), y1: pad.t, y2: pad.t + ih, stroke: '#141a17', 'stroke-width': 1, 'stroke-dasharray': '4 3' }, svg);
-    const t = el('text', { x: x(marker) - 6, y: pad.t + 10, 'text-anchor': 'end', fill: '#141a17', 'font-size': 10, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+    const t = el('text', { x: x(marker) - 6, y: pad.t + 10, 'text-anchor': 'end', fill: '#141a17', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
     t.textContent = `you: ${marker} mm`;
   }
-  const xl = el('text', { x: pad.l + iw / 2, y: H - 4, 'text-anchor': 'middle', fill: '#3a423c', 'font-size': 11, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+  const xl = el('text', { x: pad.l + iw / 2, y: H - 4, 'text-anchor': 'middle', fill: '#3a423c', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
   xl.textContent = 'Irrigation water available, mm per year';
 }
 
@@ -220,7 +220,7 @@ export function supplyCurve(host, series, marker) {
  *
  * The single most legible chart in the product: every year the rotation needs
  * more water than the farmer has is a bar that crosses the line. No score, no
- * index — just the years, in order.
+ * index, just the years, in order.
  *
  * @param {HTMLElement} host
  * @param {Array<{year:number, requirement:number, unmet:number, ok:boolean}>} perYear
@@ -242,7 +242,7 @@ export function requirementStrip(host, perYear, supply) {
 
   for (let g = 0; g <= maxReq; g += 250) {
     el('line', { x1: pad.l, x2: pad.l + iw, y1: y(g), y2: y(g), stroke: '#e8e3d6', 'stroke-width': 1 }, svg);
-    const t = el('text', { x: pad.l - 8, y: y(g) + 3.5, 'text-anchor': 'end', fill: '#6d746a', 'font-size': 9.5, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+    const t = el('text', { x: pad.l - 8, y: y(g) + 3.5, 'text-anchor': 'end', fill: '#6d746a', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
     t.textContent = String(g);
   }
 
@@ -258,12 +258,12 @@ export function requirementStrip(host, perYear, supply) {
       opacity: rec.ok ? 0.85 : 1,
     }, svg);
     if (rec.year % 5 === 0) {
-      const t = el('text', { x: x + bw / 2, y: H - 8, 'text-anchor': 'middle', fill: '#6d746a', 'font-size': 9.5, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+      const t = el('text', { x: x + bw / 2, y: H - 8, 'text-anchor': 'middle', fill: '#6d746a', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
       t.textContent = String(rec.year);
     }
   });
 
   el('line', { x1: pad.l, x2: pad.l + iw, y1: y(supply), y2: y(supply), stroke: '#141a17', 'stroke-width': 1.4, 'stroke-dasharray': '5 3' }, svg);
-  const lab = el('text', { x: pad.l + iw, y: y(supply) - 6, 'text-anchor': 'end', fill: '#141a17', 'font-size': 10, 'font-family': 'Instrument Sans, sans-serif' }, svg);
+  const lab = el('text', { x: pad.l + iw, y: y(supply) - 6, 'text-anchor': 'end', fill: '#141a17', 'font-size': 12, 'font-family': 'Instrument Sans, sans-serif' }, svg);
   lab.textContent = `supply ${supply} mm`;
 }

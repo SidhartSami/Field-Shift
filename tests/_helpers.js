@@ -2,7 +2,7 @@
  * Shared fixtures for the test suite.
  *
  * The tests run against the same engine modules the browser loads, from
- * dist/engine, so a passing suite means the shipped code is correct — not a
+ * dist/engine, so a passing suite means the shipped code is correct, not a
  * parallel copy of it.
  */
 

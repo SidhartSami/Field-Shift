@@ -3,7 +3,7 @@
  *
  * These are property tests, not golden-number tests. A golden number would break
  * every time a coefficient is corrected; a property survives refactoring and
- * still catches the failures that matter — water content outside physical
+ * still catches the failures that matter: water content outside physical
  * bounds, a nitrogen balance that rewards the wrong thing, an ET0 that goes
  * negative at night.
  */

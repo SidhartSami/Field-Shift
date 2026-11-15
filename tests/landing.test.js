@@ -2,7 +2,7 @@
  * Landing page.
  *
  * dist/index.html is the front page; dist/app.html is the tool. This file
- * guards the split and keeps the landing page's numbers tied to the engine —
+ * guards the split and keeps the landing page's numbers tied to the engine:
  * a landing page that drifts from the model is the fastest way to lose a
  * judge's trust, because it is the first thing they read.
  */
@@ -37,7 +37,7 @@ const search = searchRotations(ctx, punjab, { ...OPTIONS, cache });
 test('the landing page is the root document and the app is not', () => {
   assert.ok(fs.existsSync(path.join(ROOT, 'dist', 'index.html')));
   assert.ok(fs.existsSync(path.join(ROOT, 'dist', 'app.html')));
-  assert.ok(landing.includes('worked for your father'), 'index.html is not the landing page');
+  assert.ok(landing.includes('Know which years'), 'index.html is not the landing page');
   assert.ok(!landing.includes('id="view-lab"'), 'index.html still contains the app');
   assert.ok(app.includes('id="view-lab"'), 'app.html is not the app');
 });

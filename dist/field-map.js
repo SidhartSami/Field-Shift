@@ -1,10 +1,10 @@
 // Field boundary sketch on the voice tab: basemap options + polygon drawing.
-// Leaflet only (vendored); no drawing plugin — click vertices, finish to close.
+// Leaflet only (vendored); no drawing plugin: click vertices, finish to close.
 
 const BASEMAPS = {
  satellite:{
   url:'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-  attribution:'Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
+  attribution:'Tiles © Esri · Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community',
   maxNativeZoom:17
  },
  streets:{
@@ -133,7 +133,7 @@ export function createFieldBoundaryMap({document:doc,getCenter,getBoundary,setBo
   if(!drawing)return;
   verts.push([e.latlng.lat,e.latlng.lng]);
   paintPreview();
-  status(verts.length<3?`${verts.length} points — keep clicking, then Finish.`:`${verts.length} points — Finish when the outline is complete.`);
+  status(verts.length<3?`${verts.length} points: keep clicking, then Finish.`:`${verts.length} points: Finish when the outline is complete.`);
  }
 
  function init(){
@@ -177,7 +177,7 @@ export function createFieldBoundaryMap({document:doc,getCenter,getBoundary,setBo
    if(!drawing||!verts.length)return;
    verts.pop();
    paintPreview();
-   status(verts.length?`${verts.length} points left.`:'No points left — cancel or keep clicking.');
+   status(verts.length?`${verts.length} points left.`:'No points left: cancel or keep clicking.');
   };
   const fin=$('voice-map-finish');
   if(fin)fin.onclick=()=>finish();

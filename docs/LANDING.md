@@ -8,9 +8,9 @@ in eight sections and hands off to the app at four points; the app never has to
 explain itself.
 
 ```
-/            index.html   the argument — why a failure rate, what we built, what it found
-/app.html    app.html     the tool — Field, Rotation Lab, Decision, Ledger
-/model.html  model.html   the model card — equations, data, eight known errors
+/            index.html   the argument (why a failure rate, what we built, what it found
+/app.html    app.html     the tool) Field, Rotation Lab, Decision, Ledger
+/model.html  model.html   the model card: equations, data, eight known errors
 /pitch.html  pitch.html   the seven-slide scroll deck
 ```
 
@@ -22,15 +22,15 @@ Nothing on the landing page is a mockup. Every screenshot is a real capture of
 
 | # | Section | Anchor | What it does |
 |---|---------|--------|--------------|
-| — | Hero | — | The claim, the five headline counts, no eyebrow |
+| - | Hero | - | The claim, the five headline counts, no eyebrow |
 | 01 | The problem | `#problem` | Rice–wheat at 39%, and what 39% actually counts |
 | 02 | The insight | `#insight` | A score out of 100 cannot be wrong; a failure rate names years |
 | 03 | What we built | `#built` | Four surfaces in a bento grid, three real screenshots |
 | 04 | The finding | `#finding` | 39% vs 85%, and why maize–wheat at 100% is rejected |
 | 05 | The data | `#data` | Six NASA products, each with a provenance chip |
-| 06 | The honesty | `#honesty` | 5 of 5, 0.06, 20 — and the eight known errors |
+| 06 | The honesty | `#honesty` | 5 of 5, 0.06, 20, and the eight known errors |
 | 07 | Who it is for | `#who` | Six audiences, one sentence each |
-| — | Closing | `#open` | 0.99 km³, labelled as arithmetic on our own output |
+| - | Closing | `#open` | 0.99 km³, labelled as arithmetic on our own output |
 
 The funnel is story → tool. "Open the field →" appears in the floating nav, the
 hero, and the closing block, so the CTA is never more than one scroll away.
@@ -38,7 +38,7 @@ hero, and the closing block, so the CTA is never more than one scroll away.
 ## Design
 
 The page reuses `dist/app.css` and adds a scoped `<style>` block. It does not
-fork the palette — if the app's tokens move, the landing page moves with them.
+fork the palette, if the app's tokens move, the landing page moves with them.
 
 | Token | Value | Used for |
 |-------|-------|----------|
@@ -56,9 +56,9 @@ Two rules the page follows:
 
 - **Numbers are mono, prose is not.** A figure in IBM Plex Mono reads as
   measured; the same figure in Instrument Sans reads as written.
-- **Italic marks the turn.** "Rice–wheat worked for your father. *It works 13
-  years out of 33.*" — the roman half is the thing the farmer already believes;
-  the italic half is the number that contradicts it. Instrument Serif is the
+- **Italic marks the turn.** "Know which years *your rotation fails.*" The roman
+  half is the question a farmer already has; the italic half is the answer the
+  product gives. Instrument Serif is the
   companion face to Instrument Sans (same foundry), so the switch reads as
   emphasis rather than as a second voice. Both are self-hosted woff2 in
   `dist/assets/fonts/`; no Google Fonts request at runtime.
@@ -73,7 +73,7 @@ the page. `html { scroll-padding-top: 96px }` keeps anchor jumps clear of it.
 
 Section headers use a two-column `.sec-row`: the headline on the left, the
 supporting paragraph right-aligned on the same baseline. The eyebrow above each
-headline is an outlined capsule, sentence case — never uppercase, never
+headline is an outlined capsule, sentence case, never uppercase, never
 letter-spaced.
 
 The "What we built" section is a six-column bento grid (`.bento`), not a row of
@@ -94,8 +94,8 @@ node scratch/shots.mjs          # writes dist/assets/shots/*.jpg
 `scratch/shots.mjs` is a throwaway script and is not committed. It needs
 Playwright with a local Chromium; the `executablePath` at the top of the file
 points at one. Each view is clipped to a height that lands on a section
-boundary — after the shortlist in the Lab, after the requirement strip in the
-Decision brief — so no screenshot ends mid-chart.
+boundary (after the shortlist in the Lab, after the requirement strip in the
+Decision brief), so no screenshot ends mid-chart.
 
 If you change a view's layout, re-run the capture and update the `width` and
 `height` attributes on the matching `<img>` in `dist/index.html`. The test suite

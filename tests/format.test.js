@@ -2,8 +2,8 @@
  * Formatting.
  *
  * Every number a judge or a farmer reads passes through these functions, so the
- * failure mode to guard against is not a crash — it is a plausible-looking wrong
- * number. Missing data must render as an em dash, never as zero.
+ * failure mode to guard against is not a crash: it is a plausible-looking wrong
+ * number. Missing data must render as an en dash, never as zero.
  */
 
 import test from 'node:test';
@@ -14,12 +14,12 @@ import {
   rotationLabel, rotationShort, chip, escapeHtml,
 } from '../dist/ui/format.js';
 
-test('missing values render as an em dash, never as zero', () => {
+test('missing values render as an en dash, never as zero', () => {
   for (const v of [NaN, Infinity, -Infinity, undefined, null]) {
-    assert.equal(num(v), '—', `num(${v})`);
-    assert.equal(pct(v), '—', `pct(${v})`);
-    assert.equal(money(v, 'PKR'), '—', `money(${v})`);
-    assert.equal(signed(v), '—', `signed(${v})`);
+    assert.equal(num(v), '–', `num(${v})`);
+    assert.equal(pct(v), '–', `pct(${v})`);
+    assert.equal(money(v, 'PKR'), '–', `money(${v})`);
+    assert.equal(signed(v), '–', `signed(${v})`);
   }
 });
 
@@ -63,7 +63,7 @@ test('crop names resolve, and unknown ids pass through rather than vanishing', (
   assert.equal(cropName('fallow'), 'Fallow');
   assert.equal(cropName('quinoa'), 'quinoa');
   assert.equal(cropLocal('wheat'), 'Gandum');
-  assert.equal(cropLocal('fallow'), '—');
+  assert.equal(cropLocal('fallow'), '–');
 });
 
 test('rotation labels read as a sequence', () => {

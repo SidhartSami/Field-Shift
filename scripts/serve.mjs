@@ -1,4 +1,4 @@
-// Minimal static file server for dist/ — no Python required.
+// Minimal static file server for dist/, no Python required.
 import {createServer} from 'node:http';
 import {createReadStream,statSync,readFileSync,existsSync} from 'node:fs';
 import {extname,join,normalize,sep} from 'node:path';

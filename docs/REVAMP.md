@@ -1,4 +1,4 @@
-# Field Shift 3.0 — the revamp
+# Field Shift 3.0: the revamp
 
 **Status:** strategy + build plan. Written after auditing the current build, the
 challenge guide, and the live app.
@@ -9,7 +9,7 @@ challenge guide, and the live app.
 
 The current build is competently engineered and unusually honest. It will not win.
 
-Not because it is bad — because it is *forgettable*. It is a twelve-input form
+Not because it is bad, because it is *forgettable*. It is a twelve-input form
 that returns a score out of 100 for one field in one year, wrapped in fifteen
 documents explaining why the score should not be trusted. A judge will not be
 able to repeat a single sentence about it to another judge.
@@ -17,7 +17,7 @@ able to repeat a single sentence about it to another judge.
 Eight specific reasons, in order of how much they cost:
 
 1. **It does not use NASA satellite observations.** It uses NASA POWER, which is
-   MERRA-2 *reanalysis* — a model, not a measurement. The challenge names
+   MERRA-2 *reanalysis*: a model, not a measurement. The challenge names
    Landsat, SMAP, GPM, ECOSTRESS and GRACE-FO. The app uses none of them. Any
    judge with an Earth-science background will ask "where is the satellite data?"
    and the honest answer today is "there isn't any."
@@ -71,10 +71,10 @@ exactly what the reframe below does.
 One sentence. A judge can repeat it. It is true, it is specific, and no other
 team will have it.
 
-> **Shipped headline.** The site does not use this sentence verbatim — a truism
-> about the world is weaker than a number about the farmer's field. The hero
-> reads: "Rice–wheat worked for your father. *It works 13 years out of 33.*"
-> The thesis above is still the elevator pitch; the headline is the proof.
+> **Shipped headline.** The site does not use this sentence verbatim. A truism
+> about the world is weaker than a plain statement of what the tool does. The
+> hero reads: "Know which years *your rotation fails.*" The thesis above is
+> still the elevator pitch; the headline is the promise.
 
 The supporting sentence, for the technical judge:
 
@@ -95,7 +95,7 @@ And the emotional sentence, for the final slide:
 This is the single highest-leverage change in the entire revamp. Everything else
 follows from it.
 
-**Today:** `Lower-demand crop mix — 78/100`. Unfalsifiable. Unactionable. A number
+**Today:** `Lower-demand crop mix: 78/100`. Unfalsifiable. Unactionable. A number
 that means nothing to a farmer and cannot be checked by anyone.
 
 **After:** 
@@ -144,7 +144,7 @@ Replace the current five-tab workspace with four surfaces, each with one job.
 └─ LEDGER ─────────┘  What we predicted, what happened, and what it means at scale.
 ```
 
-### Surface 1 — Field
+### Surface 1: Field
 
 The entry point is a map, not a form. The user draws a polygon (or taps a
 village). Within two seconds the app has, without asking anything:
@@ -163,7 +163,7 @@ This is the screenshot. This is the thing a judge remembers.
 
 **The line:** *"We didn't ask him a single question."*
 
-### Surface 2 — Rotation Lab
+### Surface 2: Rotation Lab
 
 - The current rotation is pinned as a red reference point.
 - A search over the crop library enumerates every legal 4-season sequence
@@ -176,29 +176,29 @@ This is the screenshot. This is the thing a judge remembers.
   soil-and-nitrogen benefit (y), with erosion and downside margin as colour and
   size. Dominated rotations are grey. The frontier is the answer.
 - Drag a priority slider and the frontier recomputes. No arbitrary weights by
-  default — weights are a *view*, not the model.
+  default: weights are a *view*, not the model.
 
 **The line:** *"We searched 2,304 sequences across 33 years. Six are on the
 efficient frontier. Here they are."*
 
-### Surface 3 — Decision
+### Surface 3: Decision
 
 One page, printable, that a farmer can take to an adviser:
 
 - **The pick** and why, in three sentences.
 - **The failure profile**: which years it fails, and what those years had in common.
 - **The fallback**: if the monsoon is late by mid-July, switch to X. A trigger, not a hope.
-- **The blockers**: buyer, seed, labour, drainage, sowing window — the things
+- **The blockers**: buyer, seed, labour, drainage, sowing window: the things
   satellites cannot see, listed as questions, not as checkboxes.
 - **The prediction**: "We expect June–September root-zone wetness above 0.35 and
   peak NDVI above 0.55. We will check this in October."
 - **The sensitivity**: "This recommendation flips if your irrigation falls below
   310 mm/year, or if millet price falls below PKR 1,850/maund."
 
-That last item — **"what would change my mind"** — is the most trust-building
+That last item (**"what would change my mind"**) is the most trust-building
 thing in the entire product. Almost no team ships it.
 
-### Surface 4 — Ledger
+### Surface 4: Ledger
 
 - **Verification**: every saved plan carries its prediction. When the season ends,
   the app fetches the observation and scores itself. Hit, miss, or inconclusive.
@@ -207,13 +207,13 @@ thing in the entire product. Almost no team ships it.
   judges believe.
 - **Scale**: "Punjab's rice–wheat system covers 4.2 Mha. Our model says 68% of
   years fail the water budget under current irrigation. A 10% shift of one season
-  to a legume reduces modelled irrigation demand by X km³/yr — about Y% of the
+  to a legume reduces modelled irrigation demand by X km³/yr, about Y% of the
   province's annual groundwater overdraft." With a sensitivity band and the
   assumptions in the open.
 
 ---
 
-## 5. The data layer — verified reachable from this machine
+## 5. The data layer: verified reachable from this machine
 
 Every row below was tested today. No API keys, no Earthdata login, no build-time
 secrets. That matters: judges must be able to re-run it.
@@ -232,26 +232,26 @@ secrets. That matters: judges must be able to re-run it.
 
 **The honest labelling rule.** Every number in the UI carries one of three tags:
 
-- `OBSERVED` — a satellite measurement (MODIS NDVI, SMAP, IMERG, GRACE).
-- `REANALYSIS` — a model product assimilating observations (POWER / MERRA-2).
-- `SIMULATED` — our own model output (water balance, erosion, reliability).
+- `OBSERVED`: a satellite measurement (MODIS NDVI, SMAP, IMERG, GRACE).
+- `REANALYSIS`: a model product assimilating observations (POWER / MERRA-2).
+- `SIMULATED`: our own model output (water balance, erosion, reliability).
 
 This single convention does more for credibility than any disclaimer paragraph.
 It is also a beautiful UI element: a small coloured chip next to every figure.
 
 **The GIBS layer switcher** turns the map from a basemap into a NASA instrument:
 MODIS NDVI, MODIS LST, IMERG precipitation, SMAP root-zone soil moisture, GRACE
-water-equivalent, MODIS true colour — each with a date slider from 2000 to today.
+water-equivalent, MODIS true colour, each with a date slider from 2000 to today.
 That is the "space agency" moment the current map is missing.
 
 ---
 
-## 6. The model layer — equations, not coefficients
+## 6. The model layer: equations, not coefficients
 
 Replace `rice: water 1200` with a real, citable, daily simulation. Every equation
 below is standard and defensible in front of an agronomist.
 
-### 6.1 Reference evapotranspiration — FAO-56 Penman-Monteith
+### 6.1 Reference evapotranspiration: FAO-56 Penman-Monteith
 
 ```
 ET₀ = [0.408 Δ (Rn − G) + γ (900/(T+273)) u₂ (eₛ − eₐ)] / [Δ + γ (1 + 0.34 u₂)]
@@ -261,7 +261,7 @@ Driven by POWER daily Tmax, Tmin, RH2M, WS2M, ALLSKY_SFC_SW_DWN. Rn from solar
 radiation and temperature; eₛ from Tmax/Tmin; eₐ from RH. Standard FAO-56
 (Allen et al. 1998), the same equation every irrigation advisory uses.
 
-### 6.2 Crop evapotranspiration — dual coefficient
+### 6.2 Crop evapotranspiration: dual coefficient
 
 ```
 ETc = (Kcb + Ke) × ET₀
@@ -290,7 +290,7 @@ Irrigation `I` is the user's available supply, allocated by the app's rule
 USDA-SCS: `Pe = P × (125 − 0.2P)/125` for P < 250 mm/month, else `Pe = 125 + 0.1P`.
 Monthly, then distributed to days.
 
-### 6.5 Season Reliability — the headline metric
+### 6.5 Season Reliability: the headline metric
 
 ```
 reliable(year) = (unmet_irrigation(year) ≤ tolerance_mm)
@@ -308,7 +308,7 @@ above 30 °C; maize flowering ≈ 4% per day above 35 °C; rice spikelet sterili
 above 35 °C). Cite per crop. Report as days and as a penalty band, never as a
 single yield number.
 
-### 6.7 Erosion — RUSLE
+### 6.7 Erosion: RUSLE
 
 ```
 A = R · K · LS · C · P
@@ -333,7 +333,7 @@ Fixation credits per legume (chickpea 40–60, mung 30–50, soybean 80–120 kg
 removal from yield × N concentration, residue return from the retention setting.
 20-year SOC trajectory per rotation, reported as a band, not a promise.
 
-### 6.9 Disease-risk windows — the novel agronomy
+### 6.9 Disease-risk windows: the novel agronomy
 
 Use POWER daily temperature and humidity to count hours inside each pathogen's
 infection window during the susceptible stage:
@@ -352,10 +352,10 @@ disease-risk calendar**. It is also exactly what the challenge asks for under
 
 Gross margin per crop as a band (P10/P50/P90), editable. Water cost per m³,
 transition cost, and a first-year cash screen. Output is a distribution, not a
-point. Report downside (P10) alongside the median — a rotation that is better on
+point. Report downside (P10) alongside the median: a rotation that is better on
 average but catastrophic in bad years is not better.
 
-### 6.11 Multi-objective ranking — Pareto, not weights
+### 6.11 Multi-objective ranking: Pareto, not weights
 
 Objectives: maximise reliability, maximise N/SOC benefit, minimise erosion,
 maximise downside margin. Non-dominated sorting over all four. The UI shows the
@@ -383,78 +383,78 @@ is cheap to compute and devastatingly persuasive.
 
 Each spec is written so an agent can execute it without further context.
 
-### F1 — Reliability engine *(core, blocking)*
+### F1: Reliability engine *(core, blocking)*
 **What:** the simulation described in §6, as pure ES modules with no DOM.
 **Files:** `dist/engine/eto.js`, `water.js`, `erosion.js`, `nitrogen.js`, `disease.js`, `economics.js`, `reliability.js`, `pareto.js`, `search.js`, `crops.js`.
 **Acceptance:** given the Punjab bundle, rice–wheat returns a reliability between
 0.2 and 0.5 and millet–chickpea–mung–mustard between 0.7 and 0.95; every function
 has a unit test; the full 2,304-sequence search completes in about 45 ms in Node.
 
-### F2 — Field Memory strip *(the screenshot)*
+### F2: Field Memory strip *(the screenshot)*
 **What:** 34 columns, one per year, each with rainfall anomaly, heat days, peak
 NDVI, root-zone wetness. Hover a year for the full record. Click to filter the
 whole app to that year.
 **Why it wins:** it is the visual that makes "34 years" real in one second.
 **Acceptance:** renders in under 100 ms, works at 360 px wide, no chart library.
 
-### F3 — Zero-input field profile
+### F3: Zero-input field profile
 **What:** draw a polygon → area, soil, slope, climate, NDVI, groundwater, crop
 system, all inferred. Every inferred value is editable and tagged with its source.
 **Acceptance:** a new field reaches a full profile in under 2 s with no typing.
 
-### F4 — Rotation Lab + Pareto frontier
+### F4: Rotation Lab + Pareto frontier
 **What:** enumerate, simulate, non-dominated sort, plot. Current practice pinned
 in red. Hover a point for its failure profile. Click to open the Decision surface.
 **Acceptance:** 2,304 sequences, 1,176 distinct cycles, frontier of 132 points
 (6 shown as role-labelled cards), recompute under 3 s.
 
-### F5 — 2050 stress test
+### F5: 2050 stress test
 **What:** toggle that re-runs the frontier under the CMIP6 delta. Show the
 reliability drop per rotation, and which rotations *gain* rank.
 **Acceptance:** one toggle, one number per rotation, clearly labelled `SIMULATED`.
 
-### F6 — Decision brief + prediction
+### F6: Decision brief + prediction
 **What:** printable one-pager: pick, failure profile, fallback trigger, blockers,
 prediction, sensitivity.
 **Acceptance:** prints to one A4 page; every number carries an `OBSERVED` /
 `REANALYSIS` / `SIMULATED` chip.
 
-### F7 — Verification ledger
+### F7: Verification ledger
 **What:** saved plans carry predictions; a checker compares them to the next
 season's MODIS/SMAP observation; a public scorecard tallies hits and misses.
 **Acceptance:** at least one seeded historical prediction verified end-to-end so
 the demo shows a real hit and a real miss.
 
-### F8 — NASA layer switcher
+### F8: NASA layer switcher
 **What:** GIBS WMTS layers (MODIS NDVI, LST, IMERG, SMAP, GRACE, true colour) with
 a date slider, over the field polygon.
 **Acceptance:** six layers, date slider 2000→today, attribution shown, no key.
 
-### F9 — Counterfactual explainer
+### F9: Counterfactual explainer
 **What:** "Why not rice?" → the three years that break it, the mechanism, the
 number. Generated from the simulation, not written by hand.
 **Acceptance:** every rejected rotation has a one-paragraph, number-backed reason.
 
-### F10 — Disease-risk calendar
+### F10: Disease-risk calendar
 **What:** per rotation, the infection-window days for the three pathogens, by
 month, from POWER temperature and humidity.
 **Acceptance:** wheat yellow-rust risk peaks in Feb–Mar in Punjab, not in July.
 
-### F11 — Scale panel
+### F11: Scale panel
 **What:** regional area × reliability gap × water demand → km³/yr avoided, with a
 sensitivity band and the assumptions visible.
 **Acceptance:** every input to the multiplication is on screen and editable.
 
-### F12 — Sensitivity panel ("what would change my mind")
+### F12: Sensitivity panel ("what would change my mind")
 **What:** the flip threshold for the top recommendation.
 **Acceptance:** returns one sentence with one number.
 
-### F13 — Advisor one-pager export
+### F13: Advisor one-pager export
 **What:** PDF/print with the field map, the frontier, the pick, the blockers, the
 prediction, and the full data lineage.
 **Acceptance:** one page, legible in black and white.
 
-### F14 — Region packs
+### F14: Region packs
 **What:** five fields across four continents, each with a crop library and a
 system. Proves the architecture is not a Punjab one-off.
 **Acceptance:** switching region changes crops, calendar and library; the engine
@@ -466,62 +466,62 @@ does not change.
 
 Rehearse this until it is muscle memory. Do not read it.
 
-**0:00 — The decision.**
+**0:00 · The decision.**
 "This is a field in Sheikhupura, Punjab. Two point four hectares. The farmer has
 no soil test, no yield records and no water meter. He has one decision: what to
 plant next season. He is about to spend a third of his annual income on it."
 
-**0:15 — Zero input.**
+**0:15 · Zero input.**
 *Draw the polygon.* "We ask him nothing. Soil, slope, thirty-four years of
-rainfall, twenty-four years of satellite vegetation, the aquifer trend — all of it
+rainfall, twenty-four years of satellite vegetation, the aquifer trend, all of it
 comes from orbit."
 
-**0:30 — The Field Memory.**
+**0:30 · The Field Memory.**
 *Point at the strip.* "This is his field's memory. Every column is a year. The
 amber ones are the years the monsoon failed. Six of the last ten were hotter than
 any year before 2000. He has never seen this."
 
-**0:50 — The reframe.**
-*Rice–wheat card.* "His current rotation — rice, then wheat — meets his water
+**0:50 · The reframe.**
+*Rice–wheat card.* "His current rotation (rice, then wheat) meets his water
 budget in eleven of thirty-four years. Thirty-two percent. In 2002 he was twelve
 hundred millimetres short. In 2022, heat cut the wheat grain-fill window by nine
 days."
 
-**1:10 — The search.**
+**1:10 · The search.**
 *Pareto plot.* "We simulated two thousand three hundred and four sequences across
 all thirty-four years. A hundred and fifty-six thousand crop seasons. Six of them
-are on the efficient frontier. This one — millet, chickpea, mung, mustard — meets
+are on the efficient frontier. This one (millet, chickpea, mung, mustard) meets
 the budget in twenty-nine of thirty-four years, adds two legume seasons, and cuts
 erosion by forty percent."
 
-**1:35 — The honesty.**
+**1:35 · The honesty.**
 *Failure profile.* "It still fails five times. Here they are. And here is the
 fallback: if the monsoon hasn't arrived by the eighteenth of July, switch the
 kharif to mung. That is a trigger, not a hope."
 
-**1:55 — 2050.**
+**1:55 · 2050.**
 *Toggle.* "Under the CMIP6 mid-range scenario, rice–wheat drops to four years out
 of thirty-four. The alternative holds at twenty-four. That is the difference
 between adapting and not."
 
-**2:15 — The proof.**
+**2:15 · The proof.**
 *Ledger.* "We don't ask him to bet the farm. Plant twenty percent this season. We
 will measure it from space. Every plan we issue carries a prediction, and we
 publish our own hit rate. Eighteen predictions, fourteen hits, two misses, two
 inconclusive. That is the difference between advice and evidence."
 
-**2:35 — The scale.**
+**2:35 · The scale.**
 *Scale panel.* "Punjab has four point two million hectares of rice–wheat. Our
 model says sixty-eight percent of years fail the water budget. A ten percent shift
 of one season to a legume is X cubic kilometres a year. Here is the sensitivity."
 
-**2:50 — The close.**
+**2:50 · The close.**
 "NASA has been photographing this field since 1991. Field Shift hands the farmer
-the film — and a plan he can check."
+the film, and a plan he can check."
 
 ---
 
-## 9. The pitch deck — seven slides, exact copy
+## 9. The pitch deck: seven slides, exact copy
 
 1. **The decision.** A field. A farmer. One season. One third of his income.
 2. **The blind spot.** NASA has 34 years of data on his field. He has none of it.
@@ -533,10 +533,10 @@ the film — and a plan he can check."
 
 ---
 
-## 10. Judge Q&A — the eighteen questions that will actually be asked
+## 10. Judge Q&A: the eighteen questions that will actually be asked
 
 **1. "Isn't this just a crop model?"**
-No. The model is deliberately standard — FAO-56, RUSLE, a nitrogen balance. The
+No. The model is deliberately standard: FAO-56, RUSLE, a nitrogen balance. The
 contribution is the decision layer: a 34-year reliability distribution, a Pareto
 frontier over 2,304 rotations, a 2050 stress test, and a verification loop. Anyone
 can run FAO-56. Almost nobody turns it into a failure rate a farmer can act on.
@@ -556,11 +556,11 @@ roadmap.
 **4. "NASA POWER is reanalysis, not satellite data."**
 Correct, and we label it `REANALYSIS` everywhere. We use POWER for continuous
 daily meteorology because no satellite gives a gap-free 34-year daily series at a
-point. The actual observations — MODIS NDVI, SMAP soil moisture, IMERG
-precipitation, GRACE water storage — are in the product and tagged `OBSERVED`.
+point. The actual observations (MODIS NDVI, SMAP soil moisture, IMERG
+precipitation, GRACE water storage) are in the product and tagged `OBSERVED`.
 
 **5. "How do you validate the reliability numbers?"**
-Three ways. First, the model is deterministic and the inputs are public — anyone
+Three ways. First, the model is deterministic and the inputs are public: anyone
 can re-run it from the exact request URLs we ship. Second, we run a sensitivity
 analysis that reports the threshold at which the recommendation flips. Third, the
 verification ledger: we make predictions and publish our hit rate.
@@ -587,8 +587,8 @@ the price has to move before the recommendation flips. A mandi price feed is the
 obvious next integration.
 
 **10. "Is the 2050 projection real CMIP6?"**
-It is a CMIP6 delta from the IPCC AR6 Atlas — +1.9 °C, −6% precipitation for South
-Asia under SSP2-4.5 — applied to the observed record. It is labelled `SIMULATED`.
+It is a CMIP6 delta from the IPCC AR6 Atlas (+1.9 °C, −6% precipitation for South
+Asia under SSP2-4.5) applied to the observed record. It is labelled `SIMULATED`.
 NEX-GDDP-CMIP6 is public on S3 and is the roadmap upgrade.
 
 **11. "How do you stop bad advice from causing harm?"**
@@ -613,11 +613,11 @@ is a hypothesis, not a claim.
 
 **15. "What would you do with $50,000?"**
 Two hundred farmers, one season, metered water, agronomist calibration of the crop
-library, and a published validation report — including the cases where we were
+library, and a published validation report, including the cases where we were
 wrong.
 
 **16. "Isn't 250 m NDVI too coarse for a two-hectare field?"**
-It is coarse — about six MODIS pixels across the field. That is why NDVI is used
+It is coarse, about six MODIS pixels across the field. That is why NDVI is used
 for phenology and anomaly, not for a yield estimate, and why the field polygon is
 sampled as a pixel-weighted mean rather than a point. Landsat at 30 m is the
 roadmap upgrade.
@@ -632,13 +632,13 @@ its work, and promises to check itself next season.
 
 ---
 
-## 11. Build plan — six parallel workstreams
+## 11. Build plan: six parallel workstreams
 
 Ordered by dependency. Workstreams 2–6 can run concurrently once 1 lands.
 
 | # | Workstream | Depends on | Output | Est. |
 |---|---|---|---|---|
-| 1 | **Data pipeline** | — | `data/fields/*.json` for 5 fields, 34 yr daily + 24 yr NDVI + soil | 45 min (I/O bound) |
+| 1 | **Data pipeline** | - | `data/fields/*.json` for 5 fields, 34 yr daily + 24 yr NDVI + soil | 45 min (I/O bound) |
 | 2 | **Engine** | 1 (schema only) | `dist/engine/*.js` + tests | 2 h |
 | 3 | **Field + Memory UI** | 1 | map, polygon draw, strip | 2 h |
 | 4 | **Rotation Lab + Pareto** | 2 | search, plot, hover | 2 h |
@@ -654,7 +654,7 @@ schema in 1 is fixed, in parallel with 2.
 
 **Cut line.** If time runs short, ship 1, 2, 3, 4 and 6. The Decision surface can
 degrade to a modal; the Ledger can degrade to a static page with one seeded
-prediction. Never cut the Field Memory or the Pareto plot — those are the two
+prediction. Never cut the Field Memory or the Pareto plot: those are the two
 things judges will remember.
 
 ---
@@ -698,7 +698,7 @@ Deleting is faster than building and improves the product more.
 > a bet you can check. A farmer draws a field; we infer its soil, slope, climate
 > history and vegetation from NASA satellites and reanalysis without asking a
 > single question. We then simulate 2,304 candidate sequences across all 33 usable years
-> and a 2050 climate stress test, and return the efficient frontier — not a score.
+> and a 2050 climate stress test, and return the efficient frontier, not a score.
 > The headline is a failure rate: "rice–wheat meets your water budget in 11 of 34
 > years; this alternative meets it in 29." Every plan carries a fallback trigger,
 > the local checks only an adviser can confirm, and a falsifiable prediction we

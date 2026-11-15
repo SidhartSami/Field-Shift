@@ -1,5 +1,5 @@
 /**
- * Field Shift — application shell.
+ * Field Shift: application shell.
  *
  * Four surfaces, one state object. The engine does the science; this file only
  * decides what to show and in what order.
@@ -101,7 +101,7 @@ function bindChrome() {
  * Read the describe-it box and fold it into the Lab controls.
  *
  * The parser is the one from the voice-entry branch. It understands far more
- * than the Lab can act on, so we apply what maps and name what does not —
+ * than the Lab can act on, so we apply what maps and name what does not:
  * silently ignoring "clay soil" would be the dishonest option.
  */
 function applyDescribe() {
@@ -336,7 +336,7 @@ function renderThesis() {
     <p class="thesis-sub">
       ${better
         ? `One rotation beats it on water, nitrogen and money at the same time:
-           <a href="#decision"><strong>${escapeHtml(rotationLabel(rec.rotation))}</strong></a> —
+           <a href="#decision"><strong>${escapeHtml(rotationLabel(rec.rotation))}</strong></a>,
            ${pct(rec.reliability)} reliable, ${signed(rec.nitrogenNet, 0)} kg N, ${money(rec.marginP10, cur)} downside.`
         : `The most reliable option we found is
            <a href="#decision"><strong>${escapeHtml(rotationLabel(rec.rotation))}</strong></a> at ${pct(rec.reliability)}.`}
@@ -389,7 +389,7 @@ function annualStats() {
   return {
     years,
     median,
-    lastYear: years.length ? years[years.length - 1].year : '—',
+    lastYear: years.length ? years[years.length - 1].year : '–',
     rainMean: years.reduce((a, y) => a + y.rain, 0) / years.length,
     et0Mean: years.reduce((a, y) => a + y.et0, 0) / years.length,
   };
@@ -401,7 +401,7 @@ function renderMemory() {
     if (!y) return;
     const ndviText = y.ndvi ? ` · peak NDVI <b>${y.ndvi.toFixed(2)}</b>` : '';
     $('#memory-read').innerHTML =
-      `<b>${y.year}</b> — rainfall <b>${num(y.rain)} mm</b> · days above 35 °C <b>${y.heat}</b>` +
+      `<b>${y.year}</b>: rainfall <b>${num(y.rain)} mm</b> · days above 35 °C <b>${y.heat}</b>` +
       ` · reference ET₀ <b>${num(y.et0)} mm</b> · root-zone wetness <b>${y.wet.toFixed(2)}</b>${ndviText}` +
       (y.dry ? ' · <b>failed monsoon</b>' : '');
   });
@@ -412,7 +412,7 @@ function renderMemory() {
   const recent = warmest.filter((y) => y >= 2000).length;
   $('#memory-read').innerHTML =
     `The record holds <b>${years.length}</b> complete years. <b>${dry.length}</b> failed the monsoon ` +
-    `(below 78% of the median). The five hottest years are ${warmest.join(', ')} — ` +
+    `(below 78% of the median). The five hottest years are ${warmest.join(', ')}: ` +
     `${recent} of the five fall after 2000.`;
 }
 
@@ -715,7 +715,7 @@ function renderDecision() {
       <span class="num">${predictionWetness()}</span> through the growing window${ndviPrediction
         ? ` and a peak NDVI above <span class="num">${ndviPrediction}</span>`
         : ''}. We will check ${ndviPrediction ? 'both' : 'it'} against the satellite pass in
-      <span class="num">${nextCheckMonth()}</span> and record the result in the ledger — hit, miss, or inconclusive.</p>
+      <span class="num">${nextCheckMonth()}</span> and record the result in the ledger: hit, miss, or inconclusive.</p>
       ${ndviPrediction ? '' : '<p class="ledger-note">No MODIS composite is bundled for this field yet, so the NDVI prediction is withheld rather than invented.</p>'}
     </div>
   `);
@@ -744,14 +744,14 @@ function whyText(r, base, waterSaved, nDelta, eroDelta, marginDelta, cur) {
     `<strong>${r.reliableYears} of ${r.years}</strong>.`,
   );
   if (waterSaved > 0) {
-    parts.push(`It needs <strong>${num(waterSaved)} mm less water a year</strong> — about ${num(waterSaved * 10 * state.region.defaultAreaHa)} m³ across ${num(state.region.defaultAreaHa, 1)} hectares.`);
+    parts.push(`It needs <strong>${num(waterSaved)} mm less water a year</strong>, about ${num(waterSaved * 10 * state.region.defaultAreaHa)} m³ across ${num(state.region.defaultAreaHa, 1)} hectares.`);
   } else if (waterSaved < 0) {
     parts.push(`It needs <strong>${num(-waterSaved)} mm more water a year</strong>, which is the cost of the other gains.`);
   }
   if (Math.abs(nDelta) > 1) {
     parts.push(nDelta > 0
       ? `It moves the nitrogen balance by <strong>${signed(nDelta, 0)} kg/ha</strong> a year, because the legumes fix what the cereals remove.`
-      : `It moves the nitrogen balance by <strong>${signed(nDelta, 0)} kg/ha</strong> a year — the legumes do not fully cover removal.`);
+      : `It moves the nitrogen balance by <strong>${signed(nDelta, 0)} kg/ha</strong> a year: the legumes do not fully cover removal.`);
   }
   if (Math.abs(eroDelta) > 0.02) {
     parts.push(eroDelta < 0
@@ -771,7 +771,7 @@ function diversityText(r) {
     return `It breaks the crop family <strong>${r.familyBreaks} times</strong> across four seasons, which is the mechanism that interrupts the pest and disease cycles a repeated cereal cannot.`;
   }
   if (r.legumeSeasons >= 3) {
-    return `All four seasons are legumes, so the rotation fixes nitrogen heavily but does not diversify crop families — the disease break comes from the legume itself, not from rotation.`;
+    return `All four seasons are legumes, so the rotation fixes nitrogen heavily but does not diversify crop families: the disease break comes from the legume itself, not from rotation.`;
   }
   if (r.familyBreaks === 0) {
     return `It repeats one crop family across all four seasons. That is the cheapest rotation to run and the most fragile one to pests.`;
@@ -787,7 +787,7 @@ function droughtText(r) {
   const driest = new Set(ranked.slice(0, 5).map((y) => y.year));
   const overlap = r.failingYears.filter((y) => driest.has(y));
   if (!overlap.length) return '';
-  return `<p class="check">Cross-check: ${overlap.length} of the ${r.failingYears.length} failing years — ${overlap.join(', ')} — are among the five driest in the record. The model is not inventing failures.</p>`;
+  return `<p class="check">Cross-check: ${overlap.length} of the ${r.failingYears.length} failing years (${overlap.join(', ')}) are among the five driest in the record. The model is not inventing failures.</p>`;
 }
 function actionList(r) {
   const [s0, s1] = state.region.seasons;
@@ -860,7 +860,7 @@ function thresholdText(r, base) {
     ? Math.round(((base.marginP10 - r.marginP10) / Math.max(1, base.marginP10)) * 100)
     : 0;
   if (marginFlip > 0) {
-    parts.push(`It also stops being worth it if the downside margin falls more than <strong>${marginFlip}%</strong> below current practice — a buyer-price question, not a satellite question.`);
+    parts.push(`It also stops being worth it if the downside margin falls more than <strong>${marginFlip}%</strong> below current practice: a buyer-price question, not a satellite question.`);
   }
   return parts.join(' ') || 'The ranking is stable across the tested range.';
 }
@@ -919,7 +919,7 @@ function renderLedger() {
   const backtest = (year, expected) => {
     const observed = wetness.get(year);
     return {
-      title: `${year} — flagged as ${expected === 'fail' ? 'a failure year' : 'a pass'}`,
+      title: `${year}: flagged as ${expected === 'fail' ? 'a failure year' : 'a pass'}`,
       meta: `model: water budget ${expected === 'fail' ? 'missed' : 'met'} · observed: NASA POWER GWETROOT, May–Sep`,
       text: Number.isFinite(observed) ? `${observed.toFixed(2)} m³/m³` : 'No data',
       note: Number.isFinite(observed) ? `record mean ${wetMean.toFixed(2)}` : '',
@@ -1021,7 +1021,7 @@ function validationPanel() {
           <span>driest years in the record are flagged as failures by the model for current practice</span>
         </div>
         <div>
-          <b>${Number.isFinite(delta) ? delta.toFixed(2) : '—'}</b>
+          <b>${Number.isFinite(delta) ? delta.toFixed(2) : '–'}</b>
           <span>m³/m³ wetter root zone in years the model passes than in years it fails, from the reanalysis record</span>
         </div>
         <div>
@@ -1033,7 +1033,7 @@ function validationPanel() {
         The driest five years are ${driest.map((y) => `${y.year} (${num(y.rain)} mm)`).join(', ')}.
         The model flags ${overlap.join(', ') || 'none of them'} as failures.
         ${rec && rec.key !== base.key ? `The recommended rotation fails in ${rec.failingYears.length} years instead of ${base.failingYears.length}.` : ''}
-        This is a directional check on a reanalysis product, not an independent satellite validation — we say so because the difference matters.
+        This is a directional check on a reanalysis product, not an independent satellite validation: we say so because the difference matters.
       </p>
     </div>
   `;
@@ -1067,7 +1067,7 @@ function scalePanel() {
       </p>
       <p class="meta">
         Area, share and demand difference are all editable in the model card. This is arithmetic on our own
-        model output, not a measured saving, and it assumes the rotation is adopted uniformly — which it would not be.
+        model output, not a measured saving, and it assumes the rotation is adopted uniformly, which it would not be.
       </p>
     </div>
   `;
